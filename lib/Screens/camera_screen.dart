@@ -66,20 +66,18 @@ class _MyHomePageState extends State<MyHomePage> {
               height: (MediaQuery.of(context).size.height -
                       AppBar().preferredSize.height -
                       MediaQuery.of(context).viewPadding.top) *
-                  0.4,
+                  (MediaQuery.of(context).size.height <
+                          MediaQuery.of(context).size.width
+                      ? 0.6
+                      : 0.4),
               child: FutureBuilder<void>(
                 future: _initializeControllerFuture,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.done) {
                     return Center(
-                      child: Container(
-                        padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
-                        width: MediaQuery.of(context).size.width,
-                        height: MediaQuery.of(context).size.height,
-                        child: AspectRatio(
-                          aspectRatio: _controller.value.aspectRatio,
-                          child: CameraPreview(_controller),
-                        ),
+                      child: AspectRatio(
+                        aspectRatio: 10 / 6,
+                        child: CameraPreview(_controller),
                       ),
                     );
                   } else {
@@ -97,13 +95,17 @@ class _MyHomePageState extends State<MyHomePage> {
               height: (MediaQuery.of(context).size.height -
                       AppBar().preferredSize.height -
                       MediaQuery.of(context).viewPadding.top) *
-                  0.5,
-              child: GridView.count(
-                padding: const EdgeInsets.all(10),
-                mainAxisSpacing: 10,
-                crossAxisSpacing: 10,
-                crossAxisCount: 2,
-                childAspectRatio: 1 / 0.6,
+                  (MediaQuery.of(context).size.height <
+                          MediaQuery.of(context).size.width
+                      ? 0.3
+                      : 0.5),
+              child: GridView(
+                padding: const EdgeInsets.fromLTRB(40, 10, 40, 0),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  childAspectRatio: MediaQuery.of(context).size.width /
+                      (MediaQuery.of(context).size.height / 4),
+                ),
                 children: [
                   ElevatedButton(
                     onPressed: () {},
