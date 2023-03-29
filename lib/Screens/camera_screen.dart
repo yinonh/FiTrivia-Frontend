@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 
 import '../Widgets/camera_widget.dart';
+import '../Widgets/bottom_buttons.dart';
+import '../models/make_request.dart';
+import '../models/question.dart';
 
 class MyApp extends StatelessWidget {
   final CameraDescription camera;
@@ -32,10 +35,14 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   late CameraController _controller;
   late Future<void> _initializeControllerFuture;
+  Future<List<QuizQuestion>>? _futureQuestions;
 
   @override
   void initState() {
     super.initState();
+
+    _futureQuestions = fetchQuestions();
+
     _controller = CameraController(
       widget.camera,
       ResolutionPreset.high,
@@ -54,7 +61,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Camera Demo'),
+        title: Text('Trivia'),
         centerTitle: true,
       ),
       body: Container(
@@ -69,7 +76,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   (MediaQuery.of(context).size.height <
                           MediaQuery.of(context).size.width
                       ? 0.6
-                      : 0.4),
+                      : 0.5),
               child: FutureBuilder<void>(
                 future: _initializeControllerFuture,
                 builder: (context, snapshot) {
@@ -86,11 +93,30 @@ class _MyHomePageState extends State<MyHomePage> {
                 },
               ),
             ),
-            SizedBox(
-                height: (MediaQuery.of(context).size.height -
-                        AppBar().preferredSize.height -
-                        MediaQuery.of(context).viewPadding.top) *
-                    0.1),
+            Container(
+              height: (MediaQuery.of(context).size.height -
+                      AppBar().preferredSize.height -
+                      MediaQuery.of(context).viewPadding.top) *
+                  0.1,
+              child: Center(
+                child: FutureBuilder<List<QuizQuestion>>(
+                    future: _futureQuestions,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return CircularProgressIndicator();
+                      } else if (snapshot.hasError) {
+                        return Text('Error: ${snapshot.error}');
+                      } else if (!snapshot.hasData) {
+                        return Text('No data');
+                      } else {
+                        return Text(
+                          snapshot.data![0].question,
+                          style: TextStyle(fontSize: 20.0),
+                        );
+                      }
+                    }),
+              ),
+            ),
             Container(
               height: (MediaQuery.of(context).size.height -
                       AppBar().preferredSize.height -
@@ -98,33 +124,23 @@ class _MyHomePageState extends State<MyHomePage> {
                   (MediaQuery.of(context).size.height <
                           MediaQuery.of(context).size.width
                       ? 0.3
-                      : 0.5),
-              child: GridView(
-                padding: const EdgeInsets.fromLTRB(40, 10, 40, 0),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  childAspectRatio: MediaQuery.of(context).size.width /
-                      (MediaQuery.of(context).size.height / 4),
-                ),
-                children: [
-                  ElevatedButton(
-                    onPressed: () {},
-                    child: Text("answer 1"),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {},
-                    child: Text("answer 2"),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {},
-                    child: Text("answer 3"),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {},
-                    child: Text("answer 4"),
-                  ),
-                ],
-              ),
+                      : 0.4),
+              child: FutureBuilder<List<QuizQuestion>>(
+                  future: _futureQuestions,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return CircularProgressIndicator();
+                    } else if (snapshot.hasError) {
+                      return Text('Error: ${snapshot.error}');
+                    } else if (!snapshot.hasData) {
+                      return Text('No data');
+                    } else {
+                      return bottom_buttons(
+                        correctAnswer: snapshot.data![0].correctAnswer,
+                        wrongAnswers: snapshot.data![0].incorrectAnswers,
+                      );
+                    }
+                  }),
             )
           ],
         ),
