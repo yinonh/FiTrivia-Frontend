@@ -79,6 +79,7 @@ class _HomePageState extends State<HomePage> {
                         return Text(
                           snapshot.data![0].question,
                           style: TextStyle(fontSize: 20.0),
+                          textAlign: TextAlign.center,
                         );
                       }
                     }),
