@@ -4,39 +4,43 @@ import '../Widgets/bottom_buttons.dart';
 import '../models/make_request.dart';
 import '../models/question.dart';
 
-class NoCameraApp extends StatelessWidget {
+class NoCameraScreen extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Trivia',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: HomePage(),
-    );
-  }
+  State<NoCameraScreen> createState() => _NoCameraScreenState();
 }
 
-class HomePage extends StatefulWidget {
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
+class _NoCameraScreenState extends State<NoCameraScreen> {
   Future<List<QuizQuestion>>? _futureQuestions;
+  int questionsLength = 0;
+  int index = 0;
 
   @override
   void initState() {
     super.initState();
 
     _futureQuestions = fetchQuestions();
+    _futureQuestions?.then((questions) {
+      questionsLength = questions.length;
+    });
+  }
+
+  void next_question() {
+    setState(() {
+      if (index + 1 < questionsLength) index++;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Trivia'),
+        actions: [
+          IconButton(
+            onPressed: next_question,
+            icon: Icon(Icons.navigate_next_rounded),
+          )
+        ],
+        title: Text('FiTrivia'),
         centerTitle: true,
       ),
       body: Container(
@@ -70,14 +74,16 @@ class _HomePageState extends State<HomePage> {
                     future: _futureQuestions,
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return CircularProgressIndicator();
+                        return CircularProgressIndicator(
+                          strokeWidth: 5,
+                        );
                       } else if (snapshot.hasError) {
                         return Text('Error: ${snapshot.error}');
                       } else if (!snapshot.hasData) {
                         return Text('No data');
                       } else {
                         return Text(
-                          snapshot.data![0].question,
+                          snapshot.data![index].question,
                           style: TextStyle(fontSize: 20.0),
                           textAlign: TextAlign.center,
                         );
@@ -97,15 +103,15 @@ class _HomePageState extends State<HomePage> {
                   future: _futureQuestions,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return CircularProgressIndicator();
+                      return Container();
                     } else if (snapshot.hasError) {
                       return Text('Error: ${snapshot.error}');
                     } else if (!snapshot.hasData) {
                       return Text('No data');
                     } else {
                       return bottom_buttons(
-                        correctAnswer: snapshot.data![0].correctAnswer,
-                        wrongAnswers: snapshot.data![0].incorrectAnswers,
+                        correctAnswer: snapshot.data![index].correctAnswer,
+                        wrongAnswers: snapshot.data![index].incorrectAnswers,
                       );
                     }
                   }),

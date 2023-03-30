@@ -6,42 +6,32 @@ import '../Widgets/bottom_buttons.dart';
 import '../models/make_request.dart';
 import '../models/question.dart';
 
-class MyApp extends StatelessWidget {
+class CameraScreen extends StatefulWidget {
+  static const routeName = '/camera-screen';
   final CameraDescription camera;
 
-  const MyApp(this.camera);
+  CameraScreen(this.camera);
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Trivia',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: MyHomePage(camera),
-    );
-  }
+  _CameraScreenState createState() => _CameraScreenState();
 }
 
-class MyHomePage extends StatefulWidget {
-  final CameraDescription camera;
-
-  MyHomePage(this.camera);
-
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
+class _CameraScreenState extends State<CameraScreen> {
   late CameraController _controller;
   late Future<void> _initializeControllerFuture;
   Future<List<QuizQuestion>>? _futureQuestions;
+  int questionsLength = 0;
+  int index = 0;
 
   @override
   void initState() {
     super.initState();
 
     _futureQuestions = fetchQuestions();
+
+    _futureQuestions?.then((questions) {
+      questionsLength = questions.length;
+    });
 
     _controller = CameraController(
       widget.camera,
@@ -57,11 +47,23 @@ class _MyHomePageState extends State<MyHomePage> {
     super.dispose();
   }
 
+  void next_question() {
+    setState(() {
+      if (index + 1 < questionsLength) index++;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Trivia'),
+        actions: [
+          IconButton(
+            onPressed: next_question,
+            icon: Icon(Icons.navigate_next_rounded),
+          )
+        ],
+        title: Text('FiTrivia'),
         centerTitle: true,
       ),
       body: Container(
@@ -88,7 +90,11 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                     );
                   } else {
-                    return Center(child: CircularProgressIndicator());
+                    return Center(
+                      child: CircularProgressIndicator(
+                        strokeWidth: 5,
+                      ),
+                    );
                   }
                 },
               ),
@@ -110,7 +116,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         return Text('No data');
                       } else {
                         return Text(
-                          snapshot.data![0].question,
+                          snapshot.data![index].question,
                           style: TextStyle(fontSize: 20.0),
                           textAlign: TextAlign.center,
                         );
@@ -130,15 +136,15 @@ class _MyHomePageState extends State<MyHomePage> {
                   future: _futureQuestions,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return CircularProgressIndicator();
+                      return Container();
                     } else if (snapshot.hasError) {
                       return Text('Error: ${snapshot.error}');
                     } else if (!snapshot.hasData) {
                       return Text('No data');
                     } else {
                       return bottom_buttons(
-                        correctAnswer: snapshot.data![0].correctAnswer,
-                        wrongAnswers: snapshot.data![0].incorrectAnswers,
+                        correctAnswer: snapshot.data![index].correctAnswer,
+                        wrongAnswers: snapshot.data![index].incorrectAnswers,
                       );
                     }
                   }),
