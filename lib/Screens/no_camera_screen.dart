@@ -58,7 +58,10 @@ class _NoCameraScreenState extends State<NoCameraScreen> {
                         : 0.5),
                 child: Center(
                   child: AspectRatio(
-                    aspectRatio: 10 / 6,
+                    aspectRatio: MediaQuery.of(context).size.height <
+                            MediaQuery.of(context).size.width
+                        ? 10 / 6
+                        : 4 / 6,
                     child: Container(
                       color: Colors.black,
                     ),

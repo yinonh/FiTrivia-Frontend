@@ -48,31 +48,36 @@ class _bottom_buttonsState extends State<bottom_buttons> {
   List<ElevatedButton> get_questions_for_grid() {
     List<ElevatedButton> result = [];
     for (var i = 0; i < 4; i++) {
-      result.add(ElevatedButton(
-        style: _lastPressedIndex == i
-            ? ElevatedButton.styleFrom(
-                backgroundColor: done && answers[i] == widget.correctAnswer
-                    ? Colors.green
-                    : Colors.deepOrange[300],
-                side: BorderSide(
-                  width: 5.0,
-                  color: Colors.black,
+      result.add(
+        ElevatedButton(
+          style: _lastPressedIndex == i
+              ? ElevatedButton.styleFrom(
+                  backgroundColor: done && answers[i] == widget.correctAnswer
+                      ? Colors.green
+                      : Colors.deepOrange[300],
+                  side: BorderSide(
+                    width: 5.0,
+                    color: Colors.black,
+                  ),
+                )
+              : ElevatedButton.styleFrom(
+                  backgroundColor: done && answers[i] == widget.correctAnswer
+                      ? Colors.green
+                      : null,
                 ),
-              )
-            : ElevatedButton.styleFrom(
-                backgroundColor: done && answers[i] == widget.correctAnswer
-                    ? Colors.green
-                    : Colors.blue,
-              ),
-        onPressed: () {
-          button_pressed(i);
-        },
-        child: Text(
-          textAlign: TextAlign.center,
-          answers[i],
-          style: TextStyle(fontSize: 20.0),
+          onPressed: () {
+            button_pressed(i);
+          },
+          child: FittedBox(
+            fit: BoxFit.cover,
+            child: Text(
+              textAlign: TextAlign.center,
+              answers[i],
+              style: TextStyle(fontSize: 20.0),
+            ),
+          ),
         ),
-      ));
+      );
     }
     return result;
   }
@@ -96,15 +101,18 @@ class _bottom_buttonsState extends State<bottom_buttons> {
                 : ElevatedButton.styleFrom(
                     backgroundColor: done && answers[i] == widget.correctAnswer
                         ? Colors.green
-                        : Colors.blue,
+                        : null,
                   ),
             onPressed: () {
               button_pressed(i);
             },
-            child: Text(
-              textAlign: TextAlign.center,
-              answers[i],
-              style: TextStyle(fontSize: 20.0),
+            child: FittedBox(
+              fit: BoxFit.cover,
+              child: Text(
+                textAlign: TextAlign.center,
+                answers[i],
+                style: TextStyle(fontSize: 20.0),
+              ),
             ),
           ),
         ),

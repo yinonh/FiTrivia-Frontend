@@ -36,6 +36,8 @@ class _CameraScreenState extends State<CameraScreen> {
     _controller = CameraController(
       widget.camera,
       ResolutionPreset.high,
+      // imageFormatGroup: ImageFormatGroup.yuv420,
+      // enableAudio: false,
     );
 
     _initializeControllerFuture = _controller.initialize();
@@ -85,7 +87,10 @@ class _CameraScreenState extends State<CameraScreen> {
                   if (snapshot.connectionState == ConnectionState.done) {
                     return Center(
                       child: AspectRatio(
-                        aspectRatio: 10 / 6,
+                        aspectRatio: MediaQuery.of(context).size.height <
+                                MediaQuery.of(context).size.width
+                            ? 10 / 6
+                            : 4 / 6,
                         child: CameraPreview(_controller),
                       ),
                     );
