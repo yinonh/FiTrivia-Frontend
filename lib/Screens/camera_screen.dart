@@ -28,7 +28,7 @@ class _CameraScreenState extends State<CameraScreen> {
   int questionsLength = 0;
   int index = 0;
   bool _isCapturing = true;
-  int count_down_time = 5;
+  int count_down_time = 1;
   Stream<int>? countDownStream;
 
   @override
@@ -66,7 +66,7 @@ class _CameraScreenState extends State<CameraScreen> {
   }
 
   void _startTimer() {
-    final repeatingTimer = Timer.periodic(Duration(milliseconds: 100), (timer) {
+    final repeatingTimer = Timer.periodic(Duration(milliseconds: 10), (timer) {
       if (_controller != null && _controller.value.isInitialized) {
         _captureFrame();
       }
@@ -82,7 +82,7 @@ class _CameraScreenState extends State<CameraScreen> {
   }
 
   Future<void> _sendImages() async {
-    if (_capturedImages.length >= 10) {
+    if (_capturedImages.length == 10) {
       List<http.MultipartFile> imageFiles = [];
       for (var image in _capturedImages) {
         var bytes = await image.readAsBytes();
@@ -113,9 +113,10 @@ class _CameraScreenState extends State<CameraScreen> {
       XFile imageFile = await _controller.takePicture();
       if (_capturedImages.length < 10) {
         _capturedImages.add(imageFile);
-      } else {
-        _sendImages().then((value) => _capturedImages.clear());
-        _capturedImages.add(imageFile);
+      }
+      if (_capturedImages.length == 10) {
+        await _sendImages();
+        _capturedImages.clear();
       }
     } catch (e) {
       print('Error capturing frame: $e');
