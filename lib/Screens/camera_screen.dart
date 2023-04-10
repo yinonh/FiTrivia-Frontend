@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
+import 'dart:async';
+import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
+import 'package:path/path.dart' as path;
 
 import '../Widgets/camera_widget.dart';
 import '../Widgets/bottom_buttons.dart';
@@ -20,8 +24,12 @@ class _CameraScreenState extends State<CameraScreen> {
   late CameraController _controller;
   late Future<void> _initializeControllerFuture;
   Future<List<QuizQuestion>>? _futureQuestions;
+  List<XFile> _capturedImages = [];
   int questionsLength = 0;
   int index = 0;
+  bool _isCapturing = true;
+  int count_down_time = 5;
+  Stream<int>? countDownStream;
 
   @override
   void initState() {
@@ -40,7 +48,9 @@ class _CameraScreenState extends State<CameraScreen> {
       // enableAudio: false,
     );
 
-    _initializeControllerFuture = _controller.initialize();
+    _initializeControllerFuture = _controller.initialize().then((value) {
+      _isCapturing = false;
+    });
   }
 
   @override
@@ -55,6 +65,65 @@ class _CameraScreenState extends State<CameraScreen> {
     });
   }
 
+  void _startTimer() {
+    final repeatingTimer = Timer.periodic(Duration(milliseconds: 100), (timer) {
+      if (_controller != null && _controller.value.isInitialized) {
+        _captureFrame();
+      }
+    });
+
+    countDownStream =
+        Stream.periodic(Duration(seconds: 1), (i) => this.count_down_time - i)
+            .takeWhile((count) => count > 0);
+
+    Timer(Duration(seconds: this.count_down_time), () {
+      repeatingTimer.cancel();
+    });
+  }
+
+  Future<void> _sendImages() async {
+    if (_capturedImages.length >= 10) {
+      List<http.MultipartFile> imageFiles = [];
+      for (var image in _capturedImages) {
+        var bytes = await image.readAsBytes();
+        var fileName = path.basename(image.path);
+        var file = http.MultipartFile.fromBytes('images', bytes,
+            filename: fileName, contentType: MediaType('image', 'jpeg'));
+        imageFiles.add(file);
+      }
+      var request = http.MultipartRequest(
+          'POST', Uri.parse('http://127.0.0.1:8000/images/'));
+      request.files.addAll(imageFiles);
+      var response = await request.send();
+      if (response.statusCode == 200) {
+        print('Images sent successfully!');
+        _capturedImages.clear();
+      } else {
+        print('Error sending images: ${response.reasonPhrase}');
+      }
+    }
+  }
+
+  void _captureFrame() async {
+    if (_isCapturing) {
+      return;
+    }
+    try {
+      _isCapturing = true;
+      XFile imageFile = await _controller.takePicture();
+      if (_capturedImages.length < 10) {
+        _capturedImages.add(imageFile);
+      } else {
+        _sendImages().then((value) => _capturedImages.clear());
+        _capturedImages.add(imageFile);
+      }
+    } catch (e) {
+      print('Error capturing frame: $e');
+    } finally {
+      _isCapturing = false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -65,7 +134,16 @@ class _CameraScreenState extends State<CameraScreen> {
             icon: Icon(Icons.navigate_next_rounded),
           )
         ],
-        title: Text('FiTrivia'),
+        title: StreamBuilder<int>(
+          stream: countDownStream,
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return Text('Time Left: ${snapshot.data} s');
+            } else {
+              return Text('Time Left: 0 s');
+            }
+          },
+        ),
         centerTitle: true,
       ),
       body: Container(
@@ -148,6 +226,7 @@ class _CameraScreenState extends State<CameraScreen> {
                       return Text('No data');
                     } else {
                       return bottom_buttons(
+                        func: _startTimer,
                         correctAnswer: snapshot.data![index].correctAnswer,
                         wrongAnswers: snapshot.data![index].incorrectAnswers,
                       );

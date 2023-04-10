@@ -36,7 +36,7 @@ class MyApp extends StatelessWidget {
           } else if (snapshot.hasError || snapshot.data == null) {
             return NoCameraScreen();
           } else {
-            final back_camera = snapshot.data?[1];
+            final back_camera = snapshot.data?.last;
             if (back_camera != null) {
               return CameraScreen(back_camera);
             } else {

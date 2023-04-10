@@ -113,6 +113,7 @@ class _NoCameraScreenState extends State<NoCameraScreen> {
                       return Text('No data');
                     } else {
                       return bottom_buttons(
+                        func: () {},
                         correctAnswer: snapshot.data![index].correctAnswer,
                         wrongAnswers: snapshot.data![index].incorrectAnswers,
                       );
