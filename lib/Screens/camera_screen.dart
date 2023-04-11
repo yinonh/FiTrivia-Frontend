@@ -1,33 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
+import 'package:http_parser/http_parser.dart';
 import 'dart:async';
 import 'package:http/http.dart' as http;
-import 'package:http_parser/http_parser.dart';
 import 'package:path/path.dart' as path;
 
-import '../Widgets/camera_widget.dart';
 import '../Widgets/bottom_buttons.dart';
 import '../models/make_request.dart';
 import '../models/question.dart';
 
 class CameraScreen extends StatefulWidget {
-  static const routeName = '/camera-screen';
-  final CameraDescription camera;
+  static const routeName = '/camera_screen';
+  CameraController controller;
 
-  CameraScreen(this.camera);
+  CameraScreen({required this.controller, Key? key}) : super(key: key);
 
   @override
   _CameraScreenState createState() => _CameraScreenState();
 }
 
 class _CameraScreenState extends State<CameraScreen> {
-  late CameraController _controller;
-  late Future<void> _initializeControllerFuture;
   Future<List<QuizQuestion>>? _futureQuestions;
   List<XFile> _capturedImages = [];
   int questionsLength = 0;
   int index = 0;
-  bool _isCapturing = true;
+  bool _isCapturing = false;
   int count_down_time = 1;
   Stream<int>? countDownStream;
 
@@ -40,22 +37,11 @@ class _CameraScreenState extends State<CameraScreen> {
     _futureQuestions?.then((questions) {
       questionsLength = questions.length;
     });
-
-    _controller = CameraController(
-      widget.camera,
-      ResolutionPreset.high,
-      // imageFormatGroup: ImageFormatGroup.yuv420,
-      // enableAudio: false,
-    );
-
-    _initializeControllerFuture = _controller.initialize().then((value) {
-      _isCapturing = false;
-    });
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    widget.controller.dispose();
     super.dispose();
   }
 
@@ -66,8 +52,8 @@ class _CameraScreenState extends State<CameraScreen> {
   }
 
   void _startTimer() {
-    final repeatingTimer = Timer.periodic(Duration(milliseconds: 10), (timer) {
-      if (_controller != null && _controller.value.isInitialized) {
+    final repeatingTimer = Timer.periodic(Duration(milliseconds: 100), (timer) {
+      if (widget.controller != null && widget.controller.value.isInitialized) {
         _captureFrame();
       }
     });
@@ -94,12 +80,20 @@ class _CameraScreenState extends State<CameraScreen> {
       var request = http.MultipartRequest(
           'POST', Uri.parse('http://127.0.0.1:8000/images/'));
       request.files.addAll(imageFiles);
-      var response = await request.send();
-      if (response.statusCode == 200) {
-        print('Images sent successfully!');
-        _capturedImages.clear();
-      } else {
-        print('Error sending images: ${response.reasonPhrase}');
+      try {
+        var response = await request.send();
+        print(response.statusCode);
+        if (response.statusCode == 200) {
+          // Success
+          var responseBody = await response.stream.bytesToString();
+          print(responseBody);
+        } else {
+          // Error
+          print('Error: ${response.statusCode}');
+        }
+      } catch (e) {
+        // Exception
+        print('Exception: $e');
       }
     }
   }
@@ -110,7 +104,7 @@ class _CameraScreenState extends State<CameraScreen> {
     }
     try {
       _isCapturing = true;
-      XFile imageFile = await _controller.takePicture();
+      XFile imageFile = await widget.controller.takePicture();
       if (_capturedImages.length < 10) {
         _capturedImages.add(imageFile);
       }
@@ -160,27 +154,15 @@ class _CameraScreenState extends State<CameraScreen> {
                           MediaQuery.of(context).size.width
                       ? 0.6
                       : 0.5),
-              child: FutureBuilder<void>(
-                future: _initializeControllerFuture,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.done) {
-                    return Center(
-                      child: AspectRatio(
-                        aspectRatio: MediaQuery.of(context).size.height <
-                                MediaQuery.of(context).size.width
-                            ? 10 / 6
-                            : 4 / 6,
-                        child: CameraPreview(_controller),
-                      ),
-                    );
-                  } else {
-                    return Center(
-                      child: CircularProgressIndicator(
-                        strokeWidth: 5,
-                      ),
-                    );
-                  }
-                },
+              child: Hero(
+                tag: 'camera_preview',
+                child: AspectRatio(
+                  aspectRatio: MediaQuery.of(context).size.height <
+                          MediaQuery.of(context).size.width
+                      ? 10 / 6
+                      : 4 / 6,
+                  child: CameraPreview(widget.controller),
+                ),
               ),
             ),
             Container(

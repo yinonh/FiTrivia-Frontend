@@ -4,6 +4,7 @@ import 'package:flex_color_scheme/flex_color_scheme.dart';
 
 import 'package:camera/camera.dart';
 import 'Screens/camera_screen.dart';
+import 'Screens/previous_screen.dart';
 import 'Screens/no_camera_screen.dart';
 import 'Screens/splash_screen.dart';
 
@@ -19,10 +20,27 @@ class MyApp extends StatelessWidget {
     );
     WidgetsFlutterBinding.ensureInitialized();
     return MaterialApp(
+      onGenerateRoute: (settings) {
+        if (settings.name == CameraScreen.routeName) {
+          final arg = settings.arguments as CameraController;
+
+          // Then, extract the required data from
+          // the arguments and pass the data to the
+          // correct screen.
+          return MaterialPageRoute(builder: (context) {
+            return CameraScreen(
+              controller: arg,
+            );
+          });
+        }
+      },
+      routes: {
+        '/countdown_screen': (context) => SplashScreen(),
+      },
       theme: FlexThemeData.light(
-        scheme: FlexScheme.aquaBlue,
-        textTheme: text_theme,
-      ),
+          scheme: FlexScheme.aquaBlue,
+          textTheme: text_theme,
+          scaffoldBackground: Colors.blueGrey[100]),
       darkTheme: FlexThemeData.dark(
         scheme: FlexScheme.bigStone,
         textTheme: text_theme,
@@ -38,7 +56,7 @@ class MyApp extends StatelessWidget {
           } else {
             final back_camera = snapshot.data?.last;
             if (back_camera != null) {
-              return CameraScreen(back_camera);
+              return PreviousScreen(back_camera);
             } else {
               return NoCameraScreen();
             }
