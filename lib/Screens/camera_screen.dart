@@ -25,8 +25,9 @@ class _CameraScreenState extends State<CameraScreen> {
   int questionsLength = 0;
   int index = 0;
   bool _isCapturing = false;
-  int count_down_time = 1;
+  int count_down_time = 10;
   Stream<int>? countDownStream;
+  int timerCounter = 0;
 
   @override
   void initState() {
@@ -37,6 +38,8 @@ class _CameraScreenState extends State<CameraScreen> {
     _futureQuestions?.then((questions) {
       questionsLength = questions.length;
     });
+
+    _startTimer();
   }
 
   @override
@@ -52,18 +55,25 @@ class _CameraScreenState extends State<CameraScreen> {
   }
 
   void _startTimer() {
-    final repeatingTimer = Timer.periodic(Duration(milliseconds: 100), (timer) {
+    final repeatingTimer = Timer.periodic(Duration(milliseconds: 10), (timer) {
       if (widget.controller != null && widget.controller.value.isInitialized) {
         _captureFrame();
       }
     });
 
-    countDownStream =
-        Stream.periodic(Duration(seconds: 1), (i) => this.count_down_time - i)
-            .takeWhile((count) => count > 0);
+    countDownStream = Stream<int>.periodic(Duration(seconds: 1), (i) {
+      return count_down_time - i - 1;
+    }).take(count_down_time);
 
-    Timer(Duration(seconds: this.count_down_time), () {
+    Timer(Duration(seconds: count_down_time + 10), () {
       repeatingTimer.cancel();
+      setState(() {
+        timerCounter++;
+      });
+      if (timerCounter < 5) {
+        next_question();
+        _startTimer();
+      }
     });
   }
 
@@ -123,12 +133,6 @@ class _CameraScreenState extends State<CameraScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        actions: [
-          IconButton(
-            onPressed: next_question,
-            icon: Icon(Icons.navigate_next_rounded),
-          )
-        ],
         title: StreamBuilder<int>(
           stream: countDownStream,
           builder: (context, snapshot) {
@@ -209,7 +213,6 @@ class _CameraScreenState extends State<CameraScreen> {
                       return Text('No data');
                     } else {
                       return bottom_buttons(
-                        func: _startTimer,
                         correctAnswer: snapshot.data![index].correctAnswer,
                         wrongAnswers: snapshot.data![index].incorrectAnswers,
                       );

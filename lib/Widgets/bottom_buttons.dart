@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 
 class bottom_buttons extends StatefulWidget {
   bottom_buttons(
-      {required this.func,
+      { //required this.func,
       required this.correctAnswer,
       required this.wrongAnswers,
       Key? key})
       : super(key: key);
   final String correctAnswer;
   final List<String> wrongAnswers;
-  final Function func;
+  //final Function func;
 
   @override
   State<bottom_buttons> createState() => _bottom_buttonsState();
@@ -44,9 +44,9 @@ class _bottom_buttonsState extends State<bottom_buttons> {
 
   void button_pressed(int i) {
     setState(() {
-      widget.func();
-      // _lastPressedIndex = i;
-      // done = true;
+      //widget.func();
+      _lastPressedIndex = i;
+      done = true;
     });
   }
 

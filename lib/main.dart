@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
-
+import 'package:collection/collection.dart';
 import 'package:camera/camera.dart';
 import 'Screens/camera_screen.dart';
 import 'Screens/previous_screen.dart';
 import 'Screens/no_camera_screen.dart';
 import 'Screens/splash_screen.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 void main() => runApp(MyApp());
 
@@ -46,23 +47,43 @@ class MyApp extends StatelessWidget {
         textTheme: text_theme,
       ),
       themeMode: ThemeMode.system,
-      home: FutureBuilder<List<CameraDescription>>(
-        future: availableCameras(),
-        builder: (ctx, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return SplashScreen();
-          } else if (snapshot.hasError || snapshot.data == null) {
-            return NoCameraScreen();
-          } else {
-            final back_camera = snapshot.data?.last;
-            if (back_camera != null) {
-              return PreviousScreen(back_camera);
-            } else {
-              return NoCameraScreen();
-            }
-          }
-        },
-      ),
+      home: kIsWeb
+          ? FutureBuilder<List<CameraDescription>>(
+              future: availableCameras(),
+              builder: (ctx, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return SplashScreen();
+                } else if (snapshot.hasError || snapshot.data == null) {
+                  return NoCameraScreen();
+                } else {
+                  final back_camera = snapshot.data?.last;
+                  if (back_camera != null) {
+                    return PreviousScreen(back_camera);
+                  } else {
+                    return NoCameraScreen();
+                  }
+                }
+              },
+            )
+          : FutureBuilder<List<CameraDescription>>(
+              future: availableCameras(),
+              builder: (ctx, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return SplashScreen();
+                } else if (snapshot.hasError || snapshot.data == null) {
+                  return NoCameraScreen();
+                } else {
+                  final frontCamera = snapshot.data?.firstWhereOrNull(
+                      (camera) =>
+                          camera.lensDirection == CameraLensDirection.front);
+                  if (frontCamera != null) {
+                    return PreviousScreen(frontCamera);
+                  } else {
+                    return NoCameraScreen();
+                  }
+                }
+              },
+            ),
     );
   }
 }
