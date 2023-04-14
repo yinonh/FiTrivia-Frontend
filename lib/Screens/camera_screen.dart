@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:http_parser/http_parser.dart';
@@ -5,6 +7,7 @@ import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;
 
+import '../Widgets/rest_popup.dart';
 import '../Widgets/bottom_buttons.dart';
 import '../models/make_request.dart';
 import '../models/question.dart';
@@ -14,7 +17,6 @@ class CameraScreen extends StatefulWidget {
   CameraController controller;
 
   CameraScreen({required this.controller, Key? key}) : super(key: key);
-
   @override
   _CameraScreenState createState() => _CameraScreenState();
 }
@@ -54,27 +56,39 @@ class _CameraScreenState extends State<CameraScreen> {
     });
   }
 
-  void _startTimer() {
-    final repeatingTimer = Timer.periodic(Duration(milliseconds: 10), (timer) {
-      if (widget.controller != null && widget.controller.value.isInitialized) {
-        _captureFrame();
-      }
-    });
-
-    countDownStream = Stream<int>.periodic(Duration(seconds: 1), (i) {
-      return count_down_time - i - 1;
-    }).take(count_down_time);
-
-    Timer(Duration(seconds: count_down_time + 10), () {
-      repeatingTimer.cancel();
-      setState(() {
-        timerCounter++;
+  Future<void> _startTimer() async {
+    for (int i = 0; i < 5; i++) {
+      final repeatingTimer =
+          Timer.periodic(Duration(milliseconds: count_down_time), (timer) {
+        if (widget.controller != null &&
+            widget.controller.value.isInitialized) {
+          _captureFrame();
+        }
       });
-      if (timerCounter < 5) {
-        next_question();
-        _startTimer();
-      }
-    });
+
+      countDownStream = Stream<int>.periodic(Duration(seconds: 1), (i) {
+        return count_down_time - i - 1;
+      }).take(count_down_time);
+
+      Timer(Duration(seconds: 10), () {
+        repeatingTimer.cancel();
+      });
+
+      await Future.delayed(Duration(seconds: 10));
+
+      showDialog(
+        context: context,
+        builder: (BuildContext context) => CustomProgressDialog(
+          tween: Tween<double>(begin: 0.0, end: 1.0),
+        ),
+        barrierDismissible: false,
+      );
+
+      // Wait 10 seconds before closing the dialog box
+      await Future.delayed(Duration(seconds: 10));
+
+      next_question();
+    }
   }
 
   Future<void> _sendImages() async {
