@@ -1,5 +1,7 @@
+// import 'dart:convert';
+// import 'dart:io';
 import 'dart:convert';
-import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:http_parser/http_parser.dart';
@@ -11,6 +13,7 @@ import '../Widgets/rest_popup.dart';
 import '../Widgets/bottom_buttons.dart';
 import '../models/make_request.dart';
 import '../models/question.dart';
+import '../Screens/result_screen.dart';
 
 class CameraScreen extends StatefulWidget {
   static const routeName = '/camera_screen';
@@ -30,6 +33,8 @@ class _CameraScreenState extends State<CameraScreen> {
   int count_down_time = 10;
   Stream<int>? countDownStream;
   int timerCounter = 0;
+  List<String> current_ex = [];
+  List<List<String>> response_list = [];
 
   @override
   void initState() {
@@ -41,7 +46,7 @@ class _CameraScreenState extends State<CameraScreen> {
       questionsLength = questions.length;
     });
 
-    _startTimer();
+    _startTimer(context);
   }
 
   @override
@@ -56,7 +61,7 @@ class _CameraScreenState extends State<CameraScreen> {
     });
   }
 
-  Future<void> _startTimer() async {
+  Future<void> _startTimer(BuildContext context) async {
     for (int i = 0; i < 5; i++) {
       final repeatingTimer =
           Timer.periodic(Duration(milliseconds: count_down_time), (timer) {
@@ -75,20 +80,23 @@ class _CameraScreenState extends State<CameraScreen> {
       });
 
       await Future.delayed(Duration(seconds: 10));
+        showDialog(
+          context: context,
+          builder: (BuildContext cntx) =>
+              CustomProgressDialog(
+                tween: Tween<double>(begin: 0.0, end: 1.0),
+              ),
+          barrierDismissible: false,
+        );
 
-      showDialog(
-        context: context,
-        builder: (BuildContext context) => CustomProgressDialog(
-          tween: Tween<double>(begin: 0.0, end: 1.0),
-        ),
-        barrierDismissible: false,
-      );
-
-      // Wait 10 seconds before closing the dialog box
-      await Future.delayed(Duration(seconds: 10));
+        // Wait 10 seconds before closing the dialog box
+        await Future.delayed(Duration(seconds: 10, milliseconds: 10));
 
       next_question();
+      response_list.add([...current_ex]);
+      current_ex.clear();
     }
+    Navigator.pushReplacementNamed(context, ResultScreen.routeName, arguments: response_list);
   }
 
   Future<void> _sendImages() async {
@@ -110,7 +118,8 @@ class _CameraScreenState extends State<CameraScreen> {
         if (response.statusCode == 200) {
           // Success
           var responseBody = await response.stream.bytesToString();
-          print(responseBody);
+          var jsonResponse = jsonDecode(responseBody);
+          current_ex.add(jsonResponse['message']);
         } else {
           // Error
           print('Error: ${response.statusCode}');

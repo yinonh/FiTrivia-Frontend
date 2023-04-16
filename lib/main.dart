@@ -8,6 +8,7 @@ import 'Screens/camera_screen.dart';
 import 'Screens/previous_screen.dart';
 import 'Screens/no_camera_screen.dart';
 import 'Screens/splash_screen.dart';
+import 'Screens/result_screen.dart';
 
 void main() => runApp(MyApp());
 
@@ -31,6 +32,18 @@ class MyApp extends StatelessWidget {
             return MaterialPageRoute(builder: (context) {
               return CameraScreen(
                 controller: arg,
+              );
+            });
+          }
+          else if(settings.name == ResultScreen.routeName){
+            final arg = settings.arguments as  List<List<String>>;
+
+            // Then, extract the required data from
+            // the arguments and pass the data to the
+            // correct screen.
+            return MaterialPageRoute(builder: (context) {
+              return ResultScreen(
+                result: arg,
               );
             });
           }
