@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'dart:async';
+
 
 class bottom_buttons extends StatefulWidget {
   bottom_buttons(
@@ -8,8 +10,13 @@ class bottom_buttons extends StatefulWidget {
       required this.wrongAnswers,
       Key? key})
       : super(key: key);
-  final String correctAnswer;
-  final List<String> wrongAnswers;
+  String correctAnswer;
+  List<String> wrongAnswers;
+  // final String correctAnswer;
+  // final List<String> wrongAnswers;
+  int lastPressedIndex = -1;
+  bool done = false;
+
   //final Function func;
 
   @override
@@ -18,13 +25,23 @@ class bottom_buttons extends StatefulWidget {
 
 class _bottom_buttonsState extends State<bottom_buttons> {
   late List<String> answers;
-  int _lastPressedIndex = -1;
-  bool done = false;
+  late Timer repeatingTimer;
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    repeatingTimer.cancel();
+    super.dispose();
+  }
 
   @override
   void initState() {
     super.initState();
     _shuffleAnswers();
+    repeatingTimer = Timer.periodic(Duration(milliseconds: 1), (timer) {
+      setState(() {
+      });
+    });
   }
 
   @override
@@ -32,8 +49,8 @@ class _bottom_buttonsState extends State<bottom_buttons> {
     super.didUpdateWidget(oldWidget);
     if (widget.correctAnswer != oldWidget.correctAnswer ||
         !listEquals(widget.wrongAnswers, oldWidget.wrongAnswers)) {
-      _lastPressedIndex = -1;
-      done = false;
+      widget.lastPressedIndex = -1;
+      widget.done = false;
       _shuffleAnswers();
     }
   }
@@ -42,35 +59,26 @@ class _bottom_buttonsState extends State<bottom_buttons> {
     answers = [widget.correctAnswer, ...widget.wrongAnswers]..shuffle();
   }
 
-  void button_pressed(int i, bool done) {
-    setState(() {
-      _lastPressedIndex = i;
-      done = done;
-    });
-  }
+  // void button_pressed(int i, bool done) {
+  //   setState(() {
+  //     widget.lastPressedIndex = i;
+  //     widget.done = done;
+  //   });
+  // }
 
   List<ElevatedButton> get_questions_for_grid() {
     List<ElevatedButton> result = [];
     for (var i = 0; i < 4; i++) {
       result.add(
         ElevatedButton(
-          style: _lastPressedIndex == i
-              ? ElevatedButton.styleFrom(
-                  backgroundColor: done && answers[i] == widget.correctAnswer
-                      ? Colors.green
-                      : Colors.deepOrange[300],
-                  side: BorderSide(
-                    width: 5.0,
-                    color: Colors.black,
-                  ),
-                )
-              : ElevatedButton.styleFrom(
-                  backgroundColor: done && answers[i] == widget.correctAnswer
-                      ? Colors.green
-                      : null,
-                ),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: widget.done && answers[i] == widget.correctAnswer ? Colors.green
+                : widget.lastPressedIndex == i && widget.done && answers[i] != widget.correctAnswer ? Colors.deepOrange[300]
+                : null,
+            side: widget.lastPressedIndex == i ? BorderSide(width: 5.0, color: Colors.black) : null,
+          ),
           onPressed: () {
-            //button_pressed(i);
+            //button_pressed(i, true);
           },
           child: FittedBox(
             fit: BoxFit.cover,
@@ -92,23 +100,14 @@ class _bottom_buttonsState extends State<bottom_buttons> {
       result.add(
         Expanded(
           child: ElevatedButton(
-            style: _lastPressedIndex == i
-                ? ElevatedButton.styleFrom(
-                    backgroundColor: done && answers[i] == widget.correctAnswer
-                        ? Colors.green
-                        : Colors.deepOrange[300],
-                    side: BorderSide(
-                      width: 5.0,
-                      color: Colors.black,
-                    ),
-                  )
-                : ElevatedButton.styleFrom(
-                    backgroundColor: done && answers[i] == widget.correctAnswer
-                        ? Colors.green
-                        : null,
-                  ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: widget.done && answers[i] == widget.correctAnswer ? Colors.green
+                  : widget.lastPressedIndex == i && widget.done && answers[i] != widget.correctAnswer ? Colors.deepOrange[300]
+                  : null,
+              side: widget.lastPressedIndex == i ? BorderSide(width: 5.0, color: Colors.black) : null,
+            ),
             onPressed: () {
-              //button_pressed(i);
+              //button_pressed(i, true);
             },
             child: FittedBox(
               fit: BoxFit.cover,

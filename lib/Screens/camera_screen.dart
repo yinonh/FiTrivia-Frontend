@@ -33,6 +33,8 @@ class _CameraScreenState extends State<CameraScreen> {
   int timerCounter = 0;
   List<String> current_ex = [];
   List<List<String>> response_list = [];
+  late bottom_buttons ans_buttons;
+  Map<String, int> ex_dict = {'jumping jacks': 0, 'squat': 1, 'stand': 2, 'side stretch': 3, 'arm circles': 4, 'high knees': 5};
 
   @override
   void initState() {
@@ -50,6 +52,7 @@ class _CameraScreenState extends State<CameraScreen> {
   @override
   void dispose() {
     widget.controller.dispose();
+    //ans_buttons.dispose();
     super.dispose();
   }
 
@@ -59,8 +62,37 @@ class _CameraScreenState extends State<CameraScreen> {
     });
   }
 
+  int getMostFrequentExerciseValue() {
+    Map<int, int> freqDict = {}; // Frequency dictionary
+    int mostFrequentValue = 0; // Initialize to 0
+
+    // Count the frequency of each exercise value
+    for (String ex in current_ex) {
+      int? value = ex_dict[ex];
+      freqDict[value ?? 0] = (freqDict[value ?? 0] ?? 0) + 1; // Increment the frequency count
+    }
+
+    // Find the most frequent exercise value
+    int maxFreq = 0;
+    for (int value in freqDict.keys) {
+      int freq = freqDict[value]!;
+      if (freq > maxFreq) {
+        maxFreq = freq;
+        mostFrequentValue = value;
+      }
+    }
+
+    return mostFrequentValue;
+  }
+
+
+
   Future<void> _startTimer(BuildContext context) async {
     for (int i = 0; i < 2; i++) {
+      Timer(Duration(seconds: 1), () {
+          ans_buttons.lastPressedIndex = i;
+          print(ans_buttons.done);
+      });
       final repeatingTimer =
           Timer.periodic(Duration(milliseconds: count_down_time), (timer) {
         if (widget.controller != null &&
@@ -75,6 +107,9 @@ class _CameraScreenState extends State<CameraScreen> {
 
       Timer(Duration(seconds: 10), () {
         repeatingTimer.cancel();
+      });
+      Timer(Duration(seconds: 8), () {
+        ans_buttons.done = true;
       });
 
       await Future.delayed(Duration(seconds: 10));
@@ -118,6 +153,8 @@ class _CameraScreenState extends State<CameraScreen> {
           var responseBody = await response.stream.bytesToString();
           var jsonResponse = jsonDecode(responseBody);
           current_ex.add(jsonResponse['message']);
+          ans_buttons.lastPressedIndex = getMostFrequentExerciseValue();
+
         } else {
           // Error
           print('Error: ${response.statusCode}');
@@ -233,10 +270,11 @@ class _CameraScreenState extends State<CameraScreen> {
                     } else if (!snapshot.hasData) {
                       return Text('No data');
                     } else {
-                      return bottom_buttons(
+                      ans_buttons = bottom_buttons(
                         correctAnswer: snapshot.data![index].correctAnswer,
                         wrongAnswers: snapshot.data![index].incorrectAnswers,
                       );
+                      return ans_buttons;
                     }
                   }),
             )
