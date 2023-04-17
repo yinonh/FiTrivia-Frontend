@@ -60,6 +60,7 @@ class MyApp extends StatelessWidget {
           textTheme: text_theme,
         ),
         themeMode: ThemeMode.system,
+    //home: ResultScreen(result: [['1','2'],['1','2']],),);
         home: FutureBuilder<List<CameraDescription>>(
           future: availableCameras(),
           builder: (ctx, snapshot) {

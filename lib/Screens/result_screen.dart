@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../Widgets/chart.dart';
+import '../Widgets/result_list_item.dart';
 
 class ResultScreen extends StatelessWidget {
   static const routeName = '/result_screen';
@@ -40,7 +40,6 @@ class ResultScreen extends StatelessWidget {
     return outputList;
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,9 +58,7 @@ class ResultScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 4.0),
               child: Row(
                 children: [
-                    Expanded(
-                      child: NumberLineGraph(numbers: [1,1,1,2])//convertStringList(sublist)),
-                    ),
+                  ListItem(numbers: convertStringList(sublist),)
                 ],
               ),
             );

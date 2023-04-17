@@ -42,11 +42,10 @@ class _bottom_buttonsState extends State<bottom_buttons> {
     answers = [widget.correctAnswer, ...widget.wrongAnswers]..shuffle();
   }
 
-  void button_pressed(int i) {
+  void button_pressed(int i, bool done) {
     setState(() {
-      //widget.func();
       _lastPressedIndex = i;
-      done = true;
+      done = done;
     });
   }
 
@@ -71,7 +70,7 @@ class _bottom_buttonsState extends State<bottom_buttons> {
                       : null,
                 ),
           onPressed: () {
-            button_pressed(i);
+            //button_pressed(i);
           },
           child: FittedBox(
             fit: BoxFit.cover,
@@ -109,7 +108,7 @@ class _bottom_buttonsState extends State<bottom_buttons> {
                         : null,
                   ),
             onPressed: () {
-              button_pressed(i);
+              //button_pressed(i);
             },
             child: FittedBox(
               fit: BoxFit.cover,

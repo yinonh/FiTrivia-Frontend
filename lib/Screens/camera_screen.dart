@@ -1,5 +1,3 @@
-// import 'dart:convert';
-// import 'dart:io';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -62,7 +60,7 @@ class _CameraScreenState extends State<CameraScreen> {
   }
 
   Future<void> _startTimer(BuildContext context) async {
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 2; i++) {
       final repeatingTimer =
           Timer.periodic(Duration(milliseconds: count_down_time), (timer) {
         if (widget.controller != null &&
