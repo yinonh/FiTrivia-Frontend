@@ -9,6 +9,8 @@ import 'Screens/previous_screen.dart';
 import 'Screens/no_camera_screen.dart';
 import 'Screens/splash_screen.dart';
 import 'Screens/result_screen.dart';
+import '../models/question.dart';
+
 
 void main() => runApp(MyApp());
 
@@ -24,18 +26,19 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
         onGenerateRoute: (settings) {
           if (settings.name == CameraScreen.routeName) {
-            final arg = settings.arguments as CameraController;
+            final args = settings.arguments as Map<String, dynamic>;
 
-            // Then, extract the required data from
-            // the arguments and pass the data to the
-            // correct screen.
+            final cameraController = args['controller'] as CameraController;
+            final quizQuestions = args['questions'] as List<QuizQuestion>;
+
             return MaterialPageRoute(builder: (context) {
               return CameraScreen(
-                controller: arg,
+                controller: cameraController,
+                questions: quizQuestions,
               );
             });
           }
-          else if(settings.name == ResultScreen.routeName){
+          if(settings.name == ResultScreen.routeName){
             final arg = settings.arguments as  List<List<String>>;
 
             // Then, extract the required data from

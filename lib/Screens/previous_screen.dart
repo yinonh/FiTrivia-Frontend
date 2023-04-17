@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'dart:async';
 
+import '../models/make_request.dart';
+import '../models/question.dart';
+
 class PreviousScreen extends StatefulWidget {
   static const routeName = '/previous_screen';
   final CameraDescription camera;
@@ -14,6 +17,7 @@ class PreviousScreen extends StatefulWidget {
 
 class _PreviousScreenState extends State<PreviousScreen> {
   late CameraController _controller;
+  late Future<List<QuizQuestion>> _futureQuestions;
   late Future<void> _initializeControllerFuture;
   bool pressed = false;
   int _countdownValue = 6;
@@ -26,12 +30,16 @@ class _PreviousScreenState extends State<PreviousScreen> {
     _controller = CameraController(
       widget.camera,
       ResolutionPreset.high,
-      // imageFormatGroup: ImageFormatGroup.yuv420,
       // enableAudio: false,
     );
 
     _initializeControllerFuture = _controller.initialize();
-    //_startCountdownTimer();
+    _futureQuestions = fetchQuestions().whenComplete(() {
+      setState(() {
+        // Ensure that the state is updated after both the controller and futureQuestions are initialized
+        pressed = true;
+      });
+    });
   }
 
   @override
@@ -40,13 +48,18 @@ class _PreviousScreenState extends State<PreviousScreen> {
     super.dispose();
   }
 
-  void startCountdown() {
+  void startCountdown() async {
     // Start the countdown timer
-    _countdownTimer = Timer.periodic(Duration(seconds: 1), (timer) {
+    _countdownTimer = Timer.periodic(Duration(seconds: 1), (timer) async {
       if (_countdownValue == 1) {
+        // Wait for the future to complete and get the result
+        List<QuizQuestion> questions = await _futureQuestions;
         // Navigate to the CameraScreen when the countdown is finished
-        Navigator.pushReplacementNamed(context, '/camera_screen',
-            arguments: _controller);
+        final Map<String, dynamic> arguments = {
+          'controller': _controller,
+          'questions': questions,
+        };
+        Navigator.pushReplacementNamed(context, '/camera_screen', arguments: arguments);
         timer.cancel();
       } else {
         setState(() {
@@ -57,6 +70,7 @@ class _PreviousScreenState extends State<PreviousScreen> {
     });
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -66,10 +80,10 @@ class _PreviousScreenState extends State<PreviousScreen> {
           children: [
             Container(
               height: (MediaQuery.of(context).size.height -
-                      AppBar().preferredSize.height -
-                      MediaQuery.of(context).viewPadding.top) *
+                  AppBar().preferredSize.height -
+                  MediaQuery.of(context).viewPadding.top) *
                   (MediaQuery.of(context).size.height <
-                          MediaQuery.of(context).size.width
+                      MediaQuery.of(context).size.width
                       ? 0.6
                       : 0.5),
               child: FutureBuilder<void>(
@@ -77,15 +91,24 @@ class _PreviousScreenState extends State<PreviousScreen> {
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.done) {
                     return Center(
-                      child: Hero(
-                        tag: 'camera_preview',
-                        child: AspectRatio(
-                          aspectRatio: MediaQuery.of(context).size.height <
-                                  MediaQuery.of(context).size.width
-                              ? 10 / 6
-                              : 4 / 6,
-                          child: CameraPreview(_controller),
-                        ),
+                      child: TweenAnimationBuilder<double>(
+                        tween: Tween<double>(begin: 0.0, end: 1.0),
+                        duration: Duration(seconds: 1),
+                        builder: (context, value, child) {
+                          return Opacity(
+                            opacity: value,
+                            child: Hero(
+                              tag: 'camera_preview',
+                              child: AspectRatio(
+                                aspectRatio: MediaQuery.of(context).size.height <
+                                    MediaQuery.of(context).size.width
+                                    ? 10 / 6
+                                    : 4 / 6,
+                                child: CameraPreview(_controller),
+                              ),
+                            ),
+                          );
+                        },
                       ),
                     );
                   } else {
@@ -102,13 +125,14 @@ class _PreviousScreenState extends State<PreviousScreen> {
             Padding(
               padding: const EdgeInsets.all(10.0),
               child: ElevatedButton(
-                onPressed: () {
-                  pressed = true;
+                onPressed: pressed
+                    ? () {
                   // Start the countdown when the "Ready" button is pressed
                   startCountdown();
-                },
+                }
+                    : null,
                 child: Text(
-                  pressed ? '$_countdownValue' : 'Ready!',
+                  pressed ? '$_countdownValue' : 'Loading...',
                   style: TextStyle(fontSize: 20.0),
                 ),
               ),

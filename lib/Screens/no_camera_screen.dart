@@ -112,11 +112,7 @@ class _NoCameraScreenState extends State<NoCameraScreen> {
                     } else if (!snapshot.hasData) {
                       return Text('No data');
                     } else {
-                      return bottom_buttons(
-                        //func: () {},
-                        correctAnswer: snapshot.data![index].correctAnswer,
-                        wrongAnswers: snapshot.data![index].incorrectAnswers,
-                      );
+                      return AnswerButtons(correctAnswer: "hello", wrongAnswers: ["hey","hey","hey"], lastPressedIndex: -1, done: false);
                     }
                   }),
             )

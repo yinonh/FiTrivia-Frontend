@@ -9,23 +9,21 @@ import 'package:path/path.dart' as path;
 
 import '../Widgets/rest_popup.dart';
 import '../Widgets/bottom_buttons.dart';
-import '../models/make_request.dart';
 import '../models/question.dart';
 import '../Screens/result_screen.dart';
 
 class CameraScreen extends StatefulWidget {
   static const routeName = '/camera_screen';
   CameraController controller;
+  List<QuizQuestion> questions;
 
-  CameraScreen({required this.controller, Key? key}) : super(key: key);
+  CameraScreen({required this.controller, required this.questions, Key? key}) : super(key: key);
   @override
   _CameraScreenState createState() => _CameraScreenState();
 }
 
 class _CameraScreenState extends State<CameraScreen> {
-  Future<List<QuizQuestion>>? _futureQuestions;
   List<XFile> _capturedImages = [];
-  int questionsLength = 0;
   int index = 0;
   bool _isCapturing = false;
   int count_down_time = 10;
@@ -33,20 +31,26 @@ class _CameraScreenState extends State<CameraScreen> {
   int timerCounter = 0;
   List<String> current_ex = [];
   List<List<String>> response_list = [];
-  late bottom_buttons ans_buttons;
+  late AnswerButtons ans_buttons;
   Map<String, int> ex_dict = {'jumping jacks': 0, 'squat': 1, 'stand': 2, 'side stretch': 3, 'arm circles': 4, 'high knees': 5};
+  int lastPressedIndex = -1;
+  bool done = false;
 
   @override
   void initState() {
     super.initState();
-
-    _futureQuestions = fetchQuestions();
-
-    _futureQuestions?.then((questions) {
-      questionsLength = questions.length;
-    });
-
+    update_buttons();
     _startTimer(context);
+  }
+
+  void update_buttons(){
+    setState(() {
+      ans_buttons = AnswerButtons(
+          correctAnswer: widget.questions[index].correctAnswer,
+          wrongAnswers: widget.questions[index].incorrectAnswers,
+          lastPressedIndex: lastPressedIndex,
+          done: done,);
+    });
   }
 
   @override
@@ -58,8 +62,9 @@ class _CameraScreenState extends State<CameraScreen> {
 
   void next_question() {
     setState(() {
-      if (index + 1 < questionsLength) index++;
+      if (index + 1 < widget.questions.length) index++;
     });
+    update_buttons();
   }
 
   int getMostFrequentExerciseValue() {
@@ -89,10 +94,12 @@ class _CameraScreenState extends State<CameraScreen> {
 
   Future<void> _startTimer(BuildContext context) async {
     for (int i = 0; i < 2; i++) {
-      Timer(Duration(seconds: 1), () {
-          ans_buttons.lastPressedIndex = i;
-          print(ans_buttons.done);
-      });
+      // Timer(Duration(seconds: 1), () {
+      //   setState(() {
+      //       lastPressedIndex= i;
+      //   });
+      //   update_buttons();
+      // });
       final repeatingTimer =
           Timer.periodic(Duration(milliseconds: count_down_time), (timer) {
         if (widget.controller != null &&
@@ -109,7 +116,10 @@ class _CameraScreenState extends State<CameraScreen> {
         repeatingTimer.cancel();
       });
       Timer(Duration(seconds: 8), () {
-        ans_buttons.done = true;
+        setState(() {
+            done= true;
+        });
+        update_buttons();
       });
 
       await Future.delayed(Duration(seconds: 10));
@@ -125,6 +135,8 @@ class _CameraScreenState extends State<CameraScreen> {
         // Wait 10 seconds before closing the dialog box
         await Future.delayed(Duration(seconds: 10, milliseconds: 10));
 
+      this.lastPressedIndex = -1;
+      this.done = false;
       next_question();
       response_list.add([...current_ex]);
       current_ex.clear();
@@ -153,7 +165,8 @@ class _CameraScreenState extends State<CameraScreen> {
           var responseBody = await response.stream.bytesToString();
           var jsonResponse = jsonDecode(responseBody);
           current_ex.add(jsonResponse['message']);
-          ans_buttons.lastPressedIndex = getMostFrequentExerciseValue();
+          lastPressedIndex = getMostFrequentExerciseValue();
+          update_buttons();
 
         } else {
           // Error
@@ -233,23 +246,11 @@ class _CameraScreenState extends State<CameraScreen> {
                       MediaQuery.of(context).viewPadding.top) *
                   0.1,
               child: Center(
-                child: FutureBuilder<List<QuizQuestion>>(
-                    future: _futureQuestions,
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return CircularProgressIndicator();
-                      } else if (snapshot.hasError) {
-                        return Text('Error: ${snapshot.error}');
-                      } else if (!snapshot.hasData) {
-                        return Text('No data');
-                      } else {
-                        return Text(
-                          snapshot.data![index].question,
+                child:Text(
+                          widget.questions[index].question,
                           style: TextStyle(fontSize: 20.0),
                           textAlign: TextAlign.center,
-                        );
-                      }
-                    }),
+                        ),
               ),
             ),
             Container(
@@ -260,23 +261,7 @@ class _CameraScreenState extends State<CameraScreen> {
                           MediaQuery.of(context).size.width
                       ? 0.3
                       : 0.4),
-              child: FutureBuilder<List<QuizQuestion>>(
-                  future: _futureQuestions,
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Container();
-                    } else if (snapshot.hasError) {
-                      return Text('Error: ${snapshot.error}');
-                    } else if (!snapshot.hasData) {
-                      return Text('No data');
-                    } else {
-                      ans_buttons = bottom_buttons(
-                        correctAnswer: snapshot.data![index].correctAnswer,
-                        wrongAnswers: snapshot.data![index].incorrectAnswers,
-                      );
-                      return ans_buttons;
-                    }
-                  }),
+              child: ans_buttons
             )
           ],
         ),

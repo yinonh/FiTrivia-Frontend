@@ -1,81 +1,33 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'dart:async';
 
-
-class bottom_buttons extends StatefulWidget {
-  bottom_buttons(
-      { //required this.func,
-      required this.correctAnswer,
-      required this.wrongAnswers,
-      Key? key})
+class AnswerButtons extends StatelessWidget {
+  const AnswerButtons(
+      {
+        required this.correctAnswer,
+        required this.wrongAnswers,
+        required this.lastPressedIndex,
+        required this.done,
+        Key? key})
       : super(key: key);
-  String correctAnswer;
-  List<String> wrongAnswers;
-  // final String correctAnswer;
-  // final List<String> wrongAnswers;
-  int lastPressedIndex = -1;
-  bool done = false;
+  final String correctAnswer;
+  final List<String> wrongAnswers;
+  final int lastPressedIndex;
+  final bool done;
 
-  //final Function func;
-
-  @override
-  State<bottom_buttons> createState() => _bottom_buttonsState();
-}
-
-class _bottom_buttonsState extends State<bottom_buttons> {
-  late List<String> answers;
-  late Timer repeatingTimer;
-
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    repeatingTimer.cancel();
-    super.dispose();
+  List<String> _shuffleAnswers() {
+    return [correctAnswer, ...wrongAnswers]..shuffle();
   }
 
-  @override
-  void initState() {
-    super.initState();
-    _shuffleAnswers();
-    repeatingTimer = Timer.periodic(Duration(milliseconds: 1), (timer) {
-      setState(() {
-      });
-    });
-  }
-
-  @override
-  void didUpdateWidget(bottom_buttons oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.correctAnswer != oldWidget.correctAnswer ||
-        !listEquals(widget.wrongAnswers, oldWidget.wrongAnswers)) {
-      widget.lastPressedIndex = -1;
-      widget.done = false;
-      _shuffleAnswers();
-    }
-  }
-
-  void _shuffleAnswers() {
-    answers = [widget.correctAnswer, ...widget.wrongAnswers]..shuffle();
-  }
-
-  // void button_pressed(int i, bool done) {
-  //   setState(() {
-  //     widget.lastPressedIndex = i;
-  //     widget.done = done;
-  //   });
-  // }
-
-  List<ElevatedButton> get_questions_for_grid() {
+  List<ElevatedButton> get_questions_for_grid(List<String> answers) {
     List<ElevatedButton> result = [];
     for (var i = 0; i < 4; i++) {
       result.add(
         ElevatedButton(
           style: ElevatedButton.styleFrom(
-            backgroundColor: widget.done && answers[i] == widget.correctAnswer ? Colors.green
-                : widget.lastPressedIndex == i && widget.done && answers[i] != widget.correctAnswer ? Colors.deepOrange[300]
+            backgroundColor: done && answers[i] == correctAnswer ? Colors.green
+                : lastPressedIndex == i && done && answers[i] != correctAnswer ? Colors.deepOrange[300]
                 : null,
-            side: widget.lastPressedIndex == i ? BorderSide(width: 5.0, color: Colors.black) : null,
+            side: lastPressedIndex == i ? BorderSide(width: 5.0, color: Colors.black) : null,
           ),
           onPressed: () {
             //button_pressed(i, true);
@@ -94,17 +46,17 @@ class _bottom_buttonsState extends State<bottom_buttons> {
     return result;
   }
 
-  List<Widget> get_questions_for_list() {
+  List<Widget> get_questions_for_list(List<String> answers) {
     List<Widget> result = [];
     for (var i = 0; i < 4; i++) {
       result.add(
         Expanded(
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: widget.done && answers[i] == widget.correctAnswer ? Colors.green
-                  : widget.lastPressedIndex == i && widget.done && answers[i] != widget.correctAnswer ? Colors.deepOrange[300]
+              backgroundColor: done && answers[i] == correctAnswer ? Colors.green
+                  : lastPressedIndex == i && done && answers[i] != correctAnswer ? Colors.deepOrange[300]
                   : null,
-              side: widget.lastPressedIndex == i ? BorderSide(width: 5.0, color: Colors.black) : null,
+              side: lastPressedIndex == i ? BorderSide(width: 5.0, color: Colors.black) : null,
             ),
             onPressed: () {
               //button_pressed(i, true);
@@ -144,7 +96,7 @@ class _bottom_buttonsState extends State<bottom_buttons> {
       crossAxisSpacing: 16.0,
       childAspectRatio: 8 / 1,
       shrinkWrap: true,
-      children: get_questions_for_grid()
+      children: get_questions_for_grid(_shuffleAnswers())
           .map((e) => Padding(padding: EdgeInsets.all(8.0), child: e))
           .toList(),
     );
@@ -154,6 +106,7 @@ class _bottom_buttonsState extends State<bottom_buttons> {
     //List<String> answers = [correctAnswer, ...wrongAnswers]..shuffle();
     return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: get_questions_for_list());
+        children: get_questions_for_list(_shuffleAnswers()));
   }
 }
+
