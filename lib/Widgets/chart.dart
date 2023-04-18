@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 class NumberLineGraph extends StatelessWidget {
   final List<int> numbers;
 
@@ -14,7 +13,7 @@ class NumberLineGraph extends StatelessWidget {
     final dotColor = theme.colorScheme.primary;
 
     return CustomPaint(
-      size: Size(200, 50),
+      size: const Size(200, 50),
       painter: _NumberLineGraphPainter(numbers, lineColor, dotColor),
     );
   }
@@ -38,7 +37,7 @@ class _NumberLineGraphPainter extends CustomPainter {
       ..style = PaintingStyle.stroke;
 
     final Paint dotPaint = Paint()..color = dotColor;
-    numbers.insert(0, 0);
+    if (numbers.length > 0 && numbers[0] != 0) numbers.insert(0, 0);
     Path path = Path();
     path.moveTo(0, height);
 
@@ -85,6 +84,6 @@ class _NumberLineGraphPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_NumberLineGraphPainter oldDelegate) {
-    return oldDelegate.numbers != this.numbers;
+    return oldDelegate.numbers != numbers;
   }
 }

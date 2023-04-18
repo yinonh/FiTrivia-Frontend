@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 
 class CustomProgressDialog extends StatelessWidget {
   final Tween<double> tween;
-  const CustomProgressDialog({Key? key, required this.tween}) : super(key: key);
+  final int duration;
+  const CustomProgressDialog(
+      {Key? key, required this.tween, required this.duration})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +35,7 @@ class CustomProgressDialog extends StatelessWidget {
                     ],
                   );
                 },
-                duration: Duration(seconds: 10),
+                duration: Duration(seconds: duration),
                 onEnd: () {
                   Navigator.of(context).pop();
                 },

@@ -59,7 +59,8 @@ class _PreviousScreenState extends State<PreviousScreen> {
           'controller': _controller,
           'questions': questions,
         };
-        Navigator.pushReplacementNamed(context, '/camera_screen', arguments: arguments);
+        Navigator.pushReplacementNamed(context, '/camera_screen',
+            arguments: arguments);
         timer.cancel();
       } else {
         setState(() {
@@ -70,7 +71,6 @@ class _PreviousScreenState extends State<PreviousScreen> {
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -80,10 +80,10 @@ class _PreviousScreenState extends State<PreviousScreen> {
           children: [
             Container(
               height: (MediaQuery.of(context).size.height -
-                  AppBar().preferredSize.height -
-                  MediaQuery.of(context).viewPadding.top) *
+                      AppBar().preferredSize.height -
+                      MediaQuery.of(context).viewPadding.top) *
                   (MediaQuery.of(context).size.height <
-                      MediaQuery.of(context).size.width
+                          MediaQuery.of(context).size.width
                       ? 0.6
                       : 0.5),
               child: FutureBuilder<void>(
@@ -100,10 +100,11 @@ class _PreviousScreenState extends State<PreviousScreen> {
                             child: Hero(
                               tag: 'camera_preview',
                               child: AspectRatio(
-                                aspectRatio: MediaQuery.of(context).size.height <
-                                    MediaQuery.of(context).size.width
-                                    ? 10 / 6
-                                    : 4 / 6,
+                                aspectRatio:
+                                    MediaQuery.of(context).size.height <
+                                            MediaQuery.of(context).size.width
+                                        ? 10 / 6
+                                        : 4 / 6,
                                 child: CameraPreview(_controller),
                               ),
                             ),
@@ -121,19 +122,49 @@ class _PreviousScreenState extends State<PreviousScreen> {
                 },
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 40),
             Padding(
               padding: const EdgeInsets.all(10.0),
-              child: ElevatedButton(
-                onPressed: pressed
-                    ? () {
-                  // Start the countdown when the "Ready" button is pressed
-                  startCountdown();
-                }
-                    : null,
-                child: Text(
-                  pressed ? '$_countdownValue' : 'Loading...',
-                  style: TextStyle(fontSize: 20.0),
+              child: SizedBox(
+                width: 200, // Set the width to the maximum available width
+                height:
+                    60.0, // Set the height to 60.0 (you can adjust this as needed)
+                child: ElevatedButton(
+                  onPressed: pressed
+                      ? () {
+                          // Start the countdown when the "Ready" button is pressed
+                          startCountdown();
+
+                          // Disable the button after it has been pressed
+                          setState(() {
+                            pressed = false;
+                          });
+                        }
+                      : null,
+                  child: Text(
+                    (_countdownValue == 0)
+                        ? 'Loading...'
+                        : (_countdownValue == 6)
+                            ? 'Ready'
+                            : '$_countdownValue',
+                    style: TextStyle(fontSize: 20.0),
+                  ),
+                  style: ButtonStyle(
+                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50.0),
+                      ),
+                    ),
+                    backgroundColor:
+                        MaterialStateProperty.resolveWith<Color>((states) {
+                      if (states.contains(MaterialState.disabled)) {
+                        // Set a different background color for the disabled state
+                        return Colors.grey.withOpacity(0.5);
+                      }
+                      // Return the default background color for the enabled state
+                      return Theme.of(context).colorScheme.primary;
+                    }),
+                  ),
                 ),
               ),
             ),

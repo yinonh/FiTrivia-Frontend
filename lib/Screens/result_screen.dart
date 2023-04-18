@@ -1,11 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:collection/collection.dart';
+
 import '../Widgets/result_list_item.dart';
 
 class ResultScreen extends StatelessWidget {
   static const routeName = '/result_screen';
   final List<List<String>> result;
+  final Map<String, int> exDict;
+  final List<int> correctAnsIndex;
 
-  ResultScreen({required this.result, Key? key}) : super(key: key);
+  ResultScreen(
+      {required this.result,
+      required this.exDict,
+      required this.correctAnsIndex,
+      Key? key})
+      : super(key: key);
 
   List<int> convertStringList(List<String> inputList) {
     Map<String, int> frequencies = {};
@@ -40,6 +49,18 @@ class ResultScreen extends StatelessWidget {
     return outputList;
   }
 
+  String getMostFrequentValue(List<String> stringList) {
+    if (stringList.isEmpty) {
+      return "Error";
+    }
+
+    final frequencyMap = groupBy<String, String>(stringList, (value) => value);
+    final mostFrequentEntry = frequencyMap.entries
+        .reduce((a, b) => a.value.length > b.value.length ? a : b);
+
+    return mostFrequentEntry.key;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -58,7 +79,12 @@ class ResultScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 4.0),
               child: Row(
                 children: [
-                  ListItem(numbers: convertStringList(sublist),)
+                  ListItem(
+                    numbers: convertStringList(sublist),
+                    classification: getMostFrequentValue(sublist),
+                    correct: exDict[getMostFrequentValue(sublist)] ==
+                        correctAnsIndex[index],
+                  )
                 ],
               ),
             );

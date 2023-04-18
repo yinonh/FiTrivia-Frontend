@@ -5,8 +5,23 @@ class SplashScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: CircularProgressIndicator(
-          strokeWidth: 5,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(
+              "assets\\logo.png",
+              height: 200,
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            Container(
+              width: 300,
+              child: const LinearProgressIndicator(
+                  //value: 5,
+                  ),
+            ),
+          ],
         ),
       ),
     );

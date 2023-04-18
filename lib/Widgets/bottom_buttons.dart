@@ -2,21 +2,35 @@ import 'package:flutter/material.dart';
 
 class AnswerButtons extends StatelessWidget {
   const AnswerButtons(
-      {
-        required this.correctAnswer,
-        required this.wrongAnswers,
-        required this.lastPressedIndex,
-        required this.done,
-        Key? key})
+      {required this.correctAnswer,
+      required this.allAnswers,
+      required this.lastPressedIndex,
+      required this.done,
+      Key? key})
       : super(key: key);
   final String correctAnswer;
-  final List<String> wrongAnswers;
+  final List<String> allAnswers;
   final int lastPressedIndex;
   final bool done;
 
-  List<String> _shuffleAnswers() {
-    return [correctAnswer, ...wrongAnswers]..shuffle();
-  }
+  // List<String> _shuffleAnswers() {
+  //   List<String> allStrings = [correctAnswer, ...wrongAnswers];
+  //   int randomSeed = randomHash(correctAnswer, wrongAnswers);
+  //   Random random = Random(randomSeed);
+  //   List<String> shuffledList = List<String>.from(allStrings);
+  //   for (int i = shuffledList.length - 1; i > 0; i--) {
+  //     int j = random.nextInt(i + 1);
+  //     String temp = shuffledList[i];
+  //     shuffledList[i] = shuffledList[j];
+  //     shuffledList[j] = temp;
+  //   }
+  //   return shuffledList;
+  // }
+  //
+  // int randomHash(String mainString, List<String> stringList) {
+  //   String inputString = mainString + stringList.join();
+  //   return inputString.hashCode;
+  // }
 
   List<ElevatedButton> get_questions_for_grid(List<String> answers) {
     List<ElevatedButton> result = [];
@@ -24,10 +38,14 @@ class AnswerButtons extends StatelessWidget {
       result.add(
         ElevatedButton(
           style: ElevatedButton.styleFrom(
-            backgroundColor: done && answers[i] == correctAnswer ? Colors.green
-                : lastPressedIndex == i && done && answers[i] != correctAnswer ? Colors.deepOrange[300]
+            backgroundColor: done && answers[i] == correctAnswer
+                ? Colors.green
+                : lastPressedIndex == i && done && answers[i] != correctAnswer
+                    ? Colors.deepOrange[300]
+                    : null,
+            side: lastPressedIndex == i
+                ? BorderSide(width: 5.0, color: Colors.black)
                 : null,
-            side: lastPressedIndex == i ? BorderSide(width: 5.0, color: Colors.black) : null,
           ),
           onPressed: () {
             //button_pressed(i, true);
@@ -53,10 +71,14 @@ class AnswerButtons extends StatelessWidget {
         Expanded(
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: done && answers[i] == correctAnswer ? Colors.green
-                  : lastPressedIndex == i && done && answers[i] != correctAnswer ? Colors.deepOrange[300]
+              backgroundColor: done && answers[i] == correctAnswer
+                  ? Colors.green
+                  : lastPressedIndex == i && done && answers[i] != correctAnswer
+                      ? Colors.deepOrange[300]
+                      : null,
+              side: lastPressedIndex == i
+                  ? BorderSide(width: 5.0, color: Colors.black)
                   : null,
-              side: lastPressedIndex == i ? BorderSide(width: 5.0, color: Colors.black) : null,
             ),
             onPressed: () {
               //button_pressed(i, true);
@@ -96,7 +118,7 @@ class AnswerButtons extends StatelessWidget {
       crossAxisSpacing: 16.0,
       childAspectRatio: 8 / 1,
       shrinkWrap: true,
-      children: get_questions_for_grid(_shuffleAnswers())
+      children: get_questions_for_grid(allAnswers)
           .map((e) => Padding(padding: EdgeInsets.all(8.0), child: e))
           .toList(),
     );
@@ -106,7 +128,6 @@ class AnswerButtons extends StatelessWidget {
     //List<String> answers = [correctAnswer, ...wrongAnswers]..shuffle();
     return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: get_questions_for_list(_shuffleAnswers()));
+        children: get_questions_for_list(allAnswers));
   }
 }
-
