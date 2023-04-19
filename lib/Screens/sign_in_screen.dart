@@ -8,7 +8,7 @@ class SignInPage extends StatelessWidget {
       body: Stack(
         children: [
           _buildBackgroundGrid(),
-          _buildSignInForm(),
+          _buildSignInForm(context),
         ],
       ),
     );
@@ -29,7 +29,7 @@ class SignInPage extends StatelessWidget {
     );
   }
 
-  Widget _buildSignInForm() {
+  Widget _buildSignInForm(BuildContext context) {
     return Center(
       child: Container(
         width: 500,
@@ -78,7 +78,9 @@ class SignInPage extends StatelessWidget {
             ),
             SizedBox(height: 32),
             ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.pushReplacementNamed(context, '/previus_screen');
+              },
               child: Text('Sign In'),
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(

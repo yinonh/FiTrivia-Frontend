@@ -1,4 +1,5 @@
 import 'package:animated_splash_screen/animated_splash_screen.dart';
+import 'package:fitrivia/Screens/sign_in_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
@@ -58,6 +59,8 @@ class MyApp extends StatelessWidget {
       },
       routes: {
         '/countdown_screen': (context) => SplashScreen(),
+        '/previus_screen': (context) => PreviousScreen(),
+        '/no_camera_screen': (context) => NoCameraScreen(),
       },
       theme: FlexThemeData.light(
           scheme: FlexScheme.aquaBlue,
@@ -70,29 +73,31 @@ class MyApp extends StatelessWidget {
       themeMode: ThemeMode.system,
       //home: ResultScreen(result: [['1','2'],['1','2']],),);
       home: AnimatedSplashScreen(
-          backgroundColor: (Colors.blueGrey[100])!,
-          splash: Center(
-            child: Image.asset(
-              "assets\\logo.png",
-            ),
+        backgroundColor: (Colors.blueGrey[100])!,
+        splash: Center(
+          child: Image.asset(
+            "assets\\logo.png",
           ),
-          nextScreen: FutureBuilder<List<CameraDescription>>(
-            future: availableCameras(),
-            builder: (ctx, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return SplashScreen();
-              } else if (snapshot.hasError || snapshot.data == null) {
-                return NoCameraScreen();
-              } else {
-                final back_camera = snapshot.data?.last;
-                if (back_camera != null) {
-                  return PreviousScreen(back_camera);
-                } else {
-                  return NoCameraScreen();
-                }
-              }
-            },
-          )),
+        ),
+        nextScreen: SignInPage(),
+      ),
+      // FutureBuilder<List<CameraDescription>>(
+      //   future: availableCameras(),
+      //   builder: (ctx, snapshot) {
+      //     if (snapshot.connectionState == ConnectionState.waiting) {
+      //       return SplashScreen();
+      //     } else if (snapshot.hasError || snapshot.data == null) {
+      //       return NoCameraScreen();
+      //     } else {
+      //       final back_camera = snapshot.data?.last;
+      //       if (back_camera != null) {
+      //         return PreviousScreen(back_camera);
+      //       } else {
+      //         return NoCameraScreen();
+      //       }
+      //     }
+      //   },
+      // )),
     );
   }
 }
