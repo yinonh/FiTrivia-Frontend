@@ -1,4 +1,3 @@
-import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 
 class SignInPage extends StatelessWidget {
@@ -8,7 +7,7 @@ class SignInPage extends StatelessWidget {
       body: Stack(
         children: [
           _buildBackgroundGrid(),
-          _buildSignInForm(),
+          _buildSignInForm(context),
         ],
       ),
     );
@@ -29,19 +28,23 @@ class SignInPage extends StatelessWidget {
     );
   }
 
-  Widget _buildSignInForm() {
+  Widget _buildSignInForm(BuildContext context) {
     return Center(
       child: Container(
         width: 500,
-        //height: 600,
         padding: const EdgeInsets.symmetric(
           horizontal: 24,
           vertical: 32,
         ),
         decoration: BoxDecoration(
-          color: Colors.blueGrey.withOpacity(0.5),
-          borderRadius: BorderRadius.circular(10),
-        ),
+            color: Colors.blueGrey.shade300,
+            borderRadius: BorderRadius.circular(10),
+            boxShadow: [
+              BoxShadow(
+                blurRadius: 8,
+                color: Colors.white54,
+              )
+            ]),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -78,12 +81,14 @@ class SignInPage extends StatelessWidget {
             ),
             SizedBox(height: 32),
             ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.pushReplacementNamed(context, '/previus_screen');
+              },
               child: Text('Sign In'),
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(
-                  vertical: 16,
-                  horizontal: 32,
+                  vertical: 20,
+                  horizontal: 50,
                 ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
@@ -91,12 +96,24 @@ class SignInPage extends StatelessWidget {
               ),
             ),
             SizedBox(height: 16),
-            TextButton(
-              onPressed: () {},
-              child: Text(
-                'Forgot Password?',
-                style: TextStyle(color: Colors.white),
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                TextButton(
+                  onPressed: () {},
+                  child: Text(
+                    'Forgot Password',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+                TextButton(
+                  onPressed: () {},
+                  child: Text(
+                    'Register Now',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ],
             ),
           ],
         ),

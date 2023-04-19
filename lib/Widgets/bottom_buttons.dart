@@ -13,25 +13,6 @@ class AnswerButtons extends StatelessWidget {
   final int lastPressedIndex;
   final bool done;
 
-  // List<String> _shuffleAnswers() {
-  //   List<String> allStrings = [correctAnswer, ...wrongAnswers];
-  //   int randomSeed = randomHash(correctAnswer, wrongAnswers);
-  //   Random random = Random(randomSeed);
-  //   List<String> shuffledList = List<String>.from(allStrings);
-  //   for (int i = shuffledList.length - 1; i > 0; i--) {
-  //     int j = random.nextInt(i + 1);
-  //     String temp = shuffledList[i];
-  //     shuffledList[i] = shuffledList[j];
-  //     shuffledList[j] = temp;
-  //   }
-  //   return shuffledList;
-  // }
-  //
-  // int randomHash(String mainString, List<String> stringList) {
-  //   String inputString = mainString + stringList.join();
-  //   return inputString.hashCode;
-  // }
-
   List<ElevatedButton> get_questions_for_grid(List<String> answers) {
     List<ElevatedButton> result = [];
     for (var i = 0; i < 4; i++) {

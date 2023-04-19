@@ -26,9 +26,9 @@ class CameraScreen extends StatefulWidget {
 class _CameraScreenState extends State<CameraScreen> {
   List<XFile> _capturedImages = [];
   int index = 0;
-  int numOdQuestions = 2;
+  int numOfQuestions = 2;
   bool _isCapturing = false;
-  int countDownTime = 5;
+  int countDownTime = 10;
   int restTime = 5;
   Stream<int>? countDownStream;
   List<String> currentEx = [];
@@ -50,6 +50,7 @@ class _CameraScreenState extends State<CameraScreen> {
   @override
   void initState() {
     super.initState();
+    responseList = List.generate(numOfQuestions, (_) => <String>[]);
     currentQuestonList = _shuffleAnswers();
     update_buttons();
     _startTimer(context);
@@ -103,7 +104,7 @@ class _CameraScreenState extends State<CameraScreen> {
 
   void next_question() {
     setState(() {
-      if (index + 1 < numOdQuestions) {
+      if (index + 1 < numOfQuestions) {
         index++;
         currentQuestonList = _shuffleAnswers();
       }
@@ -136,12 +137,12 @@ class _CameraScreenState extends State<CameraScreen> {
   }
 
   Future<void> _startTimer(BuildContext context) async {
-    for (int i = 0; i < numOdQuestions; i++) {
+    for (int i = 0; i < numOfQuestions; i++) {
       final repeatingTimer =
-          Timer.periodic(Duration(milliseconds: 10), (timer) {
+          Timer.periodic(Duration(milliseconds: 100), (timer) {
         if (widget.controller != null &&
             widget.controller.value.isInitialized) {
-          _captureFrame();
+          _captureFrame(i);
         }
       });
 
@@ -160,7 +161,7 @@ class _CameraScreenState extends State<CameraScreen> {
         update_buttons();
       });
 
-      await Future.delayed(Duration(seconds: restTime));
+      await Future.delayed(Duration(seconds: countDownTime));
       showDialog(
         context: context,
         builder: (BuildContext cntx) => CustomProgressDialog(
@@ -175,10 +176,11 @@ class _CameraScreenState extends State<CameraScreen> {
       this.lastPressedIndex = -1;
       this.done = false;
       next_question();
-      responseList.add([...currentEx]);
+      //responseList.add([...currentEx]);
       currentEx.clear();
       print(correctAnsIndex);
     }
+    print(responseList);
     Map<String, dynamic> args = {
       "response_list": responseList,
       "ex_dict": exDict,
@@ -188,7 +190,7 @@ class _CameraScreenState extends State<CameraScreen> {
         arguments: args);
   }
 
-  Future<void> _sendImages() async {
+  Future<void> _sendImages(int index) async {
     if (_capturedImages.length == 10) {
       List<http.MultipartFile> imageFiles = [];
       for (var image in _capturedImages) {
@@ -198,6 +200,7 @@ class _CameraScreenState extends State<CameraScreen> {
             filename: fileName, contentType: MediaType('image', 'jpeg'));
         imageFiles.add(file);
       }
+      _capturedImages.clear();
       var request = http.MultipartRequest(
           'POST', Uri.parse('http://127.0.0.1:8000/images/'));
       request.files.addAll(imageFiles);
@@ -209,6 +212,7 @@ class _CameraScreenState extends State<CameraScreen> {
           var jsonResponse = jsonDecode(responseBody);
           print(jsonResponse);
           currentEx.add(jsonResponse['message']);
+          responseList[index].add(jsonResponse['message']);
           lastPressedIndex = getMostFrequentExerciseValue();
         } else {
           // Error
@@ -221,7 +225,7 @@ class _CameraScreenState extends State<CameraScreen> {
     }
   }
 
-  void _captureFrame() async {
+  void _captureFrame(int index) async {
     if (_isCapturing) {
       return;
     }
@@ -232,8 +236,7 @@ class _CameraScreenState extends State<CameraScreen> {
         _capturedImages.add(imageFile);
       }
       if (_capturedImages.length == 10) {
-        await _sendImages();
-        _capturedImages.clear();
+        _sendImages(index);
       }
     } catch (e) {
       print('Error capturing frame: $e');
