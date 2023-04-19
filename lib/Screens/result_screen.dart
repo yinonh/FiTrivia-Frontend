@@ -16,6 +16,15 @@ class ResultScreen extends StatelessWidget {
       Key? key})
       : super(key: key);
 
+  int get_total_score() {
+    int total_score = 0;
+    for (int i = 0; i < result.length; i++) {
+      total_score += convertStringList(result[i]).sum;
+      total_score += is_ans_correct(result[i], i) ? 10 : 0;
+    }
+    return total_score;
+  }
+
   List<int> convertStringList(List<String> inputList) {
     Map<String, int> frequencies = {};
     int maxFreq = 0;
@@ -45,7 +54,6 @@ class ResultScreen extends StatelessWidget {
         outputList.add(1);
       }
     }
-
     return outputList;
   }
 
@@ -61,6 +69,13 @@ class ResultScreen extends StatelessWidget {
     return mostFrequentEntry.key;
   }
 
+  bool is_ans_correct(List<String> sublist, int index) {
+    if (exDict[getMostFrequentValue(sublist)] == correctAnsIndex[index]) {
+      return true;
+    }
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -70,25 +85,40 @@ class ResultScreen extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: ListView.separated(
-          itemCount: result.length,
-          separatorBuilder: (BuildContext context, int index) => Divider(),
-          itemBuilder: (BuildContext context, int index) {
-            List<String> sublist = result[index];
-            return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4.0),
-              child: Row(
-                children: [
-                  ListItem(
-                    numbers: convertStringList(sublist),
-                    classification: getMostFrequentValue(sublist),
-                    correct: exDict[getMostFrequentValue(sublist)] ==
-                        correctAnsIndex[index],
-                  )
-                ],
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ListView.separated(
+              shrinkWrap: true,
+              itemCount: result.length,
+              separatorBuilder: (BuildContext context, int index) => Divider(),
+              itemBuilder: (BuildContext context, int index) {
+                List<String> sublist = result[index];
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                  child: Row(
+                    children: [
+                      ListItem(
+                        numbers: convertStringList(sublist),
+                        classification: getMostFrequentValue(sublist),
+                        correct: is_ans_correct(sublist, index),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+            SizedBox(height: 8.0),
+            Center(
+              child: Text(
+                "${get_total_score()}",
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                ),
               ),
-            );
-          },
+            ),
+          ],
         ),
       ),
     );

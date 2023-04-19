@@ -39,7 +39,14 @@ class ListItem extends StatelessWidget {
             numbers: numbers,
           ),
           Text(
-            "score: " + (correct ? "5" : "0"),
+            correct ? "Right answer BONUS!" : "",
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 20,
+            ),
+          ),
+          Text(
+            "score: " + "${numbers.reduce((a, b) => a + b)}",
             style: const TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 20,
