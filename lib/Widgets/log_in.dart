@@ -1,34 +1,12 @@
 import 'package:flutter/material.dart';
 
-class SignInPage extends StatelessWidget {
+class LogIn extends StatelessWidget {
+  final VoidCallback changeMode;
+
+  const LogIn({required this.changeMode, Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        children: [
-          _buildBackgroundGrid(),
-          _buildSignInForm(context),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBackgroundGrid() {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Color(0xff35a0cb),
-            Colors.white54,
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSignInForm(BuildContext context) {
     return Center(
       child: Container(
         width: 500,
@@ -39,7 +17,7 @@ class SignInPage extends StatelessWidget {
         decoration: BoxDecoration(
             color: Colors.blueGrey.shade300,
             borderRadius: BorderRadius.circular(10),
-            boxShadow: [
+            boxShadow: const [
               BoxShadow(
                 blurRadius: 8,
                 color: Colors.white54,
@@ -48,7 +26,7 @@ class SignInPage extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
+            const Text(
               'Sign In',
               style: TextStyle(
                 fontSize: 32,
@@ -101,14 +79,14 @@ class SignInPage extends StatelessWidget {
               children: [
                 TextButton(
                   onPressed: () {},
-                  child: Text(
+                  child: const Text(
                     'Forgot Password',
                     style: TextStyle(color: Colors.white),
                   ),
                 ),
                 TextButton(
-                  onPressed: () {},
-                  child: Text(
+                  onPressed: this.changeMode,
+                  child: const Text(
                     'Register Now',
                     style: TextStyle(color: Colors.white),
                   ),
