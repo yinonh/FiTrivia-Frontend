@@ -3,7 +3,7 @@ import 'package:collection/collection.dart';
 
 import '../Widgets/result_list_item.dart';
 
-class ResultScreen extends StatelessWidget {
+class ResultScreen extends StatefulWidget {
   static const routeName = '/result_screen';
   final List<List<String>> result;
   final Map<String, int> exDict;
@@ -16,11 +16,47 @@ class ResultScreen extends StatelessWidget {
       Key? key})
       : super(key: key);
 
+  @override
+  _ResultScreenState createState() => _ResultScreenState();
+}
+
+class _ResultScreenState extends State<ResultScreen>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+  late Animation<Offset> _animation;
+  final List<List<String>> _resultList = [];
+
+  @override
+  void initState() {
+    super.initState();
+
+    _animationController = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 600),
+    );
+    _animation = Tween<Offset>(begin: Offset(1, 0), end: Offset.zero).animate(
+        CurvedAnimation(parent: _animationController, curve: Curves.easeInOut));
+
+    _animationController.forward();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      setState(() {
+        _resultList.addAll(widget.result);
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
   int get_total_score() {
     int total_score = 0;
-    for (int i = 0; i < result.length; i++) {
-      total_score += convertStringList(result[i]).sum;
-      total_score += is_ans_correct(result[i], i) ? 10 : 0;
+    for (int i = 0; i < widget.result.length; i++) {
+      total_score += convertStringList(widget.result[i]).sum;
+      total_score += is_ans_correct(widget.result[i], i) ? 10 : 0;
     }
     return total_score;
   }
@@ -70,7 +106,8 @@ class ResultScreen extends StatelessWidget {
   }
 
   bool is_ans_correct(List<String> sublist, int index) {
-    if (exDict[getMostFrequentValue(sublist)] == correctAnsIndex[index]) {
+    if (widget.exDict[getMostFrequentValue(sublist)] ==
+        widget.correctAnsIndex[index]) {
       return true;
     }
     return false;
@@ -88,30 +125,38 @@ class ResultScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ListView.separated(
-              shrinkWrap: true,
-              itemCount: result.length,
-              separatorBuilder: (BuildContext context, int index) => Divider(),
-              itemBuilder: (BuildContext context, int index) {
-                List<String> sublist = result[index];
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 4.0),
-                  child: Row(
+            Expanded(
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: _resultList.length,
+                itemBuilder: (BuildContext context, int index) {
+                  List<String> sublist = _resultList[index];
+                  return Column(
                     children: [
-                      ListItem(
-                        numbers: convertStringList(sublist),
-                        classification: getMostFrequentValue(sublist),
-                        correct: is_ans_correct(sublist, index),
+                      SlideTransition(
+                        position: _animation,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 4.0),
+                          child: Row(
+                            children: [
+                              ListItem(
+                                numbers: convertStringList(sublist),
+                                classification: getMostFrequentValue(sublist),
+                                correct: is_ans_correct(sublist, index),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
+                      Divider(),
                     ],
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             ),
-            SizedBox(height: 8.0),
             Center(
               child: Text(
-                "${get_total_score()}",
+                "Total score: ${get_total_score()}",
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 20,

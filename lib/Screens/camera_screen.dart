@@ -37,10 +37,10 @@ class _CameraScreenState extends State<CameraScreen> {
   Map<String, int> exDict = {
     'jumping jacks': 0,
     'squat': 1,
-    'stand': 2,
-    'side stretch': 3,
-    'arm circles': 0,
-    'high knees': 1
+    'stand': -1,
+    'side stretch': 2,
+    'arm circles': 3,
+    //'high knees': 1
   };
   late List<String> currentQuestonList;
   List<int> correctAnsIndex = [];
@@ -86,13 +86,18 @@ class _CameraScreenState extends State<CameraScreen> {
   }
 
   void update_buttons() {
+    Map<int, String> newDict = {};
+
+    exDict.forEach((key, value) {
+      newDict[value] = key;
+    });
     setState(() {
       ansButtons = AnswerButtons(
-        correctAnswer: widget.questions[index].correctAnswer,
-        allAnswers: currentQuestonList,
-        lastPressedIndex: lastPressedIndex,
-        done: done,
-      );
+          correctAnswer: widget.questions[index].correctAnswer,
+          allAnswers: currentQuestonList,
+          lastPressedIndex: lastPressedIndex,
+          done: done,
+          exDict: newDict);
     });
   }
 

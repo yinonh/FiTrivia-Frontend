@@ -6,12 +6,14 @@ class AnswerButtons extends StatelessWidget {
       required this.allAnswers,
       required this.lastPressedIndex,
       required this.done,
+      required this.exDict,
       Key? key})
       : super(key: key);
   final String correctAnswer;
   final List<String> allAnswers;
   final int lastPressedIndex;
   final bool done;
+  final Map<int, String> exDict;
 
   List<ElevatedButton> get_questions_for_grid(List<String> answers) {
     List<ElevatedButton> result = [];
@@ -31,13 +33,27 @@ class AnswerButtons extends StatelessWidget {
           onPressed: () {
             //button_pressed(i, true);
           },
-          child: FittedBox(
-            fit: BoxFit.cover,
-            child: Text(
-              textAlign: TextAlign.center,
-              answers[i],
-              style: TextStyle(fontSize: 20.0),
-            ),
+          child: Row(
+            children: [
+              Flexible(
+                flex: 1,
+                child: Image.asset(
+                  'assets\\${exDict[i]}.gif',
+                  width: 250,
+                  height: 250,
+                ),
+              ),
+              SizedBox(
+                  width: 16.0), // add some spacing between the image and text
+              Flexible(
+                flex: 6,
+                child: Text(
+                  textAlign: TextAlign.center,
+                  answers[i],
+                  style: TextStyle(fontSize: 20.0),
+                ),
+              ),
+            ],
           ),
         ),
       );
@@ -64,13 +80,27 @@ class AnswerButtons extends StatelessWidget {
             onPressed: () {
               //button_pressed(i, true);
             },
-            child: FittedBox(
-              fit: BoxFit.cover,
-              child: Text(
-                textAlign: TextAlign.center,
-                answers[i],
-                style: TextStyle(fontSize: 20.0),
-              ),
+            child: Row(
+              children: [
+                Flexible(
+                  flex: 1,
+                  child: Image.asset(
+                    'assets\\${exDict[i]}.gif',
+                    width: 250,
+                    height: 250,
+                  ),
+                ),
+                SizedBox(
+                    width: 16.0), // add some spacing between the image and text
+                Flexible(
+                  flex: 6,
+                  child: Text(
+                    textAlign: TextAlign.center,
+                    answers[i],
+                    style: TextStyle(fontSize: 20.0),
+                  ),
+                ),
+              ],
             ),
           ),
         ),
