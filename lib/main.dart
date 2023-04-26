@@ -12,6 +12,8 @@ import 'Screens/previous_screen.dart';
 import 'Screens/no_camera_screen.dart';
 import 'Screens/splash_screen.dart';
 import 'Screens/result_screen.dart';
+import 'Screens/trivia_rooms.dart';
+import 'Screens/wheel.dart';
 import '../models/question.dart';
 
 void main() => runApp(MyApp());
@@ -72,7 +74,6 @@ class MyApp extends StatelessWidget {
         textTheme: text_theme,
       ),
       themeMode: ThemeMode.system,
-      //home: ResultScreen(result: [['1','2'],['1','2']],),);
       home: AnimatedSplashScreen(
         backgroundColor: (Colors.blueGrey[100])!,
         splash: Center(
@@ -82,23 +83,6 @@ class MyApp extends StatelessWidget {
         ),
         nextScreen: AuthScreen(),
       ),
-      // FutureBuilder<List<CameraDescription>>(
-      //   future: availableCameras(),
-      //   builder: (ctx, snapshot) {
-      //     if (snapshot.connectionState == ConnectionState.waiting) {
-      //       return SplashScreen();
-      //     } else if (snapshot.hasError || snapshot.data == null) {
-      //       return NoCameraScreen();
-      //     } else {
-      //       final back_camera = snapshot.data?.last;
-      //       if (back_camera != null) {
-      //         return PreviousScreen(back_camera);
-      //       } else {
-      //         return NoCameraScreen();
-      //       }
-      //     }
-      //   },
-      // )),
     );
   }
 }
