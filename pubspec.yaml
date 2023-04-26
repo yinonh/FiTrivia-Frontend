@@ -39,6 +39,8 @@ dependencies:
   assets_audio_player: ^3.0.6
   fl_chart: ^0.62.0
   animated_splash_screen: ^1.3.0
+  card_swiper: ^2.0.4
+  flutter_slidable: ^3.0.0
 
 dev_dependencies:
   flutter_test:
@@ -72,6 +74,7 @@ flutter:
     - assets\high knee.gif
     - assets\side stretch.gif
     - assets\squat.gif
+    - assets\music.png
 
   #   - images/a_dot_ham.jpeg
 

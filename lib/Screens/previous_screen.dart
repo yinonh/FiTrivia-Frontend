@@ -7,7 +7,7 @@ import '../models/make_request.dart';
 import '../models/question.dart';
 
 class PreviousScreen extends StatefulWidget {
-  static const routeName = '/previous_screen';
+  static const routeName = '/previus_screen';
 
   @override
   _PreviousScreenState createState() => _PreviousScreenState();
@@ -70,6 +70,7 @@ class _PreviousScreenState extends State<PreviousScreen> {
           'controller': _controller,
           'questions': questions,
         };
+        Navigator.of(context).popUntil((route) => route.isFirst); // clean the Navigator
         Navigator.pushReplacementNamed(context, '/camera_screen',
             arguments: arguments);
         timer.cancel();
@@ -129,6 +130,7 @@ class _PreviousScreenState extends State<PreviousScreen> {
 
   Widget camera_preview(Widget content) {
     return Scaffold(
+      appBar: AppBar(),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

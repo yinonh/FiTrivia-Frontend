@@ -5,6 +5,7 @@ import '../models/make_request.dart';
 import '../models/question.dart';
 
 class NoCameraScreen extends StatefulWidget {
+  static const routeName = "/no_camera_screen";
   @override
   State<NoCameraScreen> createState() => _NoCameraScreenState();
 }

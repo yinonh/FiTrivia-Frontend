@@ -8,13 +8,44 @@ class AuthScreen extends StatefulWidget {
   State<AuthScreen> createState() => _AuthScreenState();
 }
 
-class _AuthScreenState extends State<AuthScreen> {
+class _AuthScreenState extends State<AuthScreen>
+    with SingleTickerProviderStateMixin {
   bool loginMode = true;
+  late AnimationController _controller;
+  late Animation<Size> _heightAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 300),
+    );
+    _heightAnimation = Tween<Size>(
+      begin: Size(500, 400),
+      end: Size(500, 520),
+    ).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Curves.linear,
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _controller.dispose();
+  }
 
   void _changeMode() {
-    setState(() {
-      loginMode = !loginMode;
-    });
+    if (loginMode) {
+      loginMode = false;
+      _controller.forward();
+    } else {
+      loginMode = true;
+      _controller.reverse();
+    }
   }
 
   @override
@@ -23,9 +54,35 @@ class _AuthScreenState extends State<AuthScreen> {
       body: Stack(
         children: [
           _buildBackgroundGrid(),
-          loginMode
-              ? LogIn(changeMode: _changeMode)
-              : SignUp(changeMode: _changeMode),
+          Center(
+            child: AnimatedBuilder(
+              animation: _heightAnimation,
+              builder: (BuildContext context, Widget? child) {
+                return Container(
+                  height: _heightAnimation.value.height,
+                  width: 500,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 32,
+                  ),
+                  decoration: BoxDecoration(
+                      color: Colors.blueGrey.shade300,
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: const [
+                        BoxShadow(
+                          blurRadius: 8,
+                          color: Colors.white54,
+                        )
+                      ]),
+                  child: SingleChildScrollView(
+                    child: loginMode
+                        ? LogIn(changeMode: _changeMode)
+                        : SignUp(changeMode: _changeMode),
+                  ),
+                );
+              },
+            ),
+          )
         ],
       ),
     );
