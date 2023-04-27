@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:card_swiper/card_swiper.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
+
+// import 'package:flutter_slidable/flutter_slidable.dart';
 
 import '../Screens/previous_screen.dart';
 import '../Screens/room_detail_screen.dart';
 import '../Widgets/private_rooms_item.dart';
 import '../Widgets/public_room_items.dart';
+
 
 
 class MyCustomScrollBehavior extends MaterialScrollBehavior {
