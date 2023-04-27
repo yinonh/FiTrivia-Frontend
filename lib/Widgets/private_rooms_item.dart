@@ -54,18 +54,19 @@ class PrivateRoomItem extends StatelessWidget {
             MediaQuery.of(context).size.width ? Container(
           width: 200,
           child: Row(
-            children: const [
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
               IconButton(
                 icon: Icon(Icons.share),
-                onPressed: null,
+                onPressed: (){},
               ),
               IconButton(
                 icon: Icon(Icons.edit),
-                onPressed: null,
+                onPressed: (){},
               ),
               IconButton(
                 icon: Icon(Icons.delete),
-                onPressed: null,
+                onPressed: (){},
               ),
             ],
           ),

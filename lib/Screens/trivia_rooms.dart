@@ -9,8 +9,6 @@ import '../Screens/room_detail_screen.dart';
 import '../Widgets/private_rooms_item.dart';
 import '../Widgets/public_room_items.dart';
 
-
-
 class MyCustomScrollBehavior extends MaterialScrollBehavior {
   // Override behavior methods and getters like dragDevices
   @override
@@ -26,22 +24,24 @@ class TriviaRooms extends StatelessWidget {
   TriviaRooms({Key? key}) : super(key: key);
   final List<PublicRoomItems> publicRooms = List.generate(
     9,
-    (index) => PublicRoomItems(index: index,),
+    (index) => PublicRoomItems(
+      index: index,
+    ),
   );
 
   final List<PrivateRoomItem> userPrivateRooms = List.generate(
     10,
     (index) => PrivateRoomItem(),
-    );
+  );
 
-  get drawer{
+  get drawer {
     return Drawer(
       backgroundColor: Colors.blueGrey[50],
       child: ListView(
         padding: EdgeInsets.zero,
         children: <Widget>[
           const DrawerHeader(
-            child: Center(child: Text('My App')),
+            child: Center(child: Text('FiTrivia')),
             decoration: BoxDecoration(
               color: Colors.blue,
             ),
@@ -54,7 +54,7 @@ class TriviaRooms extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: Icon(Icons.cake),
+            leading: Icon(Icons.auto_awesome),
             title: Text('Surprise Me'),
             onTap: () {
               // Implement your logic for surprising the user here
@@ -94,6 +94,7 @@ class TriviaRooms extends StatelessWidget {
               child: Swiper(
                 //loop: false,
                 index: publicRooms.length ~/ 2,
+                scale: 0.1,
                 itemCount: publicRooms.length,
                 itemBuilder: (BuildContext context, int index) {
                   return publicRooms[index];
@@ -106,20 +107,25 @@ class TriviaRooms extends StatelessWidget {
                     ? 1
                     : 0.3,
                 pagination: new SwiperPagination(),
-                control: new SwiperControl(),
+                control: MediaQuery.of(context).size.height >
+                        MediaQuery.of(context).size.width
+                    ? null
+                    : new SwiperControl(),
                 onTap: (index) {
                   print(index);
-                  Navigator.pushNamed(
-                      context, RoomDetails.routeName);
+                  Navigator.pushNamed(context, RoomDetails.routeName);
                 },
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(10, 8, 8, 0),
+          const Padding(
+            padding: EdgeInsets.fromLTRB(10, 8, 8, 0),
             child: Text(
               'Private Rooms:',
-              style: TextStyle(fontSize: 25, fontWeight: FontWeight.w800,),
+              style: TextStyle(
+                fontSize: 25,
+                fontWeight: FontWeight.w800,
+              ),
             ),
           ),
           Divider(),
@@ -136,8 +142,7 @@ class TriviaRooms extends StatelessWidget {
                   child: userPrivateRooms[index],
                   onTap: () {
                     print(index);
-                    Navigator.pushNamed(
-                        context, PreviousScreen.routeName);
+                    Navigator.pushNamed(context, PreviousScreen.routeName);
                   },
                 );
               },
