@@ -191,6 +191,7 @@ class _CameraScreenState extends State<CameraScreen> {
       "ex_dict": exDict,
       "correct_ans_index": correctAnsIndex
     };
+
     Navigator.pushReplacementNamed(context, ResultScreen.routeName,
         arguments: args);
   }

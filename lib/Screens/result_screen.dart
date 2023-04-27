@@ -113,6 +113,15 @@ class _ResultScreenState extends State<ResultScreen>
     return false;
   }
 
+  bool validResponse(List<List> listOfLists) {
+    for (var sublist in listOfLists) {
+      if (sublist.isEmpty) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -126,33 +135,39 @@ class _ResultScreenState extends State<ResultScreen>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
-              child: ListView.builder(
-                shrinkWrap: true,
-                itemCount: _resultList.length,
-                itemBuilder: (BuildContext context, int index) {
-                  List<String> sublist = _resultList[index];
-                  return Column(
-                    children: [
-                      SlideTransition(
-                        position: _animation,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 4.0),
-                          child: Row(
-                            children: [
-                              ListItem(
-                                numbers: convertStringList(sublist),
-                                classification: getMostFrequentValue(sublist),
-                                correct: is_ans_correct(sublist, index),
+              child: validResponse(_resultList)
+                  ? ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: _resultList.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        List<String> sublist = _resultList[index];
+                        return Column(
+                          children: [
+                            SlideTransition(
+                              position: _animation,
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 4.0),
+                                child: Row(
+                                  children: [
+                                    ListItem(
+                                      numbers: convertStringList(sublist),
+                                      classification:
+                                          getMostFrequentValue(sublist),
+                                      correct: is_ans_correct(sublist, index),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      Divider(),
-                    ],
-                  );
-                },
-              ),
+                            ),
+                            Divider(),
+                          ],
+                        );
+                      },
+                    )
+                  : Center(
+                      child: Text("No Data"),
+                    ),
             ),
             Center(
               child: Text(

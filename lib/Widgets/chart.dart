@@ -12,10 +12,10 @@ class NumberLineGraph extends StatelessWidget {
     final lineColor = theme.colorScheme.secondary;
     final dotColor = theme.colorScheme.primary;
 
-    return CustomPaint(
+    return numbers.length > 0 ? CustomPaint(
       size: const Size(200, 50),
       painter: _NumberLineGraphPainter(numbers, lineColor, dotColor),
-    );
+    ) : const Text("No Data");
   }
 }
 
