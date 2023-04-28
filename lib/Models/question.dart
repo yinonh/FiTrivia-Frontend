@@ -1,3 +1,6 @@
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
 class QuizQuestion {
   final String category;
   final String id;
@@ -28,5 +31,18 @@ class QuizQuestion {
 
   static List<QuizQuestion> fromJsonList(List<dynamic> jsonList) {
     return jsonList.map((json) => QuizQuestion.fromJson(json)).toList();
+  }
+
+
+  static Future<List<QuizQuestion>> fetchQuestions() async {
+    final response = await http.get(Uri.parse(
+        'https://the-trivia-api.com/api/questions?limit=5&categories=science'));
+
+    if (response.statusCode == 200) {
+      final jsonList = json.decode(response.body);
+      return QuizQuestion.fromJsonList(jsonList);
+    } else {
+      throw Exception('Failed to fetch questions');
+    }
   }
 }

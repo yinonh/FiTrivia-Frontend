@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../Widgets/bottom_buttons.dart';
 
-import '../models/make_request.dart';
 import '../models/question.dart';
 
 class NoCameraScreen extends StatefulWidget {

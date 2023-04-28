@@ -1,6 +1,5 @@
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:fitrivia/Screens/auth_screen.dart';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
@@ -17,9 +16,25 @@ import 'Screens/wheel.dart';
 import 'Screens/room_detail_screen.dart';
 import '../models/question.dart';
 
-void main() => runApp(MyApp());
+import 'Providers/users_provider.dart';
+
+void main() {
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => UsersProvider()),
+      ],
+      child: MyApp(),
+    ),
+  );
+}
 
 class MyApp extends StatelessWidget {
+
+  const MyApp({
+    Key? key,
+  }) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     const TextTheme text_theme = TextTheme(
@@ -27,7 +42,7 @@ class MyApp extends StatelessWidget {
       titleLarge: TextStyle(fontSize: 36.0, fontStyle: FontStyle.italic),
       //bodyMedium: TextStyle(fontSize: 14.0, fontFamily: 'Hind'),
     );
-    WidgetsFlutterBinding.ensureInitialized();
+
     return MaterialApp(
       onGenerateRoute: (settings) {
         if (settings.name == CameraScreen.routeName) {
@@ -63,6 +78,7 @@ class MyApp extends StatelessWidget {
       },
       routes: {
         SplashScreen.routeName: (context) => SplashScreen(),
+        AuthScreen.routeName: (context) => AuthScreen(),
         PreviousScreen.routeName: (context) => PreviousScreen(),
         NoCameraScreen.routeName: (context) => NoCameraScreen(),
         TriviaRooms.routeName:(context) => TriviaRooms(),
@@ -81,7 +97,7 @@ class MyApp extends StatelessWidget {
         backgroundColor: (Colors.blueGrey[100])!,
         splash: Center(
           child: Image.asset(
-            "assets\\logo.png",
+            "assets/logo.png",
           ),
         ),
         nextScreen: AuthScreen(),

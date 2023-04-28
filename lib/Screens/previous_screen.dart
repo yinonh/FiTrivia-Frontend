@@ -3,7 +3,6 @@ import 'package:camera/camera.dart';
 import 'dart:async';
 
 import '../Screens/no_camera_screen.dart';
-import '../models/make_request.dart';
 import '../models/question.dart';
 
 class PreviousScreen extends StatefulWidget {
@@ -27,7 +26,7 @@ class _PreviousScreenState extends State<PreviousScreen> {
   void initState() {
     super.initState();
     isControllerInitialized = false;
-    _futureQuestions = fetchQuestions().whenComplete(() {
+    _futureQuestions = QuizQuestion.fetchQuestions().whenComplete(() {
       setState(() {
         pressed = true;
       });

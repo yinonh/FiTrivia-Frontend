@@ -13,6 +13,26 @@ class ListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if(numbers.length == 0 ) {
+      return const Center(
+        child: Text(
+          "Server Error",
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.redAccent,
+            fontSize: 20,
+            shadows: <Shadow>[
+              Shadow(
+                offset: Offset(1.0, 1.0),
+                blurRadius: 1.5,
+                color: Color.fromARGB(
+                    255, 255, 255, 255),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
     return Expanded(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,

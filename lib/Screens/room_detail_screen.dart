@@ -18,8 +18,8 @@ class RoomDetails extends StatelessWidget {
           children: [
             Hero(
               tag: 'cover 5',
-              child: Image.network(
-                "assets\\music.png",
+              child: Image.asset(
+                "assets/music.png",
                 fit: BoxFit.fill,
                 height: MediaQuery.of(context).size.height * 0.4,
                 width: MediaQuery.of(context).size.width * 0.8,

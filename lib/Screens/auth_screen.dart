@@ -4,6 +4,7 @@ import '../Widgets/log_in.dart';
 import '../Widgets/sign_up.dart';
 
 class AuthScreen extends StatefulWidget {
+  static const routeName = '/auth_screen';
   @override
   State<AuthScreen> createState() => _AuthScreenState();
 }
@@ -22,8 +23,8 @@ class _AuthScreenState extends State<AuthScreen>
       duration: Duration(milliseconds: 300),
     );
     _heightAnimation = Tween<Size>(
-      begin: Size(500, 400),
-      end: Size(500, 520),
+      begin: Size(500, 420),
+      end: Size(500, 590),
     ).animate(
       CurvedAnimation(
         parent: _controller,

@@ -38,7 +38,7 @@ class AnswerButtons extends StatelessWidget {
               Flexible(
                 flex: 1,
                 child: Image.asset(
-                  'assets\\${exDict[i]}.gif',
+                  'assets/${exDict[i]}.gif',
                   width: 250,
                   height: 250,
                 ),
@@ -85,7 +85,7 @@ class AnswerButtons extends StatelessWidget {
                 Flexible(
                   flex: 1,
                   child: Image.asset(
-                    'assets\\${exDict[i]}.gif',
+                    'assets/${exDict[i]}.gif',
                     width: 250,
                     height: 250,
                   ),

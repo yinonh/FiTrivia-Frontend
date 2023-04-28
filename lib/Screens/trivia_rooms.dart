@@ -4,6 +4,7 @@ import 'package:card_swiper/card_swiper.dart';
 
 // import 'package:flutter_slidable/flutter_slidable.dart';
 
+import '../Screens/auth_screen.dart';
 import '../Screens/previous_screen.dart';
 import '../Screens/room_detail_screen.dart';
 import '../Widgets/private_rooms_item.dart';
@@ -34,7 +35,7 @@ class TriviaRooms extends StatelessWidget {
     (index) => PrivateRoomItem(),
   );
 
-  get drawer {
+  Drawer drawer(BuildContext context) {
     return Drawer(
       backgroundColor: Colors.blueGrey[50],
       child: ListView(
@@ -64,7 +65,7 @@ class TriviaRooms extends StatelessWidget {
             leading: Icon(Icons.exit_to_app),
             title: Text('Logout'),
             onTap: () {
-              // Implement your logic for logging out the user here
+              Navigator.pushReplacementNamed(context, AuthScreen.routeName);
             },
           ),
         ],
@@ -79,7 +80,7 @@ class TriviaRooms extends StatelessWidget {
       appBar: AppBar(
         title: Text("Trivia Rooms"),
       ),
-      drawer: drawer,
+      drawer: drawer(context),
       body: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[

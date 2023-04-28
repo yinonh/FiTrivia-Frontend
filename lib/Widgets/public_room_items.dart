@@ -17,8 +17,8 @@ class PublicRoomItems extends StatelessWidget {
           children: [
             Hero(
               tag: "cover $index",
-              child: Image.network(
-                "assets\\music.png",
+              child: Image.asset(
+                "assets/music.png",
                 fit: BoxFit.fill,
               ),
             ),
