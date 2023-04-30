@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:card_swiper/card_swiper.dart';
+import 'package:provider/provider.dart';
 
 // import 'package:flutter_slidable/flutter_slidable.dart';
-
+import '../Models/trivia_room.dart';
 import '../Screens/auth_screen.dart';
 import '../Screens/previous_screen.dart';
 import '../Screens/room_detail_screen.dart';
 import '../Widgets/private_rooms_item.dart';
 import '../Widgets/public_room_items.dart';
+import '../Providers/trivia_rooms_provider.dart';
 
 class MyCustomScrollBehavior extends MaterialScrollBehavior {
   // Override behavior methods and getters like dragDevices
@@ -19,21 +21,46 @@ class MyCustomScrollBehavior extends MaterialScrollBehavior {
       };
 }
 
-class TriviaRooms extends StatelessWidget {
+class TriviaRooms extends StatefulWidget {
   static const routeName = '/trivia_rooms_screen';
 
   TriviaRooms({Key? key}) : super(key: key);
-  final List<PublicRoomItems> publicRooms = List.generate(
-    9,
-    (index) => PublicRoomItems(
-      index: index,
-    ),
-  );
+
+  @override
+  State<TriviaRooms> createState() => _TriviaRoomsState();
+}
+
+class _TriviaRoomsState extends State<TriviaRooms> {
+  late List<PublicRoomItems> publicRooms;
+  late List<TriviaRoom> publicRoomsList;
 
   final List<PrivateRoomItem> userPrivateRooms = List.generate(
     10,
     (index) => PrivateRoomItem(),
   );
+
+  @override
+  void initState() {
+    super.initState();
+
+    publicRoomsList =
+        Provider.of<TriviaRoomProvider>(context, listen: false).triviaRooms;
+    publicRooms = List.generate(
+      publicRoomsList.length,
+      (index) => PublicRoomItems(room: publicRoomsList[index]),
+    );
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    List<TriviaRoom> publicRoomsList =
+        Provider.of<TriviaRoomProvider>(context).triviaRooms;
+    publicRooms = List.generate(
+      publicRoomsList.length,
+      (index) => PublicRoomItems(room: publicRoomsList[index]),
+    );
+  }
 
   Drawer drawer(BuildContext context) {
     return Drawer(
@@ -113,8 +140,8 @@ class TriviaRooms extends StatelessWidget {
                     ? null
                     : new SwiperControl(),
                 onTap: (index) {
-                  print(index);
-                  Navigator.pushNamed(context, RoomDetails.routeName);
+                  Navigator.pushNamed(context, RoomDetails.routeName,
+                      arguments: this.publicRoomsList[index]);
                 },
               ),
             ),
@@ -143,7 +170,7 @@ class TriviaRooms extends StatelessWidget {
                   child: userPrivateRooms[index],
                   onTap: () {
                     print(index);
-                    Navigator.pushNamed(context, PreviousScreen.routeName);
+                    //Navigator.pushNamed(context, PreviousScreen.routeName);
                   },
                 );
               },

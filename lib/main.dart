@@ -14,15 +14,18 @@ import 'Screens/result_screen.dart';
 import 'Screens/trivia_rooms.dart';
 import 'Screens/wheel.dart';
 import 'Screens/room_detail_screen.dart';
-import '../models/question.dart';
+import 'Models/question.dart';
+import 'Models/trivia_room.dart';
 
 import 'Providers/users_provider.dart';
+import 'Providers/trivia_rooms_provider.dart';
 
 void main() {
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => UsersProvider()),
+        ChangeNotifierProvider(create: (context) => TriviaRoomProvider()),
       ],
       child: MyApp(),
     ),
@@ -30,7 +33,6 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-
   const MyApp({
     Key? key,
   }) : super(key: key);
@@ -57,8 +59,7 @@ class MyApp extends StatelessWidget {
               questions: quizQuestions,
             );
           });
-        }
-        if (settings.name == ResultScreen.routeName) {
+        } else if (settings.name == ResultScreen.routeName) {
           final args = settings.arguments as Map<String, dynamic>;
           final responseList = args['response_list'] as List<List<String>>;
           final exDict = args['ex_dict'] as Map<String, int>;
@@ -74,15 +75,25 @@ class MyApp extends StatelessWidget {
               correctAnsIndex: correctAnsIndex,
             );
           });
+        } else if (settings.name == RoomDetails.routeName) {
+          return MaterialPageRoute(builder: (context) {
+            return RoomDetails(
+              room: settings.arguments as TriviaRoom,
+            );
+          });
+        } else if (settings.name == PreviousScreen.routeName) {
+          return MaterialPageRoute(builder: (context) {
+            return PreviousScreen(
+              roomID: settings.arguments as String,
+            );
+          });
         }
       },
       routes: {
         SplashScreen.routeName: (context) => SplashScreen(),
         AuthScreen.routeName: (context) => AuthScreen(),
-        PreviousScreen.routeName: (context) => PreviousScreen(),
         NoCameraScreen.routeName: (context) => NoCameraScreen(),
-        TriviaRooms.routeName:(context) => TriviaRooms(),
-        RoomDetails.routeName:(context) => RoomDetails(),
+        TriviaRooms.routeName: (context) => TriviaRooms(),
       },
       theme: FlexThemeData.light(
           scheme: FlexScheme.aquaBlue,

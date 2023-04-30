@@ -9,7 +9,7 @@ import 'package:path/path.dart' as path;
 
 import '../Widgets/rest_popup.dart';
 import '../Widgets/bottom_buttons.dart';
-import '../models/question.dart';
+import '../Models/question.dart';
 import '../Screens/result_screen.dart';
 
 class CameraScreen extends StatefulWidget {

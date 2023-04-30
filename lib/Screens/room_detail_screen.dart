@@ -1,25 +1,27 @@
 import 'package:flutter/material.dart';
 
 import '../Screens/previous_screen.dart';
+import '../Models/trivia_room.dart';
 
 class RoomDetails extends StatelessWidget {
   static const routeName = "/room_details";
-  const RoomDetails({Key? key}) : super(key: key);
+  final TriviaRoom room;
+  const RoomDetails({required this.room, Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Music'),
+        title: Text(room.name),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             Hero(
-              tag: 'cover 5',
+              tag: room.id,
               child: Image.asset(
-                "assets/music.png",
+                room.picture,
                 fit: BoxFit.fill,
                 height: MediaQuery.of(context).size.height * 0.4,
                 width: MediaQuery.of(context).size.width * 0.8,
@@ -39,12 +41,15 @@ class RoomDetails extends StatelessWidget {
             ElevatedButton(
               onPressed: () {
                 //Navigator.pop(context);
-                Navigator.pushNamed(
-                    context, PreviousScreen.routeName);
+                Navigator.pushNamed(context, PreviousScreen.routeName,
+                    arguments: room.id);
               },
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Text('🏁 Start 🏁', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
+                child: Text(
+                  '🏁 Start 🏁',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
               ),
             ),
           ],

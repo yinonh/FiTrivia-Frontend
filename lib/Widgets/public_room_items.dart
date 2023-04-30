@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
+import '../Models/trivia_room.dart';
+
 class PublicRoomItems extends StatelessWidget {
-  int index;
-  PublicRoomItems({required this.index, Key? key}) : super(key: key);
+  TriviaRoom room;
+  PublicRoomItems({required this.room, Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -16,9 +18,9 @@ class PublicRoomItems extends StatelessWidget {
           alignment: Alignment.bottomCenter,
           children: [
             Hero(
-              tag: "cover $index",
+              tag: room.id,
               child: Image.asset(
-                "assets/music.png",
+                room.picture,
                 fit: BoxFit.fill,
               ),
             ),
@@ -27,10 +29,10 @@ class PublicRoomItems extends StatelessWidget {
               child: Container(
                 height: 50,
                 width: double.infinity,
-                color: Colors.blue.withOpacity(0.5),
-                child: const Center(
+                color: Colors.blue[500]?.withOpacity(0.8),
+                child: Center(
                   child: Text(
-                    "Music",
+                    room.name,
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w700,

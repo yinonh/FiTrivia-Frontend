@@ -22,7 +22,7 @@ class LogIn extends StatelessWidget {
       child: Column(
         children: [
           const Text(
-            'Sign In',
+            'Log In',
             style: TextStyle(
               fontSize: 32,
               fontWeight: FontWeight.bold,
@@ -34,8 +34,7 @@ class LogIn extends StatelessWidget {
             validator: (value) {
               if (value == null || value.isEmpty) {
                 return 'Please enter your email';
-              }
-              else if(!EmailValidator.validate(value)){
+              } else if (!EmailValidator.validate(value)) {
                 return "Email invalid";
               }
               return null;
@@ -58,8 +57,7 @@ class LogIn extends StatelessWidget {
             validator: (value) {
               if (value == null || value.isEmpty) {
                 return 'Please enter your password';
-              }
-              else if (value.length < 6){
+              } else if (value.length < 6) {
                 return 'Password should be at least 6 characters';
               }
               return null;
@@ -84,18 +82,26 @@ class LogIn extends StatelessWidget {
               if (_formKey.currentState!.validate()) {
                 // Save the form's state
                 _formKey.currentState!.save();
-                if(Provider.of<UsersProvider>(context, listen: false)
-                    .getUserByEmailAndPassword(_email!, _password!) != null){
-                  Navigator.pushReplacementNamed(context, TriviaRooms.routeName);
-                }
-                else{
+                if (Provider.of<UsersProvider>(context, listen: false)
+                        .getUserByEmailAndPassword(_email!, _password!) !=
+                    null) {
+                  Navigator.pushReplacementNamed(
+                      context, TriviaRooms.routeName);
+                } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       duration: Duration(seconds: 2),
-                      content: Text('This user is\'t exist', style: TextStyle(color: Colors.deepOrange, fontWeight: FontWeight.bold),),
+                      content: Text(
+                        'This user is\'t exist',
+                        style: TextStyle(
+                            color: Colors.deepOrange,
+                            fontWeight: FontWeight.bold),
+                      ),
                     ),
                   );
                 }
+              } else {
+                Navigator.pushReplacementNamed(context, TriviaRooms.routeName);
               }
             },
             child: Text('Sign In'),
