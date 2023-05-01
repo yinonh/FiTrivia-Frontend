@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:html';
+
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:fitrivia/Screens/auth_screen.dart';
 import 'package:flutter/material.dart';
@@ -16,24 +19,30 @@ import 'Screens/wheel.dart';
 import 'Screens/room_detail_screen.dart';
 import 'Models/question.dart';
 import 'Models/trivia_room.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'Providers/users_provider.dart';
 import 'Providers/trivia_rooms_provider.dart';
 
-void main() {
+Future<void> main() async {
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => UsersProvider()),
         ChangeNotifierProvider(create: (context) => TriviaRoomProvider()),
       ],
-      child: MyApp(),
+      child: FitriviaApp(),
     ),
   );
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({
+class FitriviaApp extends StatelessWidget {
+  const FitriviaApp({
     Key? key,
   }) : super(key: key);
 
