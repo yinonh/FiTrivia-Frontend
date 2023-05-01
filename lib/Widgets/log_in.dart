@@ -1,19 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:email_validator/email_validator.dart';
 
 import '../Screens/trivia_rooms.dart';
-import '../Providers/users_provider.dart';
 
-class LogIn extends StatelessWidget {
+class LogIn extends StatefulWidget {
   final VoidCallback changeMode;
-  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
-// Declare variables to hold the email and password values
-  String? _email;
-  String? _password;
 
   LogIn({required this.changeMode, Key? key}) : super(key: key);
+
+  @override
+  _LogInState createState() => _LogInState();
+}
+
+class _LogInState extends State<LogIn> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  // Declare variables to hold the email and password values
+  String? _email;
+  String? _password;
+  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -78,33 +85,44 @@ class LogIn extends StatelessWidget {
           ),
           SizedBox(height: 32),
           ElevatedButton(
-            onPressed: () {
-              if (_formKey.currentState!.validate()) {
-                // Save the form's state
-                _formKey.currentState!.save();
-                if (Provider.of<UsersProvider>(context, listen: false)
-                        .getUserByEmailAndPassword(_email!, _password!) !=
-                    null) {
-                  Navigator.pushReplacementNamed(
-                      context, TriviaRooms.routeName);
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      duration: Duration(seconds: 2),
-                      content: Text(
-                        'This user is\'t exist',
-                        style: TextStyle(
-                            color: Colors.deepOrange,
-                            fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  );
-                }
-              } else {
-                Navigator.pushReplacementNamed(context, TriviaRooms.routeName);
-              }
-            },
-            child: Text('Sign In'),
+            onPressed: _isLoading
+                ? null
+                : () async {
+                    if (_formKey.currentState!.validate()) {
+                      // Save the form's state
+                      _formKey.currentState!.save();
+                      setState(() {
+                        _isLoading = true;
+                      });
+                      try {
+                        await FirebaseAuth.instance.signInWithEmailAndPassword(
+                          email: _email!,
+                          password: _password!,
+                        );
+                        Navigator.pushReplacementNamed(
+                          context,
+                          TriviaRooms.routeName,
+                        );
+                      } on FirebaseAuthException catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            duration: Duration(seconds: 2),
+                            content: Text(
+                              'Failed to sign in',
+                              style: TextStyle(
+                                color: Colors.deepOrange,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        );
+                      } finally {
+                        setState(() {
+                          _isLoading = false;
+                        });
+                      }
+                    }
+                  },
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.symmetric(
                 vertical: 20,
@@ -114,6 +132,11 @@ class LogIn extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
+            child: _isLoading
+                ? const CircularProgressIndicator(
+                    color: Colors.white,
+                  )
+                : Text('Sign In'),
           ),
           SizedBox(height: 16),
           Row(
@@ -127,7 +150,7 @@ class LogIn extends StatelessWidget {
                 ),
               ),
               TextButton(
-                onPressed: this.changeMode,
+                onPressed: widget.changeMode,
                 child: const Text(
                   'Register Now',
                   style: TextStyle(color: Colors.white),

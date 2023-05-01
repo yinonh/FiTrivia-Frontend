@@ -9,15 +9,15 @@ import 'package:path/path.dart' as path;
 
 import '../Widgets/rest_popup.dart';
 import '../Widgets/bottom_buttons.dart';
-import '../Models/question.dart';
+import '../Models/trivia_room.dart';
 import '../Screens/result_screen.dart';
 
 class CameraScreen extends StatefulWidget {
   static const routeName = '/camera_screen';
   CameraController controller;
-  List<QuizQuestion> questions;
+  TriviaRoom room;
 
-  CameraScreen({required this.controller, required this.questions, Key? key})
+  CameraScreen({required this.controller, required this.room, Key? key})
       : super(key: key);
   @override
   _CameraScreenState createState() => _CameraScreenState();
@@ -26,10 +26,10 @@ class CameraScreen extends StatefulWidget {
 class _CameraScreenState extends State<CameraScreen> {
   List<XFile> _capturedImages = [];
   int index = 0;
-  int numOfQuestions = 2;
+  //int numOfQuestions = 2;
   bool _isCapturing = false;
-  int countDownTime = 10;
-  int restTime = 5;
+  //int countDownTime = 10;
+  //int restTime = 5;
   Stream<int>? countDownStream;
   List<String> currentEx = [];
   List<List<String>> responseList = [];
@@ -50,7 +50,8 @@ class _CameraScreenState extends State<CameraScreen> {
   @override
   void initState() {
     super.initState();
-    responseList = List.generate(numOfQuestions, (_) => <String>[]);
+    responseList =
+        List.generate(widget.room.questions.length, (_) => <String>[]);
     currentQuestonList = _shuffleAnswers();
     update_buttons();
     _startTimer(context);
@@ -62,11 +63,11 @@ class _CameraScreenState extends State<CameraScreen> {
 
   List<String> _shuffleAnswers() {
     List<String> allStrings = [
-      widget.questions[index].correctAnswer,
-      ...widget.questions[index].incorrectAnswers
+      widget.room.questions[index].correctAnswer,
+      ...widget.room.questions[index].incorrectAnswers
     ];
-    int randomSeed = randomHash(widget.questions[index].correctAnswer,
-        widget.questions[index].incorrectAnswers);
+    int randomSeed = randomHash(widget.room.questions[index].correctAnswer,
+        widget.room.questions[index].incorrectAnswers);
     Random random = Random(randomSeed);
     List<String> shuffledList = List<String>.from(allStrings);
     for (int i = shuffledList.length - 1; i > 0; i--) {
@@ -76,7 +77,7 @@ class _CameraScreenState extends State<CameraScreen> {
       shuffledList[j] = temp;
     }
     correctAnsIndex
-        .add(shuffledList.indexOf(widget.questions[index].correctAnswer));
+        .add(shuffledList.indexOf(widget.room.questions[index].correctAnswer));
     return shuffledList;
   }
 
@@ -93,7 +94,7 @@ class _CameraScreenState extends State<CameraScreen> {
     });
     setState(() {
       ansButtons = AnswerButtons(
-          correctAnswer: widget.questions[index].correctAnswer,
+          correctAnswer: widget.room.questions[index].correctAnswer,
           allAnswers: currentQuestonList,
           lastPressedIndex: lastPressedIndex,
           done: done,
@@ -109,7 +110,7 @@ class _CameraScreenState extends State<CameraScreen> {
 
   void next_question() {
     setState(() {
-      if (index + 1 < numOfQuestions) {
+      if (index + 1 < widget.room.questions.length) {
         index++;
         currentQuestonList = _shuffleAnswers();
       }
@@ -142,7 +143,7 @@ class _CameraScreenState extends State<CameraScreen> {
   }
 
   Future<void> _startTimer(BuildContext context) async {
-    for (int i = 0; i < numOfQuestions; i++) {
+    for (int i = 0; i < widget.room.questions.length; i++) {
       final repeatingTimer =
           Timer.periodic(Duration(milliseconds: 100), (timer) {
         if (widget.controller != null &&
@@ -153,30 +154,31 @@ class _CameraScreenState extends State<CameraScreen> {
 
       countDownStream = Stream<int>.periodic(Duration(seconds: 1), (i) {
         update_buttons();
-        return countDownTime - i - 1;
-      }).take(countDownTime);
+        return widget.room.exerciseTime - i - 1;
+      }).take(widget.room.exerciseTime);
 
-      Timer(Duration(seconds: countDownTime), () {
+      Timer(Duration(seconds: widget.room.exerciseTime), () {
         repeatingTimer.cancel();
       });
-      Timer(Duration(seconds: countDownTime - 2), () {
+      Timer(Duration(seconds: widget.room.exerciseTime - 2), () {
         setState(() {
           done = true;
         });
         update_buttons();
       });
 
-      await Future.delayed(Duration(seconds: countDownTime));
+      await Future.delayed(Duration(seconds: widget.room.exerciseTime));
       showDialog(
         context: context,
         builder: (BuildContext cntx) => CustomProgressDialog(
           tween: Tween<double>(begin: 0.0, end: 1.0),
-          duration: restTime,
+          duration: widget.room.restTime,
         ),
         barrierDismissible: false,
       );
 
-      await Future.delayed(Duration(seconds: restTime, milliseconds: 50));
+      await Future.delayed(
+          Duration(seconds: widget.room.restTime, milliseconds: 50));
 
       this.lastPressedIndex = -1;
       this.done = false;
@@ -298,7 +300,7 @@ class _CameraScreenState extends State<CameraScreen> {
                   0.1,
               child: Center(
                 child: Text(
-                  widget.questions[index].question,
+                  widget.room.questions[index].question,
                   style: TextStyle(fontSize: 20.0),
                   textAlign: TextAlign.center,
                 ),

@@ -1,21 +1,64 @@
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
-import 'package:provider/provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '../Models/user.dart';
-import '../Providers/users_provider.dart';
 import '../Screens/trivia_rooms.dart';
 
-class SignUp extends StatelessWidget {
+class SignUp extends StatefulWidget {
   final VoidCallback changeMode;
+
+  SignUp({required this.changeMode, Key? key}) : super(key: key);
+
+  @override
+  State<SignUp> createState() => _SignUpState();
+}
+
+class _SignUpState extends State<SignUp> {
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   String? _email;
-  String? _password1;
-  String? _password2;
-  String? _userName;
 
-  SignUp({required this.changeMode, Key? key}) : super(key: key);
+  String? _password1;
+
+  String? _password2;
+
+  // String? _userName;
+  bool _isLoading = false;
+
+  Future<void> _submitForm() async {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+    setState(() {
+      _isLoading = true;
+    });
+    _formKey.currentState!.save();
+    try {
+      final UserCredential userCredential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
+              email: _email!, password: _password2!);
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userCredential.user!.uid)
+          .set({'email': _email!});
+      Navigator.pushReplacementNamed(context, TriviaRooms.routeName);
+    } on FirebaseAuthException catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.message!),
+        ),
+      );
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      print(e);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,27 +75,27 @@ class SignUp extends StatelessWidget {
               color: Colors.white,
             ),
           ),
-          SizedBox(height: 32),
-          TextFormField(
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter your user name';
-              }
-              return null;
-            },
-            onSaved: (value) {
-              _userName = value;
-            },
-            decoration: InputDecoration(
-              labelStyle: TextStyle(color: Colors.black),
-              filled: true,
-              fillColor: Colors.white.withOpacity(0.5),
-              labelText: 'User Name',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-          ),
+          // SizedBox(height: 32),
+          // TextFormField(
+          //   validator: (value) {
+          //     if (value == null || value.isEmpty) {
+          //       return 'Please enter your user name';
+          //     }
+          //     return null;
+          //   },
+          //   onSaved: (value) {
+          //     _userName = value;
+          //   },
+          //   decoration: InputDecoration(
+          //     labelStyle: TextStyle(color: Colors.black),
+          //     filled: true,
+          //     fillColor: Colors.white.withOpacity(0.5),
+          //     labelText: 'User Name',
+          //     border: OutlineInputBorder(
+          //       borderRadius: BorderRadius.circular(10),
+          //     ),
+          //   ),
+          // ),
           SizedBox(height: 16),
           TextFormField(
             validator: (value) {
@@ -95,7 +138,7 @@ class SignUp extends StatelessWidget {
               labelStyle: TextStyle(color: Colors.black),
               filled: true,
               fillColor: Colors.white.withOpacity(0.5),
-              labelText: 'Confirm password',
+              labelText: 'Password',
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
@@ -121,7 +164,7 @@ class SignUp extends StatelessWidget {
               labelStyle: TextStyle(color: Colors.black),
               filled: true,
               fillColor: Colors.white.withOpacity(0.5),
-              labelText: 'Password',
+              labelText: 'Confirm password',
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
@@ -129,15 +172,7 @@ class SignUp extends StatelessWidget {
           ),
           SizedBox(height: 32),
           ElevatedButton(
-            onPressed: () {
-              if (_formKey.currentState!.validate()) {
-                // Save the form's state
-                _formKey.currentState!.save();
-                Provider.of<UsersProvider>(context, listen: false).addUser(User(uid: "123", username: _userName!, email: _email!, password: _password2!),);
-                Navigator.pushReplacementNamed(context, TriviaRooms.routeName);
-              }
-            },
-            child: Text('Sign Up'),
+            onPressed: _submitForm,
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.symmetric(
                 vertical: 20,
@@ -147,6 +182,11 @@ class SignUp extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
+            child: _isLoading
+                ? const CircularProgressIndicator(
+                    color: Colors.white,
+                  )
+                : Text('Sign Up'),
           ),
           SizedBox(height: 16),
           Row(
@@ -160,7 +200,7 @@ class SignUp extends StatelessWidget {
                 ),
               ),
               TextButton(
-                onPressed: changeMode,
+                onPressed: widget.changeMode,
                 child: const Text(
                   'Sign In Now',
                   style: TextStyle(color: Colors.white),

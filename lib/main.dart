@@ -1,14 +1,13 @@
 import 'dart:async';
-import 'dart:html';
-
 import 'package:animated_splash_screen/animated_splash_screen.dart';
-import 'package:fitrivia/Screens/auth_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:camera/camera.dart';
 import 'package:assets_audio_player/assets_audio_player.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
+import 'Screens/auth_screen.dart';
 import 'Screens/camera_screen.dart';
 import 'Screens/previous_screen.dart';
 import 'Screens/no_camera_screen.dart';
@@ -48,6 +47,8 @@ class FitriviaApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    User? currentUser = FirebaseAuth.instance.currentUser;
+    Widget initialScreen = currentUser == null ? AuthScreen() : TriviaRooms();
     const TextTheme text_theme = TextTheme(
       displayLarge: TextStyle(fontSize: 100.0, fontWeight: FontWeight.bold),
       titleLarge: TextStyle(fontSize: 36.0, fontStyle: FontStyle.italic),
@@ -60,12 +61,12 @@ class FitriviaApp extends StatelessWidget {
           final args = settings.arguments as Map<String, dynamic>;
 
           final cameraController = args['controller'] as CameraController;
-          final quizQuestions = args['questions'] as List<QuizQuestion>;
+          final triviaRoom = args['questions'] as TriviaRoom;
 
           return MaterialPageRoute(builder: (context) {
             return CameraScreen(
               controller: cameraController,
-              questions: quizQuestions,
+              room: triviaRoom,
             );
           });
         } else if (settings.name == ResultScreen.routeName) {
@@ -87,13 +88,13 @@ class FitriviaApp extends StatelessWidget {
         } else if (settings.name == RoomDetails.routeName) {
           return MaterialPageRoute(builder: (context) {
             return RoomDetails(
-              room: settings.arguments as TriviaRoom,
+              roomIdentifier: settings.arguments as String,
             );
           });
         } else if (settings.name == PreviousScreen.routeName) {
           return MaterialPageRoute(builder: (context) {
             return PreviousScreen(
-              roomID: settings.arguments as String,
+              room: settings.arguments as TriviaRoom,
             );
           });
         }
@@ -120,7 +121,7 @@ class FitriviaApp extends StatelessWidget {
             "assets/logo.png",
           ),
         ),
-        nextScreen: AuthScreen(),
+        nextScreen: initialScreen,
       ),
     );
   }

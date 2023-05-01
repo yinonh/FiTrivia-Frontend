@@ -1,9 +1,10 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:card_swiper/card_swiper.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-// import 'package:flutter_slidable/flutter_slidable.dart';
 import '../Models/trivia_room.dart';
 import '../Screens/auth_screen.dart';
 import '../Screens/previous_screen.dart';
@@ -32,7 +33,7 @@ class TriviaRooms extends StatefulWidget {
 
 class _TriviaRoomsState extends State<TriviaRooms> {
   late List<PublicRoomItems> publicRooms;
-  late List<TriviaRoom> publicRoomsList;
+  late List<String> publicRoomsList;
 
   final List<PrivateRoomItem> userPrivateRooms = List.generate(
     10,
@@ -43,35 +44,37 @@ class _TriviaRoomsState extends State<TriviaRooms> {
   void initState() {
     super.initState();
 
-    publicRoomsList =
-        Provider.of<TriviaRoomProvider>(context, listen: false).triviaRooms;
+    publicRoomsList = Provider.of<TriviaRoomProvider>(context, listen: false)
+        .publicTriviaRooms;
     publicRooms = List.generate(
       publicRoomsList.length,
-      (index) => PublicRoomItems(room: publicRoomsList[index]),
+      (index) => PublicRoomItems(category: publicRoomsList[index]),
     );
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    List<TriviaRoom> publicRoomsList =
-        Provider.of<TriviaRoomProvider>(context).triviaRooms;
-    publicRooms = List.generate(
-      publicRoomsList.length,
-      (index) => PublicRoomItems(room: publicRoomsList[index]),
-    );
-  }
+  // @override
+  // void didChangeDependencies() {
+  //   super.didChangeDependencies();
+  //   List<TriviaRoom> publicRoomsList =
+  //       Provider.of<TriviaRoomProvider>(context).triviaRooms;
+  //   publicRooms = List.generate(
+  //     publicRoomsList.length,
+  //     (index) => PublicRoomItems(category: publicRoomsList[index]),
+  //   );
+  // }
 
   Drawer drawer(BuildContext context) {
+    bool logout_pressed = false;
     return Drawer(
       backgroundColor: Colors.blueGrey[50],
       child: ListView(
         padding: EdgeInsets.zero,
         children: <Widget>[
-          const DrawerHeader(
-            child: Center(child: Text('FiTrivia')),
-            decoration: BoxDecoration(
-              color: Colors.blue,
+          DrawerHeader(
+            child: Center(
+              child: Image.asset(
+                "assets/logo2.png",
+              ),
             ),
           ),
           ListTile(
@@ -90,8 +93,10 @@ class _TriviaRoomsState extends State<TriviaRooms> {
           ),
           ListTile(
             leading: Icon(Icons.exit_to_app),
-            title: Text('Logout'),
-            onTap: () {
+            title: logout_pressed ? Text('...') : Text('Logout'),
+            onTap: () async {
+              logout_pressed = true;
+              await FirebaseAuth.instance.signOut();
               Navigator.pushReplacementNamed(context, AuthScreen.routeName);
             },
           ),
@@ -105,7 +110,7 @@ class _TriviaRoomsState extends State<TriviaRooms> {
     final ScrollController controller = ScrollController();
     return Scaffold(
       appBar: AppBar(
-        title: Text("Trivia Rooms"),
+        title: Center(child: Text("Trivia Rooms")),
       ),
       drawer: drawer(context),
       body: Column(
@@ -166,12 +171,21 @@ class _TriviaRoomsState extends State<TriviaRooms> {
             child: ListView.builder(
               itemCount: userPrivateRooms.length,
               itemBuilder: (context, index) {
-                return GestureDetector(
-                  child: userPrivateRooms[index],
-                  onTap: () {
-                    print(index);
-                    //Navigator.pushNamed(context, PreviousScreen.routeName);
-                  },
+                return Column(
+                  children: [
+                    GestureDetector(
+                      child: userPrivateRooms[index],
+                      onTap: () {
+                        print(index);
+                        //Navigator.pushNamed(context, PreviousScreen.routeName);
+                      },
+                    ),
+                    Divider(
+                        //color: Colors.grey,
+                        // thickness: 1.0,
+                        // height: 1.0,
+                        ),
+                  ],
                 );
               },
             ),

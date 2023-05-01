@@ -1,21 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 import '../Models/trivia_room.dart';
 import '../Models/question.dart';
-import '../Models/user.dart';
 
 class TriviaRoomProvider with ChangeNotifier {
+  final List<String> _publicTriviaRooms = [
+    "music",
+    "sport_and_leisure",
+    "film_and_tv",
+    //"arts_and_literature",
+    //"history",
+    //"society_and_culture",
+    //"science",
+    "geography",
+    "food_and_drink",
+    //"general_knowledge",
+  ];
   final List<TriviaRoom> _triviaRooms = [
     TriviaRoom(
       id: "1",
       name: 'Music',
       description: 'A trivia room for music',
-      manager: User(
-          uid: 'user1',
-          username: 'john_doe',
-          email: 'johndoe@example.com',
-          password: 'password123'),
+      managerID: 'user1',
       questions: [
         QuizQuestion(
           category: "music",
@@ -58,11 +67,7 @@ class TriviaRoomProvider with ChangeNotifier {
       id: "2",
       name: 'Film & TV',
       description: 'A trivia room for movie buffs',
-      manager: User(
-          uid: 'user2',
-          username: 'jane_smith',
-          email: 'janesmith@example.com',
-          password: 'password456'),
+      managerID: 'user2',
       questions: [
         QuizQuestion(
           category: "Film & TV",
@@ -97,7 +102,7 @@ class TriviaRoomProvider with ChangeNotifier {
         "user2": 5,
         "user3": 3,
       },
-      picture: 'assets/movie_trivia.png',
+      picture: 'assets/film_and_tv.png',
       isPublic: true,
       password: '',
     ),
@@ -105,11 +110,7 @@ class TriviaRoomProvider with ChangeNotifier {
       id: "3",
       name: 'Sport & Leisure',
       description: 'A trivia room for sport',
-      manager: User(
-          uid: 'user2',
-          username: 'jane_smith',
-          email: 'janesmith@example.com',
-          password: 'password456'),
+      managerID: 'user2',
       questions: [
         QuizQuestion(
           category: "Sport & Leisure",
@@ -148,7 +149,7 @@ class TriviaRoomProvider with ChangeNotifier {
         "user2": 5,
         "user3": 3,
       },
-      picture: 'assets/Sport.png',
+      picture: 'assets/sport_and_leisure.png',
       isPublic: true,
       password: '',
     ),
@@ -156,11 +157,7 @@ class TriviaRoomProvider with ChangeNotifier {
       id: "4",
       name: 'Geography',
       description: 'A trivia room for around the world',
-      manager: User(
-          uid: 'user2',
-          username: 'jane_smith',
-          email: 'janesmith@example.com',
-          password: 'password456'),
+      managerID: 'user2',
       questions: [
         QuizQuestion(
           category: "Geography",
@@ -195,7 +192,7 @@ class TriviaRoomProvider with ChangeNotifier {
         "user2": 5,
         "user3": 3,
       },
-      picture: 'assets/Geography.png',
+      picture: 'assets/geography.png',
       isPublic: true,
       password: '',
     ),
@@ -203,11 +200,7 @@ class TriviaRoomProvider with ChangeNotifier {
       id: "5",
       name: 'Food & Drink',
       description: 'A trivia room for food and drinks',
-      manager: User(
-          uid: 'user2',
-          username: 'jane_smith',
-          email: 'janesmith@example.com',
-          password: 'password456'),
+      managerID: 'user2',
       questions: [
         QuizQuestion(
           category: "Apricot",
@@ -242,13 +235,15 @@ class TriviaRoomProvider with ChangeNotifier {
         "user2": 5,
         "user3": 3,
       },
-      picture: 'assets/food.png',
+      picture: 'assets/food_and_drink.png',
       isPublic: true,
       password: '',
     ),
   ];
 
   List<TriviaRoom> get triviaRooms => _triviaRooms;
+
+  List<String> get publicTriviaRooms => _publicTriviaRooms;
 
   void addRoom(TriviaRoom room) {
     _triviaRooms.add(room);
@@ -266,6 +261,26 @@ class TriviaRoomProvider with ChangeNotifier {
   void deleteRoom(int id) {
     _triviaRooms.removeWhere((room) => room.id == id);
     notifyListeners();
+  }
+
+  String convertCategory(String category) {
+    List<String> words = category.split('_');
+    words = words
+        .map((word) => "${word[0].toUpperCase()}${word.substring(1)}")
+        .toList();
+    return words.join(' ');
+  }
+
+  Future<List<QuizQuestion>> fetchQuestions(String category, int number) async {
+    final response = await http.get(Uri.parse(
+        'https://the-trivia-api.com/api/questions?limit=$number&categories=$category'));
+
+    if (response.statusCode == 200) {
+      final jsonList = json.decode(response.body);
+      return QuizQuestion.fromJsonList(jsonList);
+    } else {
+      throw Exception('Failed to fetch questions');
+    }
   }
 
   List<QuizQuestion> getQuestionsForRoom(String roomId) {

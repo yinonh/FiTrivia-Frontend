@@ -1,3 +1,4 @@
+import 'package:fitrivia/Models/trivia_room.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'dart:async';
@@ -10,9 +11,9 @@ import '../Providers/trivia_rooms_provider.dart';
 
 class PreviousScreen extends StatefulWidget {
   static const routeName = '/previous_screen';
-  final String roomID;
+  final TriviaRoom room;
 
-  const PreviousScreen({required this.roomID, Key? key}) : super(key: key);
+  const PreviousScreen({required this.room, Key? key}) : super(key: key);
 
   @override
   _PreviousScreenState createState() => _PreviousScreenState();
@@ -69,13 +70,13 @@ class _PreviousScreenState extends State<PreviousScreen> {
     _countdownTimer = Timer.periodic(Duration(seconds: 1), (timer) async {
       if (_countdownValue == 1) {
         // Wait for the future to complete and get the result
-        List<QuizQuestion> questions =
-            Provider.of<TriviaRoomProvider>(context, listen: false)
-                .getQuestionsForRoom(widget.roomID); //await _futureQuestions;
+        // List<QuizQuestion> questions =
+        //     Provider.of<TriviaRoomProvider>(context, listen: false)
+        //         .getQuestionsForRoom(widget.room.id); //await _futureQuestions;
         // Navigate to the CameraScreen when the countdown is finished
         final Map<String, dynamic> arguments = {
           'controller': _controller,
-          'questions': questions,
+          'questions': widget.room,
         };
         Navigator.of(context)
             .popUntil((route) => route.isFirst); // clean the Navigator
