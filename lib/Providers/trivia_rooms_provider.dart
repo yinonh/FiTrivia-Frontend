@@ -11,13 +11,13 @@ class TriviaRoomProvider with ChangeNotifier {
     "music",
     "sport_and_leisure",
     "film_and_tv",
-    //"arts_and_literature",
-    //"history",
-    //"society_and_culture",
-    //"science",
+    "arts_and_literature",
+    "history",
+    "society_and_culture",
+    "science",
     "geography",
     "food_and_drink",
-    //"general_knowledge",
+    "general_knowledge",
   ];
   final List<TriviaRoom> _triviaRooms = [
     TriviaRoom(
@@ -27,7 +27,6 @@ class TriviaRoomProvider with ChangeNotifier {
       managerID: 'user1',
       questions: [
         QuizQuestion(
-          category: "music",
           id: "1",
           correctAnswer: "Guitar",
           incorrectAnswers: ["Piano", "Drums", "Saxophone"],
@@ -35,7 +34,6 @@ class TriviaRoomProvider with ChangeNotifier {
           difficulty: "easy",
         ),
         QuizQuestion(
-          category: "music",
           id: "2",
           correctAnswer: "The Cure",
           incorrectAnswers: ["Level 42", "Deep Purple", "Snow Patrol"],
@@ -44,7 +42,6 @@ class TriviaRoomProvider with ChangeNotifier {
           difficulty: "hard",
         ),
         QuizQuestion(
-          category: "music",
           id: "3",
           correctAnswer: "Bob Dylan",
           incorrectAnswers: ["Bruce Springsteen", "David Bowie", "Neil Young"],
@@ -70,7 +67,6 @@ class TriviaRoomProvider with ChangeNotifier {
       managerID: 'user2',
       questions: [
         QuizQuestion(
-          category: "Film & TV",
           id: "1",
           correctAnswer: "Darth Vader",
           incorrectAnswers: ["Obi-Wan Kenobi", "Han Solo", "Yoda"],
@@ -78,7 +74,6 @@ class TriviaRoomProvider with ChangeNotifier {
           difficulty: "medium",
         ),
         QuizQuestion(
-          category: "Film & TV",
           id: "2",
           correctAnswer: "1963",
           incorrectAnswers: ["1957", "1969", "1975"],
@@ -86,7 +81,6 @@ class TriviaRoomProvider with ChangeNotifier {
           difficulty: "hard",
         ),
         QuizQuestion(
-          category: "Film & TV",
           id: "3",
           correctAnswer: "Roberto Benigni",
           incorrectAnswers: ["Tom Hanks", "Ian McKellen", "Nick Nolte"],
@@ -113,7 +107,6 @@ class TriviaRoomProvider with ChangeNotifier {
       managerID: 'user2',
       questions: [
         QuizQuestion(
-          category: "Sport & Leisure",
           id: "1",
           correctAnswer: "Eight",
           incorrectAnswers: ["Four", "Twelve", "Sixteen"],
@@ -122,7 +115,6 @@ class TriviaRoomProvider with ChangeNotifier {
           difficulty: "medium",
         ),
         QuizQuestion(
-          category: "Sport & Leisure",
           id: "2",
           correctAnswer: "Chicago Whitesox",
           incorrectAnswers: [
@@ -134,7 +126,6 @@ class TriviaRoomProvider with ChangeNotifier {
           difficulty: "hard",
         ),
         QuizQuestion(
-          category: "Sport & Leisure",
           id: "3",
           correctAnswer: "Boston Red Sox",
           incorrectAnswers: ["Boston United", "Boston Pirates", "Boston Inter"],
@@ -160,7 +151,6 @@ class TriviaRoomProvider with ChangeNotifier {
       managerID: 'user2',
       questions: [
         QuizQuestion(
-          category: "Geography",
           id: "1",
           correctAnswer: "Jerusalem",
           incorrectAnswers: ["Paris", "Rome", "Istanbul"],
@@ -169,7 +159,6 @@ class TriviaRoomProvider with ChangeNotifier {
           difficulty: "medium",
         ),
         QuizQuestion(
-          category: "Geography",
           id: "2",
           correctAnswer: "Rio De Janeiro",
           incorrectAnswers: ["Caracas", "San Juan", "Montevideo"],
@@ -177,7 +166,6 @@ class TriviaRoomProvider with ChangeNotifier {
           difficulty: "easy",
         ),
         QuizQuestion(
-          category: "Geography",
           id: "3",
           correctAnswer: "Canada",
           incorrectAnswers: ["Australia", "New Zealand", "United States"],
@@ -203,7 +191,6 @@ class TriviaRoomProvider with ChangeNotifier {
       managerID: 'user2',
       questions: [
         QuizQuestion(
-          category: "Apricot",
           id: "1",
           correctAnswer: "Jerusalem",
           incorrectAnswers: ["Raspberry", "Orange", "Banana"],
@@ -211,7 +198,6 @@ class TriviaRoomProvider with ChangeNotifier {
           difficulty: "hard",
         ),
         QuizQuestion(
-          category: "Food & Drink",
           id: "2",
           correctAnswer: "Aloco",
           incorrectAnswers: ["Borscht", "Shawarma", "Dholl Puri"],
@@ -220,7 +206,6 @@ class TriviaRoomProvider with ChangeNotifier {
           difficulty: "hard",
         ),
         QuizQuestion(
-          category: "Food & Drink",
           id: "3",
           correctAnswer: "Iceland",
           incorrectAnswers: ["The Czech Republic", "Austria", "Nepal"],
@@ -290,5 +275,9 @@ class TriviaRoomProvider with ChangeNotifier {
       return [];
     }
     return room.questions;
+  }
+
+  TriviaRoom getRoomById(String roomId) {
+    return _triviaRooms.firstWhere((room) => room.id == roomId);
   }
 }

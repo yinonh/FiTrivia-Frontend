@@ -1,4 +1,3 @@
-import 'package:fitrivia/Models/trivia_room.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'dart:async';
@@ -7,6 +6,7 @@ import 'package:provider/provider.dart';
 import '../Screens/no_camera_screen.dart';
 import '../Screens/camera_screen.dart';
 import '../Models/question.dart';
+import '../Models/trivia_room.dart';
 import '../Providers/trivia_rooms_provider.dart';
 
 class PreviousScreen extends StatefulWidget {

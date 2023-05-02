@@ -1,5 +1,4 @@
 class QuizQuestion {
-  final String category;
   final String id;
   final String correctAnswer;
   final List<String> incorrectAnswers;
@@ -7,7 +6,6 @@ class QuizQuestion {
   final String difficulty;
 
   QuizQuestion({
-    required this.category,
     required this.id,
     required this.correctAnswer,
     required this.incorrectAnswers,
@@ -17,7 +15,6 @@ class QuizQuestion {
 
   factory QuizQuestion.fromJson(Map<String, dynamic> json) {
     return QuizQuestion(
-      category: json['category'],
       id: json['id'],
       correctAnswer: json['correctAnswer'],
       incorrectAnswers: List<String>.from(json['incorrectAnswers']),

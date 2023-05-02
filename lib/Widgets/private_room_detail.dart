@@ -13,12 +13,12 @@ class PrivateRoomDetail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String roomName = Provider.of<TriviaRoomProvider>(context, listen: false)
-        .convertCategory(roomID);
+    TriviaRoom _room = Provider.of<TriviaRoomProvider>(context, listen: false)
+        .getRoomById(roomID);
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          roomName,
+          _room.name,
         ),
       ),
       body: Center(
@@ -26,9 +26,9 @@ class PrivateRoomDetail extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             Hero(
-              tag: roomID,
+              tag: _room.id,
               child: Image.asset(
-                'assets/$roomID.png',
+                _room.picture,
                 fit: BoxFit.fill,
                 height: MediaQuery.of(context).size.height * 0.4,
                 width: MediaQuery.of(context).size.width * 0.8,
@@ -36,37 +36,20 @@ class PrivateRoomDetail extends StatelessWidget {
             ),
             SizedBox(height: 16),
             Text(
-              'Album Title',
+              _room.name,
               style: Theme.of(context).textTheme.headline5,
             ),
             SizedBox(height: 8),
             Text(
-              'Artist Name',
+              _room.description,
               style: Theme.of(context).textTheme.subtitle1,
             ),
             SizedBox(height: 16),
             ElevatedButton(
               onPressed: () async {
-                List<QuizQuestion> questions =
-                    await Provider.of<TriviaRoomProvider>(context,
-                            listen: false)
-                        .fetchQuestions(roomID, 3);
-                TriviaRoom room = TriviaRoom(
-                  id: '',
-                  name: roomName,
-                  description: '',
-                  managerID: '',
-                  questions: questions,
-                  exerciseTime: 10,
-                  restTime: 5,
-                  scoreboard: {},
-                  picture: '',
-                  isPublic: true,
-                  password: '',
-                );
                 //Navigator.pop(context);
                 Navigator.pushNamed(context, PreviousScreen.routeName,
-                    arguments: room);
+                    arguments: _room);
               },
               child: const Padding(
                 padding: EdgeInsets.all(8.0),

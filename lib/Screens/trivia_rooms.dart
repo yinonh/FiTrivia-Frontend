@@ -176,8 +176,9 @@ class _TriviaRoomsState extends State<TriviaRooms> {
                     GestureDetector(
                       child: userPrivateRooms[index],
                       onTap: () {
-                        print(index);
-                        //Navigator.pushNamed(context, PreviousScreen.routeName);
+                        print("$index");
+                        // Navigator.pushNamed(context, RoomDetails.routeName,
+                        //     arguments: userPrivateRooms[index]);
                       },
                     ),
                     Divider(
