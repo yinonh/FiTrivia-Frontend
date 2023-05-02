@@ -24,12 +24,10 @@ class CameraScreen extends StatefulWidget {
 }
 
 class _CameraScreenState extends State<CameraScreen> {
+  static const _num_of_images = 20;
   List<XFile> _capturedImages = [];
   int index = 0;
-  //int numOfQuestions = 2;
   bool _isCapturing = false;
-  //int countDownTime = 10;
-  //int restTime = 5;
   Stream<int>? countDownStream;
   List<String> currentEx = [];
   List<List<String>> responseList = [];
@@ -145,7 +143,7 @@ class _CameraScreenState extends State<CameraScreen> {
   Future<void> _startTimer(BuildContext context) async {
     for (int i = 0; i < widget.room.questions.length; i++) {
       final repeatingTimer =
-          Timer.periodic(Duration(milliseconds: 100), (timer) {
+          Timer.periodic(Duration(milliseconds: 50), (timer) {
         if (widget.controller != null &&
             widget.controller.value.isInitialized) {
           _captureFrame(i);
@@ -199,7 +197,7 @@ class _CameraScreenState extends State<CameraScreen> {
   }
 
   Future<void> _sendImages(int index) async {
-    if (_capturedImages.length == 10) {
+    if (_capturedImages.length == _num_of_images) {
       List<http.MultipartFile> imageFiles = [];
       for (var image in _capturedImages) {
         var bytes = await image.readAsBytes();
@@ -240,10 +238,10 @@ class _CameraScreenState extends State<CameraScreen> {
     try {
       _isCapturing = true;
       XFile imageFile = await widget.controller.takePicture();
-      if (_capturedImages.length < 10) {
+      if (_capturedImages.length < _num_of_images) {
         _capturedImages.add(imageFile);
       }
-      if (_capturedImages.length == 10) {
+      if (_capturedImages.length == _num_of_images) {
         _sendImages(index);
       }
     } catch (e) {

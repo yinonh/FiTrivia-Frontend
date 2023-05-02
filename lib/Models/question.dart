@@ -26,4 +26,14 @@ class QuizQuestion {
   static List<QuizQuestion> fromJsonList(List<dynamic> jsonList) {
     return jsonList.map((json) => QuizQuestion.fromJson(json)).toList();
   }
+
+  // factory QuizQuestion.fromMap(Map<String, dynamic> data) {
+  //   return QuizQuestion(
+  //     id: data['id'],
+  //     correctAnswer: data['correctAnswer'],
+  //     incorrectAnswers: List<String>.from(data['incorrectAnswers']),
+  //     question: data['question'],
+  //     difficulty: data['difficulty'],
+  //   );
+  // }
 }

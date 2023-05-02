@@ -1,15 +1,14 @@
 import 'dart:async';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:card_swiper/card_swiper.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-import '../Models/trivia_room.dart';
-import '../Screens/auth_screen.dart';
-import '../Screens/previous_screen.dart';
 import '../Screens/room_detail_screen.dart';
 import '../Widgets/private_rooms_item.dart';
+import '../Widgets/navigate_drawer.dart';
 import '../Widgets/public_room_items.dart';
 import '../Providers/trivia_rooms_provider.dart';
 
@@ -34,92 +33,36 @@ class TriviaRooms extends StatefulWidget {
 class _TriviaRoomsState extends State<TriviaRooms> {
   late List<PublicRoomItems> publicRooms;
   late List<String> publicRoomsList;
-
-  final List<PrivateRoomItem> userPrivateRooms = List.generate(
-    10,
-    (index) => PrivateRoomItem(),
-  );
+  late Future<List<Map<String, dynamic>>> _privateRoomsFuture;
 
   @override
   void initState() {
     super.initState();
-
     publicRoomsList = Provider.of<TriviaRoomProvider>(context, listen: false)
         .publicTriviaRooms;
     publicRooms = List.generate(
       publicRoomsList.length,
       (index) => PublicRoomItems(category: publicRoomsList[index]),
     );
-  }
-
-  // @override
-  // void didChangeDependencies() {
-  //   super.didChangeDependencies();
-  //   List<TriviaRoom> publicRoomsList =
-  //       Provider.of<TriviaRoomProvider>(context).triviaRooms;
-  //   publicRooms = List.generate(
-  //     publicRoomsList.length,
-  //     (index) => PublicRoomItems(category: publicRoomsList[index]),
-  //   );
-  // }
-
-  Drawer drawer(BuildContext context) {
-    bool logout_pressed = false;
-    return Drawer(
-      backgroundColor: Colors.blueGrey[50],
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: <Widget>[
-          DrawerHeader(
-            child: Center(
-              child: Image.asset(
-                "assets/logo2.png",
-              ),
-            ),
-          ),
-          ListTile(
-            leading: Icon(Icons.add),
-            title: Text('Create New Room'),
-            onTap: () {
-              // Implement your logic for creating a new room here
-            },
-          ),
-          ListTile(
-            leading: Icon(Icons.auto_awesome),
-            title: Text('Surprise Me'),
-            onTap: () {
-              // Implement your logic for surprising the user here
-            },
-          ),
-          ListTile(
-            leading: Icon(Icons.exit_to_app),
-            title: logout_pressed ? Text('...') : Text('Logout'),
-            onTap: () async {
-              logout_pressed = true;
-              await FirebaseAuth.instance.signOut();
-              Navigator.pushReplacementNamed(context, AuthScreen.routeName);
-            },
-          ),
-        ],
-      ),
-    );
+    _privateRoomsFuture =
+        Provider.of<TriviaRoomProvider>(context, listen: false)
+            .getTriviaRoomsByManagerID(FirebaseAuth.instance.currentUser!.uid);
   }
 
   @override
   Widget build(BuildContext context) {
-    final ScrollController controller = ScrollController();
     return Scaffold(
       appBar: AppBar(
         title: Center(child: Text("Trivia Rooms")),
       ),
-      drawer: drawer(context),
+      drawer: NavigateDrawer(),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {},
+        child: Icon(CupertinoIcons.plus),
+      ),
       body: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          // Text(
-          //   'Headline',
-          //   style: TextStyle(fontSize: 18),
-          // ),
           SizedBox(
             height: 200.0,
             child: ScrollConfiguration(
@@ -168,26 +111,39 @@ class _TriviaRoomsState extends State<TriviaRooms> {
                 AppBar().preferredSize.height -
                 MediaQuery.of(context).viewPadding.top -
                 260,
-            child: ListView.builder(
-              itemCount: userPrivateRooms.length,
-              itemBuilder: (context, index) {
-                return Column(
-                  children: [
-                    GestureDetector(
-                      child: userPrivateRooms[index],
-                      onTap: () {
-                        print("$index");
-                        // Navigator.pushNamed(context, RoomDetails.routeName,
-                        //     arguments: userPrivateRooms[index]);
-                      },
-                    ),
-                    Divider(
-                        //color: Colors.grey,
-                        // thickness: 1.0,
-                        // height: 1.0,
-                        ),
-                  ],
-                );
+            child: FutureBuilder<List<Map<String, dynamic>>>(
+              future: _privateRoomsFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Error fetching private rooms'));
+                } else {
+                  final List<Map<String, dynamic>> privateRooms =
+                      snapshot.data!;
+                  return ListView.builder(
+                    itemCount: privateRooms.length,
+                    itemBuilder: (context, index) {
+                      final Map<String, dynamic> room = privateRooms[index];
+                      return Column(
+                        children: [
+                          GestureDetector(
+                            child: PrivateRoomItem(
+                              roomName: room['name'],
+                              description: room['description'],
+                            ),
+                            onTap: () {
+                              Navigator.pushNamed(
+                                  context, RoomDetails.routeName,
+                                  arguments: room['id']);
+                            },
+                          ),
+                          Divider(),
+                        ],
+                      );
+                    },
+                  );
+                }
               },
             ),
           ),

@@ -2,7 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
 class PrivateRoomItem extends StatelessWidget {
-  const PrivateRoomItem({Key? key}) : super(key: key);
+  final String roomName;
+  final String description;
+
+  const PrivateRoomItem(
+      {required this.roomName, required this.description, Key? key})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -52,8 +57,8 @@ class PrivateRoomItem extends StatelessWidget {
                 ),
       child: ListTile(
         leading: Icon(Icons.text_fields),
-        title: Text('Title'),
-        subtitle: Text('Subtitle'),
+        title: Text(roomName),
+        subtitle: Text(description),
         trailing: MediaQuery.of(context).size.height <
                 MediaQuery.of(context).size.width
             ? Container(

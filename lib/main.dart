@@ -16,13 +16,10 @@ import 'Screens/result_screen.dart';
 import 'Screens/trivia_rooms.dart';
 import 'Screens/wheel.dart';
 import 'Screens/room_detail_screen.dart';
-import 'Models/question.dart';
 import 'Models/trivia_room.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
-import 'Providers/users_provider.dart';
 import 'Providers/trivia_rooms_provider.dart';
 
 Future<void> main() async {
@@ -32,7 +29,6 @@ Future<void> main() async {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => UsersProvider()),
         ChangeNotifierProvider(create: (context) => TriviaRoomProvider()),
       ],
       child: FitriviaApp(),
@@ -104,6 +100,7 @@ class FitriviaApp extends StatelessWidget {
         AuthScreen.routeName: (context) => AuthScreen(),
         NoCameraScreen.routeName: (context) => NoCameraScreen(),
         TriviaRooms.routeName: (context) => TriviaRooms(),
+        WheelScreen.routeName: (context) => WheelScreen(),
       },
       theme: FlexThemeData.light(
           scheme: FlexScheme.aquaBlue,

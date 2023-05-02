@@ -27,4 +27,26 @@ class TriviaRoom {
     required this.isPublic,
     required this.password,
   });
+
+  // factory TriviaRoom.fromMap(Map<String, dynamic> data) {
+  //   List<QuizQuestion> questions = [];
+  //   if (data['questions'] != null) {
+  //     for (var questionData in data['questions']) {
+  //       questions.add(QuizQuestion.fromMap(questionData));
+  //     }
+  //   }
+  //   return TriviaRoom(
+  //     id: data['id'],
+  //     name: data['name'],
+  //     description: data['description'],
+  //     managerID: data['managerID'],
+  //     questions: questions,
+  //     exerciseTime: data['exerciseTime'],
+  //     restTime: data['restTime'],
+  //     scoreboard: Map<String, int>.from(data['scoreboard'] ?? {}),
+  //     picture: data['picture'],
+  //     isPublic: data['isPublic'],
+  //     password: data['password'],
+  //   );
+  // }
 }

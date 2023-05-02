@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
 
+import '../Widgets/navigate_drawer.dart';
+
 class WheelScreen extends StatefulWidget {
+  static const routeName = '/wheel_screen';
   @override
   State<WheelScreen> createState() => _WheelScreenState();
 }
@@ -46,6 +49,7 @@ class _WheelScreenState extends State<WheelScreen> {
           ),
         ],
       ),
+      drawer: NavigateDrawer(),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           // Calculate the total number of items in the ListWheelScrollView

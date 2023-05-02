@@ -7,60 +7,78 @@ import '../Models/trivia_room.dart';
 import '../Providers/trivia_rooms_provider.dart';
 import '../Screens/previous_screen.dart';
 
-class PrivateRoomDetail extends StatelessWidget {
+class PrivateRoomDetail extends StatefulWidget {
   String roomID;
+
   PrivateRoomDetail({required this.roomID, Key? key}) : super(key: key);
 
   @override
+  State<PrivateRoomDetail> createState() => _PrivateRoomDetailState();
+}
+
+class _PrivateRoomDetailState extends State<PrivateRoomDetail> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    TriviaRoom _room = Provider.of<TriviaRoomProvider>(context, listen: false)
-        .getRoomById(roomID);
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          _room.name,
+          "Room Details",
         ),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Hero(
-              tag: _room.id,
-              child: Image.asset(
-                _room.picture,
-                fit: BoxFit.fill,
-                height: MediaQuery.of(context).size.height * 0.4,
-                width: MediaQuery.of(context).size.width * 0.8,
-              ),
-            ),
-            SizedBox(height: 16),
-            Text(
-              _room.name,
-              style: Theme.of(context).textTheme.headline5,
-            ),
-            SizedBox(height: 8),
-            Text(
-              _room.description,
-              style: Theme.of(context).textTheme.subtitle1,
-            ),
-            SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () async {
-                //Navigator.pop(context);
-                Navigator.pushNamed(context, PreviousScreen.routeName,
-                    arguments: _room);
-              },
-              child: const Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Text(
-                  '🏁 Start 🏁',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+      body: FutureBuilder<TriviaRoom>(
+        future: Provider.of<TriviaRoomProvider>(context, listen: false)
+            .getTriviaRoomById(widget.roomID),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          }
+          final TriviaRoom room = snapshot.data!;
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      room.name,
+                      style: Theme.of(context).textTheme.headline5,
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      room.description,
+                      style: Theme.of(context).textTheme.subtitle1,
+                    ),
+                    SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () async {
+                        Navigator.pushNamed(context, PreviousScreen.routeName,
+                            arguments: room);
+                      },
+                      child: const Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Text(
+                          '🏁 Start 🏁',
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ),
-          ],
-        ),
+            ],
+          );
+        },
       ),
     );
   }
