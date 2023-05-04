@@ -61,6 +61,8 @@ class _PreviousScreenState extends State<PreviousScreen> {
 
   @override
   void dispose() {
+    //TODO: Dispose only if not process to camera screen.
+    // _controller.dispose();
     _countdownTimer?.cancel();
     super.dispose();
   }

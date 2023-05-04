@@ -129,6 +129,7 @@ class _TriviaRoomsState extends State<TriviaRooms> {
                         children: [
                           GestureDetector(
                             child: PrivateRoomItem(
+                              roomId: room['id'],
                               roomName: room['name'],
                               description: room['description'],
                             ),

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
@@ -341,5 +342,16 @@ class TriviaRoomProvider with ChangeNotifier {
 
   TriviaRoom getRoomById(String roomId) {
     return _triviaRooms.firstWhere((room) => room.id == roomId);
+  }
+
+  Future<void> removeRoom(String roomId) async{
+    try {
+      await FirebaseFirestore.instance
+          .collection('TriviaRooms')
+          .doc(roomId)
+          .delete().timeout(Duration(seconds: 60));
+    } on TimeoutException catch (e) {
+      throw Exception('Timeout Error');
+    }
   }
 }

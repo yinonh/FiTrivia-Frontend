@@ -1,13 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:provider/provider.dart';
+import '../Providers/trivia_rooms_provider.dart';
 
 class PrivateRoomItem extends StatelessWidget {
   final String roomName;
   final String description;
+  final String roomId;
 
-  const PrivateRoomItem(
-      {required this.roomName, required this.description, Key? key})
-      : super(key: key);
+  const PrivateRoomItem({
+    required this.roomName,
+    required this.description,
+    required this.roomId,
+    Key? key,
+  }) : super(key: key);
+
+  Future<void> removeRoom(BuildContext context, String roomId) async {
+    try {
+      await Provider.of<TriviaRoomProvider>(context, listen: false).removeRoom(
+          'asfasf'); //TODO: change to roomId, didnt want to remove the filled room.
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Room removed.')));
+    } catch (e) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(e.toString().substring(11))));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,14 +34,16 @@ class PrivateRoomItem extends StatelessWidget {
       startActionPane:
           MediaQuery.of(context).size.height < MediaQuery.of(context).size.width
               ? null
-              : const ActionPane(
+              : ActionPane(
                   // A motion is a widget used to control how the pane animates.
                   motion: ScrollMotion(),
 
                   children: [
                     // A SlidableAction can have an icon and/or a label.
                     SlidableAction(
-                      onPressed: null,
+                      onPressed: (BuildContext context) {
+                        removeRoom(context, roomId);
+                      },
                       backgroundColor: Color(0xFFFE4A49),
                       foregroundColor: Colors.white,
                       icon: Icons.delete,
@@ -76,7 +96,9 @@ class PrivateRoomItem extends StatelessWidget {
                     ),
                     IconButton(
                       icon: Icon(Icons.delete),
-                      onPressed: () {},
+                      onPressed: () {
+                        removeRoom(context, roomId);
+                      },
                     ),
                   ],
                 ),
