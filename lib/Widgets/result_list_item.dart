@@ -13,7 +13,7 @@ class ListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if(numbers.length == 0 ) {
+    if (numbers.length == 0) {
       return const Center(
         child: Text(
           "Server Error",
@@ -25,8 +25,7 @@ class ListItem extends StatelessWidget {
               Shadow(
                 offset: Offset(1.0, 1.0),
                 blurRadius: 1.5,
-                color: Color.fromARGB(
-                    255, 255, 255, 255),
+                color: Color.fromARGB(255, 255, 255, 255),
               ),
             ],
           ),
@@ -58,13 +57,13 @@ class ListItem extends StatelessWidget {
           NumberLineGraph(
             numbers: numbers,
           ),
-          Text(
-            correct ? "Right answer BONUS!" : "",
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 20,
-            ),
-          ),
+          // Text(
+          //   correct ? "Right answer BONUS!" : "",
+          //   style: const TextStyle(
+          //     fontWeight: FontWeight.bold,
+          //     fontSize: 20,
+          //   ),
+          // ),
           Text(
             "score: " + "${numbers.reduce((a, b) => a + b)}",
             style: const TextStyle(

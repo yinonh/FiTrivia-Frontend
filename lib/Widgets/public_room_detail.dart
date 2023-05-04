@@ -1,8 +1,8 @@
 import 'dart:async';
-import 'package:fitrivia/Models/question.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../Models/question.dart';
 import '../Models/trivia_room.dart';
 import '../Providers/trivia_rooms_provider.dart';
 import '../Screens/previous_screen.dart';

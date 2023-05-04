@@ -15,6 +15,7 @@ import 'Screens/splash_screen.dart';
 import 'Screens/result_screen.dart';
 import 'Screens/trivia_rooms.dart';
 import 'Screens/wheel.dart';
+import 'Screens/connect_us_screen.dart';
 import 'Screens/room_detail_screen.dart';
 import 'Models/trivia_room.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -101,6 +102,7 @@ class FitriviaApp extends StatelessWidget {
         NoCameraScreen.routeName: (context) => NoCameraScreen(),
         TriviaRooms.routeName: (context) => TriviaRooms(),
         WheelScreen.routeName: (context) => WheelScreen(),
+        ConnectUsPage.routeName: (context) => ConnectUsPage(),
       },
       theme: FlexThemeData.light(
           scheme: FlexScheme.aquaBlue,

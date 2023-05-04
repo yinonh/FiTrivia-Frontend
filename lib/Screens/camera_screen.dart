@@ -24,7 +24,7 @@ class CameraScreen extends StatefulWidget {
 }
 
 class _CameraScreenState extends State<CameraScreen> {
-  static const _num_of_images = 20;
+  static const _num_of_images = 10;
   List<XFile> _capturedImages = [];
   int index = 0;
   bool _isCapturing = false;
@@ -60,14 +60,15 @@ class _CameraScreenState extends State<CameraScreen> {
   }
 
   List<String> _shuffleAnswers() {
-    List<String> allStrings = [
+    List<String> shuffledList = [
       widget.room.questions[index].correctAnswer,
       ...widget.room.questions[index].incorrectAnswers
     ];
-    int randomSeed = randomHash(widget.room.questions[index].correctAnswer,
-        widget.room.questions[index].incorrectAnswers);
-    Random random = Random(randomSeed);
-    List<String> shuffledList = List<String>.from(allStrings);
+
+    // Create a random number generator.
+    Random random = Random();
+
+    // Shuffle the list by swapping elements.
     for (int i = shuffledList.length - 1; i > 0; i--) {
       int j = random.nextInt(i + 1);
       String temp = shuffledList[i];
@@ -76,8 +77,30 @@ class _CameraScreenState extends State<CameraScreen> {
     }
     correctAnsIndex
         .add(shuffledList.indexOf(widget.room.questions[index].correctAnswer));
+
+    // Return the shuffled list.
     return shuffledList;
   }
+
+  // List<String> _shuffleAnswers() {
+  //   List<String> allStrings = [
+  //     widget.room.questions[index].correctAnswer,
+  //     ...widget.room.questions[index].incorrectAnswers
+  //   ];
+  //   int randomSeed = randomHash(widget.room.questions[index].correctAnswer,
+  //       widget.room.questions[index].incorrectAnswers);
+  //   Random random = Random(randomSeed);
+  //   List<String> shuffledList = List<String>.from(allStrings);
+  //   for (int i = shuffledList.length - 1; i > 0; i--) {
+  //     int j = random.nextInt(i + 1);
+  //     String temp = shuffledList[i];
+  //     shuffledList[i] = shuffledList[j];
+  //     shuffledList[j] = temp;
+  //   }
+  //   correctAnsIndex
+  //       .add(shuffledList.indexOf(widget.room.questions[index].correctAnswer));
+  //   return shuffledList;
+  // }
 
   int randomHash(String mainString, List<String> stringList) {
     String inputString = mainString + stringList.join();
@@ -142,8 +165,8 @@ class _CameraScreenState extends State<CameraScreen> {
 
   Future<void> _startTimer(BuildContext context) async {
     for (int i = 0; i < widget.room.questions.length; i++) {
-      final repeatingTimer =
-          Timer.periodic(Duration(milliseconds: 50), (timer) {
+      final repeatingTimer = Timer.periodic(
+          Duration(milliseconds: (1000 / _num_of_images).toInt()), (timer) {
         if (widget.controller != null &&
             widget.controller.value.isInitialized) {
           _captureFrame(i);
