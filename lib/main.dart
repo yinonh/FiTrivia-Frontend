@@ -23,6 +23,7 @@ import 'Models/trivia_room.dart';
 import 'Providers/trivia_rooms_provider.dart';
 
 Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );

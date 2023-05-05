@@ -112,6 +112,7 @@ class TriviaRoomProvider with ChangeNotifier {
           .doc(roomId)
           .delete()
           .timeout(Duration(seconds: 60));
+      //notifyListeners(); //TODO: Why it is needed?
     } on TimeoutException catch (e) {
       throw Exception('Timeout Error');
     }

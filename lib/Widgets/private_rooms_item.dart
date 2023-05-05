@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 import '../Providers/trivia_rooms_provider.dart';
+import 'package:share_plus/share_plus.dart';
 
 class PrivateRoomItem extends StatelessWidget {
   final String roomName;
@@ -18,10 +19,11 @@ class PrivateRoomItem extends StatelessWidget {
   Future<void> removeRoom(BuildContext context, String roomId) async {
     try {
       await Provider.of<TriviaRoomProvider>(context, listen: false).removeRoom(
-          'asfasf'); //TODO: change to roomId, didnt want to remove the filled room.
+          "roomid"); //TODO: change to roomId, didnt want to remove the filled room.
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text('Room removed.')));
     } catch (e) {
+      print(e.toString());
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(e.toString().substring(11))));
     }
@@ -54,7 +56,7 @@ class PrivateRoomItem extends StatelessWidget {
       endActionPane:
           MediaQuery.of(context).size.height < MediaQuery.of(context).size.width
               ? null
-              : const ActionPane(
+              : ActionPane(
                   motion: ScrollMotion(),
                   children: [
                     SlidableAction(
@@ -67,7 +69,9 @@ class PrivateRoomItem extends StatelessWidget {
                       label: 'Edit',
                     ),
                     SlidableAction(
-                      onPressed: null,
+                      onPressed: (BuildContext context) {
+                        Share.share('Come join my room: $roomId');
+                      },
                       backgroundColor: Color(0xFF21B7CA),
                       foregroundColor: Colors.white,
                       icon: Icons.share,
@@ -88,7 +92,9 @@ class PrivateRoomItem extends StatelessWidget {
                   children: [
                     IconButton(
                       icon: Icon(Icons.share),
-                      onPressed: () {},
+                      onPressed: () {
+                        Share.share('Come join my room: $roomId');
+                      },
                     ),
                     IconButton(
                       icon: Icon(Icons.edit),
