@@ -246,11 +246,6 @@ class TriviaRoomProvider with ChangeNotifier {
     }
   }
 
-  void deleteRoom(int id) {
-    _triviaRooms.removeWhere((room) => room.id == id);
-    notifyListeners();
-  }
-
   String convertCategory(String category) {
     List<String> words = category.split('_');
     words = words
@@ -350,6 +345,7 @@ class TriviaRoomProvider with ChangeNotifier {
           .collection('TriviaRooms')
           .doc(roomId)
           .delete().timeout(Duration(seconds: 60));
+      notifyListeners(); //TODO: Why it is needed?
     } on TimeoutException catch (e) {
       throw Exception('Timeout Error');
     }

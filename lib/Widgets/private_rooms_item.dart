@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 import '../Providers/trivia_rooms_provider.dart';
+import 'package:share_plus/share_plus.dart';
 
 class PrivateRoomItem extends StatelessWidget {
   final String roomName;
@@ -54,7 +55,7 @@ class PrivateRoomItem extends StatelessWidget {
       endActionPane:
           MediaQuery.of(context).size.height < MediaQuery.of(context).size.width
               ? null
-              : const ActionPane(
+              : ActionPane(
                   motion: ScrollMotion(),
                   children: [
                     SlidableAction(
@@ -67,7 +68,9 @@ class PrivateRoomItem extends StatelessWidget {
                       label: 'Edit',
                     ),
                     SlidableAction(
-                      onPressed: null,
+                      onPressed: (BuildContext context) {
+                        Share.share('Come join my room: $roomId');
+                      },
                       backgroundColor: Color(0xFF21B7CA),
                       foregroundColor: Colors.white,
                       icon: Icons.share,
@@ -88,7 +91,9 @@ class PrivateRoomItem extends StatelessWidget {
                   children: [
                     IconButton(
                       icon: Icon(Icons.share),
-                      onPressed: () {},
+                      onPressed: () {
+                        Share.share('Come join my room: $roomId');
+                      },
                     ),
                     IconButton(
                       icon: Icon(Icons.edit),
