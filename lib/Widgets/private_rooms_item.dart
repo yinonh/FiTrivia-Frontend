@@ -19,7 +19,7 @@ class PrivateRoomItem extends StatelessWidget {
   Future<void> removeRoom(BuildContext context, String roomId) async {
     try {
       await Provider.of<TriviaRoomProvider>(context, listen: false).removeRoom(
-          "roomid"); //TODO: change to roomId, didnt want to remove the filled room.
+          roomId);
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text('Room removed.')));
     } catch (e) {

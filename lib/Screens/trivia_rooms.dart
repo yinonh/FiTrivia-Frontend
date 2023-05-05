@@ -44,13 +44,13 @@ class _TriviaRoomsState extends State<TriviaRooms> {
       publicRoomsList.length,
       (index) => PublicRoomItems(category: publicRoomsList[index]),
     );
-    _privateRoomsFuture =
-        Provider.of<TriviaRoomProvider>(context, listen: false)
-            .getTriviaRoomsByManagerID(FirebaseAuth.instance.currentUser!.uid);
   }
 
   @override
   Widget build(BuildContext context) {
+    _privateRoomsFuture =
+        Provider.of<TriviaRoomProvider>(context)
+            .getTriviaRoomsByManagerID(FirebaseAuth.instance.currentUser!.uid);
     return Scaffold(
       appBar: AppBar(
         title: Center(child: Text("Trivia Rooms")),
