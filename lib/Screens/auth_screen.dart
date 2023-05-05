@@ -24,7 +24,7 @@ class _AuthScreenState extends State<AuthScreen>
     );
     _heightAnimation = Tween<Size>(
       begin: Size(500, 420),
-      end: Size(500, 490),
+      end: Size(500, 600),
     ).animate(
       CurvedAnimation(
         parent: _controller,

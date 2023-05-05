@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+import '../Widgets/navigate_drawer.dart';
+
 class ConnectUsPage extends StatefulWidget {
   static const routeName = "/connect_us";
   @override
@@ -32,8 +34,9 @@ class _ConnectUsPageState extends State<ConnectUsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Connect Us"),
+        title: Center(child: Text("Connect Us")),
       ),
+      drawer: NavigateDrawer(),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -42,24 +45,35 @@ class _ConnectUsPageState extends State<ConnectUsPage> {
             children: [
               Text("What would you like to contact us about?"),
               SizedBox(height: 8),
-              ToggleButtons(
-                children:
-                    _subjectOptions.map((subject) => Text(subject)).toList(),
-                isSelected: List.generate(_subjectOptions.length,
-                    (index) => _subject == _subjectOptions[index]),
-                onPressed: (index) {
-                  setState(() {
-                    _subject = _subjectOptions[index];
-                  });
-                },
-              ),
-              SizedBox(height: 16),
               Form(
                 key: _formKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    DropdownButtonFormField<String>(
+                      //value: _subject,
+                      decoration: InputDecoration(
+                        labelText: 'Select subject',
+                        border: OutlineInputBorder(),
+                      ),
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          _subject = newValue!;
+                        });
+                      },
+                      validator: (value) {
+                        if (value == null) {
+                          return 'Please select a subject';
+                        }
+                        return null;
+                      },
+                      items: _subjectOptions
+                          .map((subject) => DropdownMenuItem<String>(
+                              value: subject, child: Text(subject)))
+                          .toList(),
+                    ),
                     TextFormField(
+                      maxLines: 5,
                       decoration: InputDecoration(
                         labelText: "Message",
                         hintText: "Type your message here",
@@ -77,14 +91,18 @@ class _ConnectUsPageState extends State<ConnectUsPage> {
                       },
                     ),
                     SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          _formKey.currentState!.save();
-                          _sendMessage();
-                        }
-                      },
-                      child: Text("Send"),
+                    Container(
+                      width: MediaQuery.of(context).size.width * 0.5,
+                      height: 50,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
+                            _formKey.currentState!.save();
+                            _sendMessage();
+                          }
+                        },
+                        child: Text("Send"),
+                      ),
                     ),
                     SizedBox(
                       height: 10,

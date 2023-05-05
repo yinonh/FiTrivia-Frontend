@@ -18,12 +18,9 @@ class _SignUpState extends State<SignUp> {
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   String? _email;
-
   String? _password1;
-
   String? _password2;
-
-  // String? _userName;
+  String? _userName;
   bool _isLoading = false;
 
   Future<void> _submitForm() async {
@@ -39,9 +36,9 @@ class _SignUpState extends State<SignUp> {
           .createUserWithEmailAndPassword(
               email: _email!, password: _password2!);
       await FirebaseFirestore.instance
-          .collection('users')
+          .collection('Users')
           .doc(userCredential.user!.uid)
-          .set({'email': _email!});
+          .set({'userName': _userName!, "isAdmin": false});
       Navigator.pushReplacementNamed(context, TriviaRooms.routeName);
     } on FirebaseAuthException catch (e) {
       setState(() {
@@ -75,27 +72,27 @@ class _SignUpState extends State<SignUp> {
               color: Colors.white,
             ),
           ),
-          // SizedBox(height: 32),
-          // TextFormField(
-          //   validator: (value) {
-          //     if (value == null || value.isEmpty) {
-          //       return 'Please enter your user name';
-          //     }
-          //     return null;
-          //   },
-          //   onSaved: (value) {
-          //     _userName = value;
-          //   },
-          //   decoration: InputDecoration(
-          //     labelStyle: TextStyle(color: Colors.black),
-          //     filled: true,
-          //     fillColor: Colors.white.withOpacity(0.5),
-          //     labelText: 'User Name',
-          //     border: OutlineInputBorder(
-          //       borderRadius: BorderRadius.circular(10),
-          //     ),
-          //   ),
-          // ),
+          SizedBox(height: 32),
+          TextFormField(
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter your user name';
+              }
+              return null;
+            },
+            onSaved: (value) {
+              _userName = value;
+            },
+            decoration: InputDecoration(
+              labelStyle: TextStyle(color: Colors.black),
+              filled: true,
+              fillColor: Colors.white.withOpacity(0.5),
+              labelText: 'User Name',
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+          ),
           SizedBox(height: 16),
           TextFormField(
             validator: (value) {

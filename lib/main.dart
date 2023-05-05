@@ -6,6 +6,8 @@ import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:camera/camera.dart';
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
 import 'Screens/auth_screen.dart';
 import 'Screens/camera_screen.dart';
@@ -18,9 +20,6 @@ import 'Screens/wheel.dart';
 import 'Screens/connect_us_screen.dart';
 import 'Screens/room_detail_screen.dart';
 import 'Models/trivia_room.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
-
 import 'Providers/trivia_rooms_provider.dart';
 
 Future<void> main() async {

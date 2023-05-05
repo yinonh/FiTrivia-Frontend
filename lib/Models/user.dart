@@ -1,31 +1,30 @@
-class User {
+class StandardUser {
   String uid;
-  String username;
   String email;
-  String password;
+  bool isAdmin;
+  String userName;
 
-  User({
+  StandardUser({
     required this.uid,
-    required this.username,
     required this.email,
-    required this.password,
+    required this.isAdmin,
+    required this.userName,
   });
 
-  factory User.fromJson(Map<String, dynamic> json) {
-    return User(
-      uid: json['uid'],
-      username: json['username'],
-      email: json['email'],
-      password: json['password'],
-    );
+  factory StandardUser.fromJson(Map<String, dynamic> json) {
+    return StandardUser(
+        uid: json['uid'],
+        email: json['email'],
+        isAdmin: json['isAdmin'],
+        userName: json['userName;']);
   }
 
   Map<String, dynamic> toJson() {
     return {
       'uid': uid,
-      'username': username,
+      'userName': userName,
       'email': email,
-      'password': password,
+      'isAdmin': isAdmin,
     };
   }
 }
