@@ -13,6 +13,15 @@ class QuizQuestion {
     required this.difficulty,
   });
 
+  @override
+  String toString() {
+    return 'QuizQuestion{id: $id, '
+        'correctAnswer: $correctAnswer, '
+        'incorrectAnswers: $incorrectAnswers, '
+        'question: $question, '
+        'difficulty: $difficulty}';
+  }
+
   factory QuizQuestion.fromJson(Map<String, dynamic> json) {
     return QuizQuestion(
       id: json['id'],
@@ -27,13 +36,19 @@ class QuizQuestion {
     return jsonList.map((json) => QuizQuestion.fromJson(json)).toList();
   }
 
-  // factory QuizQuestion.fromMap(Map<String, dynamic> data) {
-  //   return QuizQuestion(
-  //     id: data['id'],
-  //     correctAnswer: data['correctAnswer'],
-  //     incorrectAnswers: List<String>.from(data['incorrectAnswers']),
-  //     question: data['question'],
-  //     difficulty: data['difficulty'],
-  //   );
-  // }
+  QuizQuestion copyWith({
+    String? id,
+    String? correctAnswer,
+    List<String>? incorrectAnswers,
+    String? question,
+    String? difficulty,
+  }) {
+    return QuizQuestion(
+      id: id ?? this.id,
+      correctAnswer: correctAnswer ?? this.correctAnswer,
+      incorrectAnswers: incorrectAnswers ?? this.incorrectAnswers,
+      question: question ?? this.question,
+      difficulty: difficulty ?? this.difficulty,
+    );
+  }
 }

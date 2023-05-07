@@ -33,31 +33,73 @@ class _PreviousScreenState extends State<PreviousScreen> {
   void initState() {
     super.initState();
     isControllerInitialized = false;
-    // _futureQuestions = QuizQuestion.fetchQuestions().whenComplete(() {
-    //   setState(() {
-    //     pressed = true;
-    //   });
-    // });
-    availableCameras().then((cameras) {
-      if (cameras.isEmpty) {
+    availableCameras().then((camerasList) {
+      if (camerasList.isEmpty) {
         setState(() {
           cameraAvailable = false;
         });
       } else {
-        final backCamera = cameras.last;
-        _controller = CameraController(
-          backCamera,
-          ResolutionPreset.high,
-          // enableAudio: false,
-        );
-        _initializeControllerFuture = _controller.initialize().then((_) {
-          setState(() {
-            isControllerInitialized = true;
+        final cameras = <CameraLensDirection, CameraDescription>{};
+        for (final cameraDescription in camerasList) {
+          if (!cameras.containsKey(cameraDescription.lensDirection)) {
+            cameras[cameraDescription.lensDirection] = cameraDescription;
+          }
+        }
+        CameraDescription? backCamera;
+        if (cameras.length == 1) {
+          backCamera = cameras.values.last;
+        } else if (cameras.length > 1) {
+          backCamera = cameras[CameraLensDirection.front] ??
+              cameras[CameraLensDirection.back];
+        }
+        if (backCamera != null) {
+          _controller = CameraController(
+            backCamera,
+            ResolutionPreset.high,
+            // enableAudio: false,
+          );
+          _initializeControllerFuture = _controller.initialize().then((_) {
+            setState(() {
+              isControllerInitialized = true;
+            });
           });
-        });
+        } else {
+          setState(() {
+            cameraAvailable = false;
+          });
+        }
       }
     });
   }
+
+  // void initState() {
+  //   super.initState();
+  //   isControllerInitialized = false;
+  //   // _futureQuestions = QuizQuestion.fetchQuestions().whenComplete(() {
+  //   //   setState(() {
+  //   //     pressed = true;
+  //   //   });
+  //   // });
+  //   availableCameras().then((cameras) {
+  //     if (cameras.isEmpty) {
+  //       setState(() {
+  //         cameraAvailable = false;
+  //       });
+  //     } else {
+  //       final backCamera = cameras.last;
+  //       _controller = CameraController(
+  //         backCamera,
+  //         ResolutionPreset.high,
+  //         // enableAudio: false,
+  //       );
+  //       _initializeControllerFuture = _controller.initialize().then((_) {
+  //         setState(() {
+  //           isControllerInitialized = true;
+  //         });
+  //       });
+  //     }
+  //   });
+  // }
 
   @override
   void dispose() {

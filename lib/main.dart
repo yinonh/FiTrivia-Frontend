@@ -19,6 +19,7 @@ import 'Screens/trivia_rooms.dart';
 import 'Screens/wheel.dart';
 import 'Screens/connect_us_screen.dart';
 import 'Screens/room_detail_screen.dart';
+import 'Screens/add_room_screen.dart';
 import 'Models/trivia_room.dart';
 import 'Providers/trivia_rooms_provider.dart';
 
@@ -103,6 +104,7 @@ class FitriviaApp extends StatelessWidget {
         TriviaRooms.routeName: (context) => TriviaRooms(),
         WheelScreen.routeName: (context) => WheelScreen(),
         ConnectUsPage.routeName: (context) => ConnectUsPage(),
+        AddRoom.routeName: (context) => AddRoom(),
       },
       theme: FlexThemeData.light(
           scheme: FlexScheme.aquaBlue,

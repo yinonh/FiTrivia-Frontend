@@ -6,6 +6,7 @@ import 'package:card_swiper/card_swiper.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+import '../Screens/add_room_screen.dart';
 import '../Screens/room_detail_screen.dart';
 import '../Widgets/private_rooms_item.dart';
 import '../Widgets/navigate_drawer.dart';
@@ -48,16 +49,17 @@ class _TriviaRoomsState extends State<TriviaRooms> {
 
   @override
   Widget build(BuildContext context) {
-    _privateRoomsFuture =
-        Provider.of<TriviaRoomProvider>(context)
-            .getTriviaRoomsByManagerID(FirebaseAuth.instance.currentUser!.uid);
+    _privateRoomsFuture = Provider.of<TriviaRoomProvider>(context)
+        .getTriviaRoomsByManagerID(FirebaseAuth.instance.currentUser!.uid);
     return Scaffold(
       appBar: AppBar(
         title: Center(child: Text("Trivia Rooms")),
       ),
       drawer: NavigateDrawer(),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          Navigator.of(context).pushNamed(AddRoom.routeName);
+        },
         child: Icon(CupertinoIcons.plus),
       ),
       body: Column(
