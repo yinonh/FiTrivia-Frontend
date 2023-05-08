@@ -1,8 +1,8 @@
 # FiTrivia Frontend 🎉📱
 
-🚀	[Overview](#🚀-overview)
-🤔	 [How It Works](#🤔-how-it-works)
-💻	[Technologies Used](#💻-technologies-used)
+🚀	[Overview](#🚀-overview)<br>
+🤔	 [How It Works](#🤔-how-it-works)<br>
+💻	[Technologies Used](#💻-technologies-used)<br>
 
 
 ## 🚀 Overview
