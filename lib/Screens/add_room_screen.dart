@@ -74,9 +74,9 @@ class _AddRoomState extends State<AddRoom> {
                               picture: '',
                               isPublic: _isPublic,
                               password: _password))) {
-                        Navigator.of(context).pushReplacementNamed(TriviaRooms.routeName);
-                      }
-                      else {
+                        Navigator.of(context)
+                            .pushReplacementNamed(TriviaRooms.routeName);
+                      } else {
                         setState(() {
                           requestSent = true;
                         });
@@ -86,8 +86,7 @@ class _AddRoomState extends State<AddRoom> {
                           ),
                         );
                       }
-                    }
-                    else{
+                    } else {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text("Correct the question data"),
@@ -97,12 +96,15 @@ class _AddRoomState extends State<AddRoom> {
                     // setState(() => _currentStep += 1);
                   }
                 },
-                child: requestSent ? const Text('Send...') : const Text('CONTINUE'),
+                child: requestSent
+                    ? const Text('Send...')
+                    : const Text('CONTINUE'),
               ),
               TextButton(
                 onPressed: () {
                   if (_currentStep == 0) {
-                    Navigator.of(context).pushReplacementNamed(TriviaRooms.routeName);
+                    Navigator.of(context)
+                        .pushReplacementNamed(TriviaRooms.routeName);
                   } else {
                     setState(() => _currentStep -= 1);
                   }
@@ -284,7 +286,7 @@ class _AddRoomState extends State<AddRoom> {
     List<List<String>> answers = List.generate(10, (index) => []);
     return List.generate(
       _quizQuestions.length,
-          (index) => Padding(
+      (index) => Padding(
         padding: EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -311,7 +313,7 @@ class _AddRoomState extends State<AddRoom> {
             SizedBox(height: 8),
             TextFormField(
               maxLength: 55,
-              validator: (value){
+              validator: (value) {
                 if (value == null) {
                   return "Enter the correct answers";
                 }
@@ -331,11 +333,9 @@ class _AddRoomState extends State<AddRoom> {
               validator: (value) {
                 if (value == null) {
                   return "Enter the incorrect answers";
-                }
-                else if(answers[index].contains(value)){
+                } else if (answers[index].contains(value)) {
                   return "all the answers should be different";
-                }
-                else{
+                } else {
                   answers[index].add(value);
                 }
               },
@@ -354,11 +354,9 @@ class _AddRoomState extends State<AddRoom> {
               validator: (value) {
                 if (value == null) {
                   return "Enter the incorrect answers";
-                }
-                else if(answers[index].contains(value)){
+                } else if (answers[index].contains(value)) {
                   return "all the answers should be different";
-                }
-                else{
+                } else {
                   answers[index].add(value);
                 }
               },
@@ -377,11 +375,9 @@ class _AddRoomState extends State<AddRoom> {
               validator: (value) {
                 if (value == null) {
                   return "Enter the incorrect answers";
-                }
-                else if(answers[index].contains(value)){
+                } else if (answers[index].contains(value)) {
                   return "all the answers should be different";
-                }
-                else{
+                } else {
                   answers[index].add(value);
                 }
               },

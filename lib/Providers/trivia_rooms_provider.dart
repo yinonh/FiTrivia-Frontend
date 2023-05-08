@@ -112,13 +112,14 @@ class TriviaRoomProvider with ChangeNotifier {
           .doc(roomId)
           .get();
       final List<String> questionIds =
-      List<String>.from(roomSnapshot.data()!['questions'] ?? []);
+          List<String>.from(roomSnapshot.data()!['questions'] ?? []);
       final batch = FirebaseFirestore.instance.batch();
       for (final questionId in questionIds) {
         batch.delete(
             FirebaseFirestore.instance.collection('Question').doc(questionId));
       }
-      batch.delete(FirebaseFirestore.instance.collection('TriviaRooms').doc(roomId));
+      batch.delete(
+          FirebaseFirestore.instance.collection('TriviaRooms').doc(roomId));
       await batch.commit().timeout(Duration(seconds: 60));
       notifyListeners();
     } on TimeoutException catch (e) {
@@ -126,18 +127,19 @@ class TriviaRoomProvider with ChangeNotifier {
     }
   }
 
-
   Future<bool> addTriviaRoom(TriviaRoom triviaRoom) async {
-    final roomsCollection = FirebaseFirestore.instance.collection('TriviaRooms');
-    final questionsCollection = FirebaseFirestore.instance.collection('Question');
+    final roomsCollection =
+        FirebaseFirestore.instance.collection('TriviaRooms');
+    final questionsCollection =
+        FirebaseFirestore.instance.collection('Question');
 
     final questionIDs = await Future.wait(
         triviaRoom.questions.map((question) => questionsCollection.add({
-          'question': question.question,
-          'correctAnswer': question.correctAnswer,
-          'incorrectAnswers': question.incorrectAnswers,
-          'difficulty': question.difficulty,
-        }).then((docRef) => docRef.id)));
+              'question': question.question,
+              'correctAnswer': question.correctAnswer,
+              'incorrectAnswers': question.incorrectAnswers,
+              'difficulty': question.difficulty,
+            }).then((docRef) => docRef.id)));
 
     try {
       await roomsCollection.add({
@@ -158,5 +160,4 @@ class TriviaRoomProvider with ChangeNotifier {
       return false;
     }
   }
-
 }
