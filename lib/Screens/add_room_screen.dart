@@ -1,9 +1,15 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import '../Models/question.dart';
+import '../Models/trivia_room.dart';
+import '../Providers/trivia_rooms_provider.dart';
 
 class AddRoom extends StatefulWidget {
   static const routeName = '/add_room';
+
   @override
   _AddRoomState createState() => _AddRoomState();
 }
@@ -12,17 +18,22 @@ class _AddRoomState extends State<AddRoom> {
   int _currentStep = 0;
   final GlobalKey<FormState> _questionsFormKey = GlobalKey<FormState>();
   final GlobalKey<FormState> _roomFormKey = GlobalKey<FormState>();
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _descriptionController = TextEditingController();
+  String _name = '';
+  String _description = '';
+  int _exerciseTime = 15;
+  int _restTime = 5;
+  bool _isPublic = true;
+  String _password = '';
   final List<QuizQuestion> _quizQuestions = List.generate(
       2,
       (index) => QuizQuestion(
             id: UniqueKey().toString(),
             correctAnswer: '',
-            incorrectAnswers: ['', '', ''],
+            incorrectAnswers: [],
             question: '',
             difficulty: '',
           ));
+  bool requestSent = false;
 
   @override
   Widget build(BuildContext context) {
@@ -31,26 +42,62 @@ class _AddRoomState extends State<AddRoom> {
         title: Text('Quiz Input Screen'),
       ),
       body: Stepper(
+        controlsBuilder: (context, _) {
+          return Row(
+            children: <Widget>[
+              TextButton(
+                onPressed: () async {
+                  if (_currentStep == 0) {
+                    if (_roomFormKey.currentState!.validate()) {
+                      setState(() => _currentStep += 1);
+                    }
+                  } else {
+                    if (_questionsFormKey.currentState!.validate()) {
+                      _questionsFormKey.currentState!.save();
+                      setState(() {
+                        requestSent = true;
+                      });
+                      if (await Provider.of<TriviaRoomProvider>(context,
+                              listen: false)
+                          .addTriviaRoom(TriviaRoom(
+                              id: '',
+                              name: _name,
+                              description: _description,
+                              managerID: FirebaseAuth.instance.currentUser!.uid,
+                              questions: _quizQuestions,
+                              exerciseTime: _exerciseTime,
+                              restTime: _restTime,
+                              scoreboard: {},
+                              picture: '',
+                              isPublic: _isPublic,
+                              password: _password))) {
+                        Navigator.of(context).pop();
+                      }
+                      setState(() {
+                        requestSent = true;
+                      });
+                    }
+                    // setState(() => _currentStep += 1);
+                  }
+                },
+                child: requestSent ? const Text('Send...') : const Text('CONTINUE'),
+              ),
+              TextButton(
+                onPressed: () {
+                  if (_currentStep == 0) {
+                    Navigator.of(context).pop();
+                  } else {
+                    setState(() => _currentStep -= 1);
+                  }
+                },
+                child: const Text('CANCEL'),
+              ),
+            ],
+          );
+        },
         currentStep: _currentStep,
-        onStepContinue: () {
-          if (_currentStep == 0) {
-            if (_roomFormKey.currentState!.validate()) {
-              setState(() => _currentStep += 1);
-            }
-          } else {
-            if (_questionsFormKey.currentState!.validate())
-              _questionsFormKey.currentState!.save();
-            print(_quizQuestions);
-            // setState(() => _currentStep += 1);
-          }
-        },
-        onStepCancel: () {
-          if (_currentStep == 0) {
-            // TODO: navigate back to previous screen
-          } else {
-            setState(() => _currentStep -= 1);
-          }
-        },
+        //onStepContinue:
+        //onStepCancel:
         steps: [
           Step(
             title: Text('Quiz Details'),
@@ -60,33 +107,118 @@ class _AddRoomState extends State<AddRoom> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  SizedBox(
+                    height: 10,
+                  ),
                   TextFormField(
-                    controller: _nameController,
-                    validator: (value) => value!.trim().isEmpty
-                        ? 'Please enter a name for the quiz'
-                        : null,
                     decoration: InputDecoration(
+                      labelStyle: TextStyle(color: Colors.black),
                       border: OutlineInputBorder(),
                       labelText: 'Name',
                     ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter a name';
+                      }
+                      return null;
+                    },
+                    onChanged: (value) {
+                      _name = value;
+                    },
                   ),
                   SizedBox(height: 16),
                   TextFormField(
-                    controller: _descriptionController,
-                    validator: (value) => value!.trim().isEmpty
-                        ? 'Please enter a description for the quiz'
-                        : null,
                     decoration: InputDecoration(
+                      labelStyle: TextStyle(color: Colors.black),
                       border: OutlineInputBorder(),
                       labelText: 'Description',
                     ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter a description';
+                      }
+                      return null;
+                    },
+                    onChanged: (value) {
+                      _description = value;
+                    },
                   ),
+                  SizedBox(
+                    height: 16,
+                  ),
+                  Text('Exercise Time (in seconds)'),
+                  Slider(
+                    value: _exerciseTime.toDouble(),
+                    min: 5,
+                    max: 30,
+                    divisions: 5,
+                    label: _exerciseTime.toString(),
+                    onChanged: (double value) {
+                      setState(() {
+                        _exerciseTime = value.toInt();
+                      });
+                    },
+                  ),
+                  SizedBox(
+                    height: 16,
+                  ),
+                  Text('Rest Time (in seconds)'),
+                  Slider(
+                    value: _restTime.toDouble(),
+                    min: 5,
+                    max: 30,
+                    divisions: 5,
+                    label: _restTime.toString(),
+                    onChanged: (double value) {
+                      setState(() {
+                        _restTime = value.toInt();
+                      });
+                    },
+                  ),
+                  SizedBox(
+                    height: 16,
+                  ),
+                  Row(
+                    children: [
+                      Checkbox(
+                        value: _isPublic,
+                        onChanged: (value) {
+                          setState(() {
+                            _isPublic = value!;
+                          });
+                        },
+                      ),
+                      Text('Public Room'),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 16,
+                  ),
+                  if (!_isPublic)
+                    TextFormField(
+                      obscureText: true,
+                      decoration: InputDecoration(
+                        labelText: 'Password',
+                        labelStyle: TextStyle(color: Colors.black),
+                        border: OutlineInputBorder(),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter a password';
+                        }
+                        return null;
+                      },
+                      onChanged: (value) {
+                        _password = value;
+                      },
+                    ),
+                  SizedBox(height: 16),
                 ],
               ),
             ),
           ),
           Step(
-            title: Text('Quiz Questions'),
+            title: Text('Questions Details'),
             isActive: _currentStep == 1,
             content: SingleChildScrollView(
               child: Form(
@@ -102,8 +234,8 @@ class _AddRoomState extends State<AddRoom> {
                           ElevatedButton(
                             onPressed: () =>
                                 setState(() => _quizQuestions.add(QuizQuestion(
-                                      id: UniqueKey()
-                                          .toString(), // generate unique ID for new question
+                                      id: UniqueKey().toString(),
+                                      // generate unique ID for new question
                                       correctAnswer: '',
                                       incorrectAnswers: [],
                                       question: '',
@@ -150,6 +282,7 @@ class _AddRoomState extends State<AddRoom> {
               onSaved: (value) => setState(() => _quizQuestions[index] =
                   _quizQuestions[index].copyWith(question: value)),
               decoration: InputDecoration(
+                labelStyle: TextStyle(color: Colors.black),
                 border: OutlineInputBorder(),
                 labelText: 'Question',
               ),
@@ -159,6 +292,7 @@ class _AddRoomState extends State<AddRoom> {
               onSaved: (value) => setState(() => _quizQuestions[index] =
                   _quizQuestions[index].copyWith(correctAnswer: value)),
               decoration: InputDecoration(
+                labelStyle: TextStyle(color: Colors.black),
                 border: OutlineInputBorder(),
                 labelText: 'Correct Answer',
               ),
@@ -170,12 +304,45 @@ class _AddRoomState extends State<AddRoom> {
                   return "Enter the incorrect answers";
                 }
               },
-              onSaved: (value) => setState(() => _quizQuestions[index] =
-                  _quizQuestions[index]
-                      .copyWith(incorrectAnswers: value!.split(','))),
+              onSaved: (value) => setState(() {
+                _quizQuestions[index].incorrectAnswers.add(value!);
+              }),
               decoration: InputDecoration(
+                labelStyle: TextStyle(color: Colors.black),
                 border: OutlineInputBorder(),
-                labelText: 'Incorrect Answers (comma-separated)',
+                labelText: 'First Incorrect Answers',
+              ),
+            ),
+            SizedBox(height: 16),
+            TextFormField(
+              validator: (value) {
+                if (value == null) {
+                  return "Enter the incorrect answers";
+                }
+              },
+              onSaved: (value) => setState(() {
+                _quizQuestions[index].incorrectAnswers.add(value!);
+              }),
+              decoration: InputDecoration(
+                labelStyle: TextStyle(color: Colors.black),
+                border: OutlineInputBorder(),
+                labelText: 'Second Incorrect Answers',
+              ),
+            ),
+            SizedBox(height: 16),
+            TextFormField(
+              validator: (value) {
+                if (value == null) {
+                  return "Enter the incorrect answers";
+                }
+              },
+              onSaved: (value) => setState(() {
+                _quizQuestions[index].incorrectAnswers.add(value!);
+              }),
+              decoration: InputDecoration(
+                labelStyle: TextStyle(color: Colors.black),
+                border: OutlineInputBorder(),
+                labelText: 'Third Incorrect Answers',
               ),
             ),
             SizedBox(height: 16),
