@@ -1,7 +1,7 @@
 class QuizQuestion {
   final String id;
   final String correctAnswer;
-  final List<String> incorrectAnswers;
+  late final List<String> incorrectAnswers;
   final String question;
   final String difficulty;
 

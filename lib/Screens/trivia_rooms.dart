@@ -35,6 +35,7 @@ class _TriviaRoomsState extends State<TriviaRooms> {
   late List<PublicRoomItems> publicRooms;
   late List<String> publicRoomsList;
   late Future<List<Map<String, dynamic>>> _privateRoomsFuture;
+  List<Map<String, dynamic>> _privateRooms = [];
 
   @override
   void initState() {
@@ -48,9 +49,19 @@ class _TriviaRoomsState extends State<TriviaRooms> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     _privateRoomsFuture = Provider.of<TriviaRoomProvider>(context)
         .getTriviaRoomsByManagerID(FirebaseAuth.instance.currentUser!.uid);
+    _privateRoomsFuture.then((rooms) {
+      setState(() {
+        _privateRooms = rooms;
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Center(child: Text("Trivia Rooms")),
@@ -58,7 +69,7 @@ class _TriviaRoomsState extends State<TriviaRooms> {
       drawer: NavigateDrawer(),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.of(context).pushNamed(AddRoom.routeName);
+          Navigator.of(context).pushReplacementNamed(AddRoom.routeName);
         },
         child: Icon(CupertinoIcons.plus),
       ),
@@ -113,20 +124,12 @@ class _TriviaRoomsState extends State<TriviaRooms> {
                 AppBar().preferredSize.height -
                 MediaQuery.of(context).viewPadding.top -
                 260,
-            child: FutureBuilder<List<Map<String, dynamic>>>(
-              future: _privateRoomsFuture,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Center(child: Text('Error fetching private rooms'));
-                } else {
-                  final List<Map<String, dynamic>> privateRooms =
-                      snapshot.data!;
-                  return ListView.builder(
-                    itemCount: privateRooms.length,
+            child: _privateRooms.isEmpty
+                ? Center(child: CircularProgressIndicator())
+                : ListView.builder(
+                    itemCount: _privateRooms.length,
                     itemBuilder: (context, index) {
-                      final Map<String, dynamic> room = privateRooms[index];
+                      final Map<String, dynamic> room = _privateRooms[index];
                       return Column(
                         children: [
                           GestureDetector(
@@ -145,10 +148,7 @@ class _TriviaRoomsState extends State<TriviaRooms> {
                         ],
                       );
                     },
-                  );
-                }
-              },
-            ),
+                  ),
           ),
         ],
       ),

@@ -107,14 +107,56 @@ class TriviaRoomProvider with ChangeNotifier {
 
   Future<void> removeRoom(String roomId) async {
     try {
-      await FirebaseFirestore.instance
+      final roomSnapshot = await FirebaseFirestore.instance
           .collection('TriviaRooms')
           .doc(roomId)
-          .delete()
-          .timeout(Duration(seconds: 60));
+          .get();
+      final List<String> questionIds =
+      List<String>.from(roomSnapshot.data()!['questions'] ?? []);
+      final batch = FirebaseFirestore.instance.batch();
+      for (final questionId in questionIds) {
+        batch.delete(
+            FirebaseFirestore.instance.collection('Question').doc(questionId));
+      }
+      batch.delete(FirebaseFirestore.instance.collection('TriviaRooms').doc(roomId));
+      await batch.commit().timeout(Duration(seconds: 60));
       notifyListeners();
     } on TimeoutException catch (e) {
       throw Exception('Timeout Error');
     }
   }
+
+
+  Future<bool> addTriviaRoom(TriviaRoom triviaRoom) async {
+    final roomsCollection = FirebaseFirestore.instance.collection('TriviaRooms');
+    final questionsCollection = FirebaseFirestore.instance.collection('Question');
+
+    final questionIDs = await Future.wait(
+        triviaRoom.questions.map((question) => questionsCollection.add({
+          'question': question.question,
+          'correctAnswer': question.correctAnswer,
+          'incorrectAnswers': question.incorrectAnswers,
+          'difficulty': question.difficulty,
+        }).then((docRef) => docRef.id)));
+
+    try {
+      await roomsCollection.add({
+        'name': triviaRoom.name,
+        'description': triviaRoom.description,
+        'managerID': triviaRoom.managerID,
+        'questions': questionIDs,
+        'exerciseTime': triviaRoom.exerciseTime,
+        'restTime': triviaRoom.restTime,
+        'scoreboard': triviaRoom.scoreboard,
+        'picture': triviaRoom.picture,
+        'isPublic': triviaRoom.isPublic,
+        'password': triviaRoom.password,
+      });
+      return true;
+    } catch (e) {
+      print('Error adding trivia room: $e');
+      return false;
+    }
+  }
+
 }

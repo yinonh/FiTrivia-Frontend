@@ -2,6 +2,7 @@ import 'package:fitrivia/Screens/trivia_rooms.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+import '../Screens/add_room_screen.dart';
 import '../Screens/wheel.dart';
 import '../Screens/auth_screen.dart';
 import '../Screens/connect_us_screen.dart';
@@ -32,7 +33,7 @@ class NavigateDrawer extends StatelessWidget {
             leading: Icon(Icons.add),
             title: Text('Create New Room'),
             onTap: () {
-              // Implement your logic for creating a new room here
+              Navigator.pushReplacementNamed(context, AddRoom.routeName);
             },
           ),
           ListTile(
