@@ -5,8 +5,7 @@ import 'dart:ui';
 import 'package:card_swiper/card_swiper.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
-import '../Screens/add_room_screen.dart';
+import '../Models/trivia_room.dart';
 import '../Screens/room_detail_screen.dart';
 import '../Widgets/private_rooms_item.dart';
 import '../Widgets/navigate_drawer.dart';
@@ -37,6 +36,24 @@ class _TriviaRoomsState extends State<TriviaRooms> {
   late Future<List<Map<String, dynamic>>> _privateRoomsFuture;
   List<Map<String, dynamic>> _privateRooms = [];
 
+  Future<void> customShowDialog(
+      {context, title, content, actionWidgets}) async {
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('$title'),
+          content: content,
+          actions: actionWidgets,
+        );
+      },
+    );
+  }
+
+  bool _checkPass(String pass1, String pass2) {
+    return pass1 == pass2;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -62,6 +79,14 @@ class _TriviaRoomsState extends State<TriviaRooms> {
 
   @override
   Widget build(BuildContext context) {
+    TriviaRoomProvider _privateRoomsProvider =
+        Provider.of<TriviaRoomProvider>(context);
+    _privateRoomsFuture = _privateRoomsProvider
+        .getTriviaRoomsByManagerID(FirebaseAuth.instance.currentUser!.uid);
+    // create a TextEditingController object
+    final TextEditingController _searchController = TextEditingController();
+    final TextEditingController _roomPasswordController =
+        TextEditingController();
     return Scaffold(
       appBar: AppBar(
         title: Center(child: Text("Trivia Rooms")),
@@ -118,12 +143,100 @@ class _TriviaRoomsState extends State<TriviaRooms> {
             ),
           ),
           Divider(),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                child: Container(
+                  height: 40,
+                  margin: EdgeInsets.symmetric(horizontal: 10),
+                  child: TextField(
+                    controller: _searchController,
+                    // attach the TextEditingController
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      hintText: 'Enter room ID to join',
+                    ),
+                  ),
+                ),
+              ),
+              IconButton(
+                icon: Icon(Icons.search),
+                onPressed: () async {
+                  String userInput = _searchController.text.trim();
+                  if (userInput.isEmpty ||
+                      !await _privateRoomsProvider
+                          .isRoomExistsById(userInput)) {
+                    customShowDialog(
+                        context: context,
+                        title: 'Room Not Found',
+                        content: Text('Can\'t find room with this ID'),
+                        actionWidgets: <Widget>[
+                          TextButton(
+                            child: Text('OK'),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                        ]);
+                  } else {
+                    TriviaRoom searchedRoom = await _privateRoomsProvider
+                        .getTriviaRoomById(userInput);
+                    bool forwardToRoom = true;
+                    bool canceled = false;
+                    if (!searchedRoom.isPublic) {
+                      forwardToRoom = false;
+                      await customShowDialog(
+                        context: context,
+                        title: 'Secured Room',
+                        content: TextField(
+                          controller: _roomPasswordController,
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            hintText: 'Password',
+                          ),
+                          obscureText: true,
+                        ),
+                        actionWidgets: <Widget>[
+                          TextButton(
+                            child: Text('OK'),
+                            onPressed: () {
+                              forwardToRoom = _checkPass(_roomPasswordController.text,
+                                  searchedRoom.password);
+                              _roomPasswordController.clear();
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                          TextButton(
+                            child: Text('Cancel'),
+                            onPressed: () {
+                              canceled = true;
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                        ],
+                      );
+                      _roomPasswordController.clear();
+                    }
+                    if (forwardToRoom) {
+                      _searchController.clear();
+                      Navigator.pushNamed(context, RoomDetails.routeName,
+                          arguments: userInput);
+                    } else if (!canceled) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Wrong Password')));
+                    }
+                  }
+                },
+              ),
+            ],
+          ),
           Container(
             height: MediaQuery.of(context).size.height -
                 MediaQuery.of(context).viewPadding.top -
                 AppBar().preferredSize.height -
                 MediaQuery.of(context).viewPadding.top -
-                260,
+                260 - 40,
             child: _privateRooms.isEmpty
                 ? Center(child: CircularProgressIndicator())
                 : ListView.builder(

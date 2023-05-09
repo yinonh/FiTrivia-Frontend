@@ -61,6 +61,14 @@ class TriviaRoomProvider with ChangeNotifier {
         .toList();
   }
 
+  Future<bool> isRoomExistsById(String id) async {
+    final DocumentSnapshot doc = await FirebaseFirestore.instance
+        .collection('TriviaRooms')
+        .doc(id)
+        .get();
+    return doc.exists;
+  }
+
   Future<TriviaRoom> getTriviaRoomById(String id) async {
     final DocumentSnapshot doc = await FirebaseFirestore.instance
         .collection('TriviaRooms')
