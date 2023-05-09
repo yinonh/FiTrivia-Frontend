@@ -55,6 +55,24 @@ class _TriviaRoomsState extends State<TriviaRooms> {
     return pass1 == pass2;
   }
 
+  Future<void> customShowDialog(
+      {context, title, content, actionWidgets}) async {
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('$title'),
+          content: content,
+          actions: actionWidgets,
+        );
+      },
+    );
+  }
+
+  bool _checkPass(String pass1, String pass2) {
+    return pass1 == pass2;
+  }
+
   @override
   void initState() {
     super.initState();
