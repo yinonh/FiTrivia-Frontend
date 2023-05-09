@@ -56,7 +56,9 @@ class TriviaRoomProvider with ChangeNotifier {
         .map((doc) => {
               'id': doc.id,
               'name': doc['name'],
-              'description': doc['description']
+              'description': doc['description'],
+              'password': doc['password'],
+              'isPublic': doc['isPublic']
             })
         .toList();
   }

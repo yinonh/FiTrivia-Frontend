@@ -3,23 +3,28 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 import '../Providers/trivia_rooms_provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:flutter/services.dart';
 
 class PrivateRoomItem extends StatelessWidget {
   final String roomName;
   final String description;
   final String roomId;
+  final String roomPass;
+  final bool isPublic;
 
   const PrivateRoomItem({
     required this.roomName,
     required this.description,
     required this.roomId,
+    required this.roomPass,
+    required this.isPublic,
     Key? key,
   }) : super(key: key);
 
   Future<void> removeRoom(BuildContext context, String roomId) async {
     try {
-      await Provider.of<TriviaRoomProvider>(context, listen: false).removeRoom(
-          roomId);
+      await Provider.of<TriviaRoomProvider>(context, listen: false)
+          .removeRoom(roomId);
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text('Room removed.')));
     } catch (e) {
@@ -31,6 +36,8 @@ class PrivateRoomItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String inviteMessage =
+        'Come join my room: $roomId ${!isPublic ? 'Password: $roomPass' : ''}';
     return Slidable(
       key: const ValueKey(0),
       startActionPane:
@@ -53,32 +60,36 @@ class PrivateRoomItem extends StatelessWidget {
                     ),
                   ],
                 ),
-      endActionPane:
-          MediaQuery.of(context).size.height < MediaQuery.of(context).size.width
-              ? null
-              : ActionPane(
-                  motion: ScrollMotion(),
-                  children: [
-                    SlidableAction(
-                      // An action can be bigger than the others.
-                      flex: 2,
-                      onPressed: null,
-                      backgroundColor: Colors.blueGrey,
-                      foregroundColor: Colors.white,
-                      icon: Icons.edit,
-                      label: 'Edit',
-                    ),
-                    SlidableAction(
-                      onPressed: (BuildContext context) {
-                        Share.share('Come join my room: $roomId');
-                      },
-                      backgroundColor: Color(0xFF21B7CA),
-                      foregroundColor: Colors.white,
-                      icon: Icons.share,
-                      label: 'Share',
-                    ),
-                  ],
+      endActionPane: MediaQuery.of(context).size.height <
+              MediaQuery.of(context).size.width
+          ? null
+          : ActionPane(
+              motion: ScrollMotion(),
+              children: [
+                const SlidableAction(
+                  // An action can be bigger than the others.
+                  flex: 2,
+                  onPressed: null,
+                  backgroundColor: Colors.blueGrey,
+                  foregroundColor: Colors.white,
+                  icon: Icons.edit,
+                  label: 'Edit',
                 ),
+                SlidableAction(
+                  onPressed: (BuildContext context) async {
+                    await Clipboard.setData(ClipboardData(text: inviteMessage));
+                    Share.share(inviteMessage);
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text(
+                            'Invite message copied to clipboard successfully.')));
+                  },
+                  backgroundColor: Color(0xFF21B7CA),
+                  foregroundColor: Colors.white,
+                  icon: Icons.share,
+                  label: 'Share',
+                ),
+              ],
+            ),
       child: ListTile(
         leading: Icon(Icons.text_fields),
         title: Text(roomName),
@@ -92,8 +103,13 @@ class PrivateRoomItem extends StatelessWidget {
                   children: [
                     IconButton(
                       icon: Icon(Icons.share),
-                      onPressed: () {
-                        Share.share('Come join my room: $roomId');
+                      onPressed: () async {
+                        await Clipboard.setData(
+                            ClipboardData(text: inviteMessage));
+                        Share.share(inviteMessage);
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                            content: Text(
+                                'Invite message copied to clipboard successfully.')));
                       },
                     ),
                     IconButton(

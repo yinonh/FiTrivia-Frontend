@@ -35,7 +35,8 @@ class _TriviaRoomsState extends State<TriviaRooms> {
   late List<PublicRoomItems> publicRooms;
   late List<String> publicRoomsList;
   late Future<List<Map<String, dynamic>>> _privateRoomsFuture;
-  List<Map<String, dynamic>> _privateRooms = [];
+  late List<Map<String, dynamic>> _privateRooms = [];
+  late TriviaRoomProvider _privateRoomsProvider;
 
   Future<void> customShowDialog(
       {context, title, content, actionWidgets}) async {
@@ -69,7 +70,8 @@ class _TriviaRoomsState extends State<TriviaRooms> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _privateRoomsFuture = Provider.of<TriviaRoomProvider>(context)
+    _privateRoomsProvider = Provider.of<TriviaRoomProvider>(context);
+    _privateRoomsFuture = _privateRoomsProvider
         .getTriviaRoomsByManagerID(FirebaseAuth.instance.currentUser!.uid);
     _privateRoomsFuture.then((rooms) {
       setState(() {
@@ -80,10 +82,6 @@ class _TriviaRoomsState extends State<TriviaRooms> {
 
   @override
   Widget build(BuildContext context) {
-    TriviaRoomProvider _privateRoomsProvider =
-        Provider.of<TriviaRoomProvider>(context);
-    _privateRoomsFuture = _privateRoomsProvider
-        .getTriviaRoomsByManagerID(FirebaseAuth.instance.currentUser!.uid);
     // create a TextEditingController object
     final TextEditingController _searchController = TextEditingController();
     final TextEditingController _roomPasswordController =
@@ -133,17 +131,9 @@ class _TriviaRoomsState extends State<TriviaRooms> {
               ),
             ),
           ),
-          const Padding(
-            padding: EdgeInsets.fromLTRB(10, 8, 8, 0),
-            child: Text(
-              'Private Rooms:',
-              style: TextStyle(
-                fontSize: 25,
-                fontWeight: FontWeight.w800,
-              ),
-            ),
+          Divider(
+            height: 10,
           ),
-          Divider(),
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -202,7 +192,8 @@ class _TriviaRoomsState extends State<TriviaRooms> {
                           TextButton(
                             child: Text('OK'),
                             onPressed: () {
-                              forwardToRoom = _checkPass(_roomPasswordController.text,
+                              forwardToRoom = _checkPass(
+                                  _roomPasswordController.text,
                                   searchedRoom.password);
                               _roomPasswordController.clear();
                               Navigator.of(context).pop();
@@ -232,12 +223,25 @@ class _TriviaRoomsState extends State<TriviaRooms> {
               ),
             ],
           ),
+          Divider(),
+          const Padding(
+            padding: EdgeInsets.fromLTRB(10, 8, 8, 0),
+            child: Text(
+              'My Rooms:',
+              style: TextStyle(
+                fontSize: 25,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ),
           Container(
             height: MediaQuery.of(context).size.height -
                 MediaQuery.of(context).viewPadding.top -
                 AppBar().preferredSize.height -
                 MediaQuery.of(context).viewPadding.top -
-                260 - 40,
+                260 -
+                40 -
+                10,
             child: _privateRooms.isEmpty
                 ? Center(child: CircularProgressIndicator())
                 : ListView.builder(
@@ -251,6 +255,8 @@ class _TriviaRoomsState extends State<TriviaRooms> {
                               roomId: room['id'],
                               roomName: room['name'],
                               description: room['description'],
+                              roomPass: room['password'],
+                              isPublic: room['isPublic'],
                             ),
                             onTap: () {
                               Navigator.pushNamed(
