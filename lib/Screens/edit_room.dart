@@ -284,21 +284,26 @@ class _EditRoomState extends State<EditRoom> {
                             children: [
                               if (_quizQuestions.length < 10)
                                 ElevatedButton(
-                                  onPressed: () => setState(
-                                      () => _quizQuestions.add(QuizQuestion(
-                                            id: '',
-                                            // generate unique ID for new question
-                                            correctAnswer: '',
-                                            incorrectAnswers: ['','',''],
-                                            question: '',
-                                            difficulty: '',
-                                          ))),
+                                  onPressed: () {
+                                    _questionsFormKey.currentState!.save();
+                                    setState(
+                                        () => _quizQuestions.add(QuizQuestion(
+                                              id: '',
+                                              // generate unique ID for new question
+                                              correctAnswer: '',
+                                              incorrectAnswers: ['', '', ''],
+                                              question: '',
+                                              difficulty: '',
+                                            )));
+                                  },
                                   child: Text('Add Question'),
                                 ),
                               if (_quizQuestions.length > 2)
                                 ElevatedButton(
-                                  onPressed: () => setState(
-                                      () => _quizQuestions.removeLast()),
+                                  onPressed: () {
+                                    _questionsFormKey.currentState!.save();
+                                    setState(() => _quizQuestions.removeLast());
+                                  },
                                   child: Text('Remove Question'),
                                 ),
                             ],
@@ -333,8 +338,8 @@ class _EditRoomState extends State<EditRoom> {
             Text('Question ${index + 1}'),
             SizedBox(height: 8),
             TextFormField(
-              controller: TextEditingController(
-                  text: _quizQuestions[index].question),
+              controller:
+                  TextEditingController(text: _quizQuestions[index].question),
               maxLength: 190,
               validator: (value) {
                 if (value == null || value == '') {
@@ -421,7 +426,7 @@ class _EditRoomState extends State<EditRoom> {
             SizedBox(height: 16),
             TextFormField(
               controller: TextEditingController(
-                  text:  _quizQuestions[index].incorrectAnswers[2]),
+                  text: _quizQuestions[index].incorrectAnswers[2]),
               maxLength: 55,
               validator: (value) {
                 if (value == null || value == '') {

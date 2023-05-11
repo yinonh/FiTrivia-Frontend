@@ -18,15 +18,37 @@ class PrivateRoomItem extends StatelessWidget {
   }) : super(key: key);
 
   Future<void> removeRoom(BuildContext context, String roomId) async {
-    try {
-      await Provider.of<TriviaRoomProvider>(context, listen: false).removeRoom(
-          roomId);
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Room removed.')));
-    } catch (e) {
-      print(e.toString());
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(e.toString().substring(11))));
+    // Show confirmation dialog to the user
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Confirm'),
+        content: Text('Are you sure you want to delete this room?'),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text('No'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: Text('Yes'),
+          ),
+        ],
+      ),
+    );
+
+    // If the user confirms, delete the room
+    if (confirm == true) {
+      try {
+        await Provider.of<TriviaRoomProvider>(context, listen: false)
+            .removeRoom(roomId);
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Room removed.')));
+      } catch (e) {
+        print(e.toString());
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(e.toString().substring(11))));
+      }
     }
   }
 
@@ -54,32 +76,34 @@ class PrivateRoomItem extends StatelessWidget {
                     ),
                   ],
                 ),
-      endActionPane:
-          MediaQuery.of(context).size.height < MediaQuery.of(context).size.width
-              ? null
-              : ActionPane(
-                  motion: ScrollMotion(),
-                  children: [
-                    SlidableAction(
-                      // An action can be bigger than the others.
-                      flex: 2,
-                      onPressed: null,
-                      backgroundColor: Colors.blueGrey,
-                      foregroundColor: Colors.white,
-                      icon: Icons.edit,
-                      label: 'Edit',
-                    ),
-                    SlidableAction(
-                      onPressed: (BuildContext context) {
-                        Share.share('Come join my room: $roomId');
-                      },
-                      backgroundColor: Color(0xFF21B7CA),
-                      foregroundColor: Colors.white,
-                      icon: Icons.share,
-                      label: 'Share',
-                    ),
-                  ],
+      endActionPane: MediaQuery.of(context).size.height <
+              MediaQuery.of(context).size.width
+          ? null
+          : ActionPane(
+              motion: ScrollMotion(),
+              children: [
+                SlidableAction(
+                  flex: 2,
+                  onPressed: (BuildContext context) {
+                    Navigator.pushReplacementNamed(context, EditRoom.routeName,
+                        arguments: this.roomId);
+                  },
+                  backgroundColor: Colors.blueGrey,
+                  foregroundColor: Colors.white,
+                  icon: Icons.edit,
+                  label: 'Edit',
                 ),
+                SlidableAction(
+                  onPressed: (BuildContext context) {
+                    Share.share('Come join my room: $roomId');
+                  },
+                  backgroundColor: Color(0xFF21B7CA),
+                  foregroundColor: Colors.white,
+                  icon: Icons.share,
+                  label: 'Share',
+                ),
+              ],
+            ),
       child: ListTile(
         leading: Icon(Icons.text_fields),
         title: Text(roomName),
@@ -100,7 +124,9 @@ class PrivateRoomItem extends StatelessWidget {
                     IconButton(
                       icon: Icon(Icons.edit),
                       onPressed: () {
-                        Navigator.pushReplacementNamed(context, EditRoom.routeName, arguments: this.roomId);
+                        Navigator.pushReplacementNamed(
+                            context, EditRoom.routeName,
+                            arguments: this.roomId);
                       },
                     ),
                     IconButton(
