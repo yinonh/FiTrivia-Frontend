@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:collection/collection.dart';
 
 import '../Widgets/result_list_item.dart';
+import '../Widgets/navigate_drawer.dart';
 
 class ResultScreen extends StatefulWidget {
   static const routeName = '/result_screen';
@@ -117,6 +118,7 @@ class _ResultScreenState extends State<ResultScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: NavigateDrawer(),
       appBar: AppBar(
         title: Text('Result Screen'),
         centerTitle: true,
@@ -141,11 +143,10 @@ class _ResultScreenState extends State<ResultScreen>
                           child: Row(
                             children: [
                               ListItem(
-                                      numbers: convertStringList(sublist),
-                                      classification:
-                                          getMostFrequentValue(sublist),
-                                      correct: is_ans_correct(sublist, index),
-                                    ),
+                                numbers: convertStringList(sublist),
+                                classification: getMostFrequentValue(sublist),
+                                correct: is_ans_correct(sublist, index),
+                              ),
                             ],
                           ),
                         ),
