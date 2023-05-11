@@ -46,14 +46,14 @@ class PrivateRoomItem extends StatelessWidget {
     // If the user confirms, delete the room
     if (confirm == true) {
       try {
-        await Provider.of<TriviaRoomProvider>(context, listen: false)
-            .removeRoom(roomId);
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Room removed.')));
+      await Provider.of<TriviaRoomProvider>(context, listen: false)
+          .removeRoom(roomId);
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Room removed.')));
       } catch (e) {
-        print(e.toString());
         ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(e.toString().substring(11))));
+            .showSnackBar(SnackBar(
+            content: Text(e.toString().substring(11))));
       }
     }
   }
@@ -70,11 +70,10 @@ class PrivateRoomItem extends StatelessWidget {
               : ActionPane(
                   // A motion is a widget used to control how the pane animates.
                   motion: ScrollMotion(),
-
                   children: [
                     // A SlidableAction can have an icon and/or a label.
                     SlidableAction(
-                      onPressed: (BuildContext context) {
+                      onPressed: (BuildContext cnx) async {
                         removeRoom(context, roomId);
                       },
                       backgroundColor: Color(0xFFFE4A49),

@@ -172,10 +172,13 @@ class TriviaRoomProvider with ChangeNotifier {
   }
 
   Future<bool> editTriviaRoom(String roomID, TriviaRoom triviaRoom) async {
-    final roomsCollection = FirebaseFirestore.instance.collection('TriviaRooms');
-    final questionsCollection = FirebaseFirestore.instance.collection('Question');
+    final roomsCollection =
+        FirebaseFirestore.instance.collection('TriviaRooms');
+    final questionsCollection =
+        FirebaseFirestore.instance.collection('Question');
 
-    final questionIDs = await Future.wait(triviaRoom.questions.map((question) async {
+    final questionIDs =
+        await Future.wait(triviaRoom.questions.map((question) async {
       if (question.id != '') {
         // If the question already has an ID, update it
         await questionsCollection.doc(question.id).update({
@@ -216,5 +219,4 @@ class TriviaRoomProvider with ChangeNotifier {
       return false;
     }
   }
-
 }
