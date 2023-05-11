@@ -170,4 +170,51 @@ class TriviaRoomProvider with ChangeNotifier {
       return false;
     }
   }
+
+  Future<bool> editTriviaRoom(String roomID, TriviaRoom triviaRoom) async {
+    final roomsCollection = FirebaseFirestore.instance.collection('TriviaRooms');
+    final questionsCollection = FirebaseFirestore.instance.collection('Question');
+
+    final questionIDs = await Future.wait(triviaRoom.questions.map((question) async {
+      if (question.id != '') {
+        // If the question already has an ID, update it
+        await questionsCollection.doc(question.id).update({
+          'question': question.question,
+          'correctAnswer': question.correctAnswer,
+          'incorrectAnswers': question.incorrectAnswers,
+          'difficulty': question.difficulty,
+        });
+        return question.id;
+      } else {
+        // If the question doesn't have an ID, add it as a new question
+        final newQuestionDocRef = await questionsCollection.add({
+          'question': question.question,
+          'correctAnswer': question.correctAnswer,
+          'incorrectAnswers': question.incorrectAnswers,
+          'difficulty': question.difficulty,
+        });
+        return newQuestionDocRef.id;
+      }
+    }));
+
+    try {
+      await roomsCollection.doc(roomID).update({
+        'name': triviaRoom.name,
+        'description': triviaRoom.description,
+        'managerID': triviaRoom.managerID,
+        'questions': questionIDs,
+        'exerciseTime': triviaRoom.exerciseTime,
+        'restTime': triviaRoom.restTime,
+        'scoreboard': triviaRoom.scoreboard,
+        'picture': triviaRoom.picture,
+        'isPublic': triviaRoom.isPublic,
+        'password': triviaRoom.password,
+      });
+      return true;
+    } catch (e) {
+      print('Error editing trivia room: $e');
+      return false;
+    }
+  }
+
 }

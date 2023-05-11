@@ -11,6 +11,7 @@ import '../Providers/trivia_rooms_provider.dart';
 
 class AddRoom extends StatefulWidget {
   static const routeName = '/add_room';
+  const AddRoom({Key? key}) : super(key: key);
 
   @override
   _AddRoomState createState() => _AddRoomState();
@@ -42,7 +43,7 @@ class _AddRoomState extends State<AddRoom> {
     return Scaffold(
       drawer: NavigateDrawer(),
       appBar: AppBar(
-        title: Text('Quiz Input Screen'),
+        title: Text('Add Room'),
       ),
       body: Stepper(
         controlsBuilder: (context, _) {
@@ -52,6 +53,7 @@ class _AddRoomState extends State<AddRoom> {
                 onPressed: () async {
                   if (_currentStep == 0) {
                     if (_roomFormKey.currentState!.validate()) {
+                      _roomFormKey.currentState!.save();
                       setState(() => _currentStep += 1);
                     }
                   } else {
@@ -78,7 +80,7 @@ class _AddRoomState extends State<AddRoom> {
                             .pushReplacementNamed(TriviaRooms.routeName);
                       } else {
                         setState(() {
-                          requestSent = true;
+                          requestSent = false;
                         });
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
@@ -142,8 +144,8 @@ class _AddRoomState extends State<AddRoom> {
                       }
                       return null;
                     },
-                    onChanged: (value) {
-                      _name = value;
+                    onSaved: (value) {
+                      _name = value!;
                     },
                   ),
                   SizedBox(height: 16),
@@ -160,8 +162,8 @@ class _AddRoomState extends State<AddRoom> {
                       }
                       return null;
                     },
-                    onChanged: (value) {
-                      _description = value;
+                    onSaved: (value) {
+                      _description = value!;
                     },
                   ),
                   SizedBox(
@@ -229,8 +231,8 @@ class _AddRoomState extends State<AddRoom> {
                         }
                         return null;
                       },
-                      onChanged: (value) {
-                        _password = value;
+                      onSaved: (value) {
+                        _password = value!;
                       },
                     ),
                   SizedBox(height: 16),

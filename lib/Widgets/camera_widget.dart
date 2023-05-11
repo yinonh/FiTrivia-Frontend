@@ -19,7 +19,7 @@ class _CameraWidgetState extends State<CameraWidget> {
     super.initState();
     _controller = CameraController(
       widget.camera,
-      ResolutionPreset.high,
+      ResolutionPreset.low,
     );
 
     _initializeControllerFuture = _controller.initialize();

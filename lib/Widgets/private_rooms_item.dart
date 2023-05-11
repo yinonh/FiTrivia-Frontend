@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 import '../Providers/trivia_rooms_provider.dart';
+import '../Screens/edit_room.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:flutter/services.dart';
 
@@ -114,7 +115,9 @@ class PrivateRoomItem extends StatelessWidget {
                     ),
                     IconButton(
                       icon: Icon(Icons.edit),
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.pushReplacementNamed(context, EditRoom.routeName, arguments: this.roomId);
+                      },
                     ),
                     IconButton(
                       icon: Icon(Icons.delete),
