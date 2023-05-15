@@ -1,30 +1,29 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
+import 'dart:async';
+import 'package:provider/provider.dart';
+import 'package:flutter/cupertino.dart';
 
+import '../Screens/room_detail_screen.dart';
 import '../Widgets/navigate_drawer.dart';
+import '../Providers/trivia_rooms_provider.dart';
+import '../Models/trivia_room.dart';
 
 class WheelScreen extends StatefulWidget {
   static const routeName = '/wheel_screen';
+
   @override
   State<WheelScreen> createState() => _WheelScreenState();
 }
 
 class _WheelScreenState extends State<WheelScreen> {
-  late FixedExtentScrollController _controller;
-  final List<String> _roomTitles = [
-    "1",
-    "2",
-    "3",
-    "4",
-    "5",
-    "6",
-    "7",
-  ];
+  late Future<List<Map<String, dynamic>>> publicRoomsList;
+  final _controller = FixedExtentScrollController();
 
-  @override
   void initState() {
     super.initState();
-    _controller = FixedExtentScrollController();
+    publicRoomsList = Provider.of<TriviaRoomProvider>(context, listen: false)
+        .getPublicTriviaRooms();
   }
 
   @override
@@ -36,59 +35,100 @@ class _WheelScreenState extends State<WheelScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('My App'),
-        centerTitle: true,
-        backgroundColor: Colors.blue,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.rotate_right),
-            style: const ButtonStyle(
-                iconColor: MaterialStatePropertyAll(Colors.black)),
-            onPressed: () {},
-          ),
-        ],
-      ),
       drawer: NavigateDrawer(),
+      appBar: AppBar(
+        title: Center(
+          child: Text("hello"),
+        ),
+      ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Calculate the total number of items in the ListWheelScrollView
-          final itemCount = _roomTitles.length;
-
-          // Calculate the number of times to rotate the ListWheelScrollView (between 2 and 5 rotations)
+        child: Icon(Icons.auto_awesome),
+        onPressed: () async {
+          final publicRoomsList = await this.publicRoomsList;
+          final itemCount = publicRoomsList.length;
           final numRotations = Random().nextInt(4) + 2;
-
-          // Calculate the index of the item to stop on (randomly chosen between 0 and itemCount - 1)
-          final stopIndex = Random().nextInt(itemCount);
 
           // Calculate the target item index after all rotations are complete
           final targetIndex =
-              (stopIndex + numRotations * itemCount) % itemCount;
+              ((numRotations * itemCount - _controller.selectedItem) * -1);
 
           // Animate the ListWheelScrollView to the target index with a duration based on the number of rotations
           _controller.animateToItem(
             targetIndex,
-            duration: Duration(seconds: numRotations),
+            duration: Duration(seconds: 1, milliseconds: 500),
             curve: Curves.easeInOut,
           );
         },
       ),
-      body: ListWheelScrollView.useDelegate(
-        itemExtent: 200,
-        controller: _controller,
-        physics: FixedExtentScrollPhysics(),
-        childDelegate: ListWheelChildLoopingListDelegate(
-          children: _roomTitles
-              .map(
-                (title) => Container(
-                  child: ElevatedButton(
-                    onPressed: () {},
-                    child: Text(title),
+      body: FutureBuilder<List<Map<String, dynamic>>>(
+        future: publicRoomsList,
+        builder: (cnx, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          }
+
+          if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          }
+
+          final publicRoomsList = snapshot.data!;
+
+          return Column(
+            children: [
+              SizedBox(
+                height: 20,
+              ),
+              Expanded(
+                child: ListWheelScrollView.useDelegate(
+                  itemExtent: 200,
+                  controller: _controller,
+                  physics: FixedExtentScrollPhysics(),
+                  childDelegate: ListWheelChildLoopingListDelegate(
+                    children: publicRoomsList.map(_buildRoomWidget).toList(),
                   ),
-                  width: MediaQuery.of(context).size.width * 0.8,
                 ),
-              )
-              .toList(),
+              ),
+              Container(
+                padding: const EdgeInsets.all(10.0),
+                child: FilledButton(
+                  onPressed: () {
+                    String roomID = publicRoomsList[_controller.selectedItem %
+                        publicRoomsList.length]['id'];
+                    Navigator.pushNamed(context, RoomDetails.routeName,
+                        arguments: roomID);
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Text(
+                      'Select!',
+                      style: TextStyle(fontSize: 20.0),
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 20,
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildRoomWidget(Map<String, dynamic> room) {
+    return Container(
+      width: min(MediaQuery.of(context).size.width * 0.8, 700),
+      child: ElevatedButton(
+        onPressed: () {
+          print('Room ${room['name']} was pressed.');
+        },
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(room['name']),
+            Text(room['description']),
+          ],
         ),
       ),
     );

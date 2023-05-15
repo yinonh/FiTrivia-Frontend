@@ -63,6 +63,21 @@ class TriviaRoomProvider with ChangeNotifier {
         .toList();
   }
 
+  Future<List<Map<String, dynamic>>> getPublicTriviaRooms() async {
+    final QuerySnapshot snapshot = await FirebaseFirestore.instance
+        .collection('TriviaRooms')
+        .where('isPublic', isEqualTo: true)
+        .get();
+
+    return snapshot.docs
+        .map((doc) => {
+              'id': doc.id,
+              'name': doc['name'],
+              'description': doc['description'],
+            })
+        .toList();
+  }
+
   Future<bool> isRoomExistsById(String id) async {
     final DocumentSnapshot doc = await FirebaseFirestore.instance
         .collection('TriviaRooms')
