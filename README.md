@@ -22,3 +22,6 @@ The app uses the device's camera to take pictures of the player several times ev
 This app is built using [Flutter](https://flutter.dev/), a powerful cross platform SDK that allows you to create high-performance, visually attractive apps for both Android and iOS platforms.
 
 The camera functionality is implemented using the [camera](https://pub.dev/packages/camera) package, which provides a simple interface to the device's camera.
+
+<a href="https://yinonh-fitrivia-information-main-0yd9mi.streamlit.app/" target="_blank"><button>For more information, click here</button></a>
+
