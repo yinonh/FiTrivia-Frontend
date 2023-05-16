@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+import '../Widgets/exGifButtons.dart';
 import '../Widgets/navigate_drawer.dart';
 import '../Screens/trivia_rooms.dart';
 import '../Models/question.dart';
@@ -32,6 +33,24 @@ class _EditRoomState extends State<EditRoom> {
   List<QuizQuestion> _quizQuestions = [];
   bool requestSent = false;
   bool reload = true;
+  List<bool> selectedItems = [true, true, true, true, false];
+  List<String> exDict = [
+    'jumping jacks',
+    'squat',
+    'side stretch',
+    'arm circles',
+    'high knee'
+  ];
+  bool exError = false;
+
+  void exGifButtonsOnPressed(int index) {
+    setState(() {
+      if (selectedItems.where((isSelected) => isSelected).length < 4 ||
+          selectedItems[index]) {
+        selectedItems[index] = !selectedItems[index];
+      }
+    });
+  }
 
   Future<void> _getRoomDetails() async {
     TriviaRoom triviaRoom =
@@ -81,8 +100,23 @@ class _EditRoomState extends State<EditRoom> {
                       onPressed: () async {
                         if (_currentStep == 0) {
                           if (_roomFormKey.currentState!.validate()) {
-                            _roomFormKey.currentState!.save();
-                            setState(() => _currentStep += 1);
+                            List<int> selectedEx = selectedItems
+                                .asMap()
+                                .entries
+                                .where((entry) => entry.value)
+                                .map((entry) => entry.key)
+                                .toList();
+                            if (_roomFormKey.currentState!.validate() &&
+                                selectedEx.length == 4) {
+                              print(selectedEx);
+                              _roomFormKey.currentState!.save();
+                              setState(() {
+                                exError = false;
+                                _currentStep += 1;
+                              });
+                            } else {
+                              setState(() => exError = true);
+                            }
                           }
                         } else {
                           if (_questionsFormKey.currentState!.validate()) {
@@ -242,6 +276,24 @@ class _EditRoomState extends State<EditRoom> {
                             Text('Public Room'),
                           ],
                         ),
+                        Text("Chose exercise:"),
+                        Container(
+                          width: 500,
+                          height: 150,
+                          child: Center(
+                            child: GifGrid(
+                              selectedItems: selectedItems,
+                              exDict: exDict,
+                              onPressed: exGifButtonsOnPressed,
+                            ),
+                          ),
+                        ),
+                        exError
+                            ? Text(
+                                "You must choose 4 exercise",
+                                style: TextStyle(color: Colors.red),
+                              )
+                            : SizedBox(height: 0),
                         SizedBox(
                           height: 16,
                         ),

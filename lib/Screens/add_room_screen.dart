@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import '../Widgets/navigate_drawer.dart';
+import '../Widgets/exGifButtons.dart';
 import '../Screens/trivia_rooms.dart';
 import '../Models/question.dart';
 import '../Models/trivia_room.dart';
@@ -11,6 +12,7 @@ import '../Providers/trivia_rooms_provider.dart';
 
 class AddRoom extends StatefulWidget {
   static const routeName = '/add_room';
+
   const AddRoom({Key? key}) : super(key: key);
 
   @override
@@ -37,6 +39,24 @@ class _AddRoomState extends State<AddRoom> {
             difficulty: '',
           ));
   bool requestSent = false;
+  List<bool> selectedItems = [true, true, true, true, false];
+  List<String> exDict = [
+    'jumping jacks',
+    'squat',
+    'side stretch',
+    'arm circles',
+    'high knee'
+  ];
+  bool exError = false;
+
+  void exGifButtonsOnPressed(int index) {
+    setState(() {
+      if (selectedItems.where((isSelected) => isSelected).length < 4 ||
+          selectedItems[index]) {
+        selectedItems[index] = !selectedItems[index];
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,9 +72,23 @@ class _AddRoomState extends State<AddRoom> {
               TextButton(
                 onPressed: () async {
                   if (_currentStep == 0) {
-                    if (_roomFormKey.currentState!.validate()) {
+                    List<int> selectedEx = selectedItems
+                        .asMap()
+                        .entries
+                        .where((entry) => entry.value)
+                        .map((entry) => entry.key)
+                        .toList();
+                    if (_roomFormKey.currentState!.validate() &&
+                        selectedEx.length == 4) {
+                      print(selectedEx);
                       _roomFormKey.currentState!.save();
-                      setState(() => _currentStep += 1);
+                      setState(() {
+                        exError = false;
+                        _currentStep += 1;
+                      },
+                      );
+                    } else {
+                      setState(() => exError = true);
                     }
                   } else {
                     if (_questionsFormKey.currentState!.validate()) {
@@ -235,6 +269,25 @@ class _AddRoomState extends State<AddRoom> {
                         _password = value!;
                       },
                     ),
+                  SizedBox(height: 16),
+                  Text("Chose exercise:"),
+                  Container(
+                    width: 500,
+                    height: 150,
+                    child: Center(
+                      child: GifGrid(
+                        selectedItems: selectedItems,
+                        exDict: exDict,
+                        onPressed: exGifButtonsOnPressed,
+                      ),
+                    ),
+                  ),
+                  exError
+                      ? Text(
+                          "You must choose 4 exercise",
+                          style: TextStyle(color: Colors.red),
+                        )
+                      : SizedBox(height: 0),
                   SizedBox(height: 16),
                 ],
               ),
