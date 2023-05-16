@@ -276,27 +276,8 @@ class _EditRoomState extends State<EditRoom> {
                             Text('Public Room'),
                           ],
                         ),
+                        SizedBox(height: 16),
                         Text("Chose exercise:"),
-                        Container(
-                          width: 500,
-                          height: 150,
-                          child: Center(
-                            child: GifGrid(
-                              selectedItems: selectedItems,
-                              exDict: exDict,
-                              onPressed: exGifButtonsOnPressed,
-                            ),
-                          ),
-                        ),
-                        exError
-                            ? Text(
-                                "You must choose 4 exercise",
-                                style: TextStyle(color: Colors.red),
-                              )
-                            : SizedBox(height: 0),
-                        SizedBox(
-                          height: 16,
-                        ),
                         if (!_isPublic)
                           TextFormField(
                             controller: _passwordController,
@@ -312,11 +293,28 @@ class _EditRoomState extends State<EditRoom> {
                               }
                               return null;
                             },
-                            // onSaved: (value) {
-                            //   _password = value!;
-                            // },
                           ),
                         SizedBox(height: 16),
+                        Container(
+                          width: 500,
+                          height: 150,
+                          child: Center(
+                            child: GifGrid(
+                              selectedItems: selectedItems,
+                              exDict: exDict,
+                              onPressed: exGifButtonsOnPressed,
+                            ),
+                          ),
+                        ),
+                        exError
+                            ? Text(
+                          "You must choose 4 exercise",
+                          style: TextStyle(color: Colors.red),
+                        )
+                            : SizedBox(height: 0),
+                        SizedBox(
+                          height: 16,
+                        ),
                       ],
                     ),
                   ),

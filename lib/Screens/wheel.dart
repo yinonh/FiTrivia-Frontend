@@ -32,6 +32,23 @@ class _WheelScreenState extends State<WheelScreen> {
     _controller.dispose();
   }
 
+  Future<void> scroll(int duration) async {
+    final publicRoomsList = await this.publicRoomsList;
+    final itemCount = publicRoomsList.length;
+    final numRotations = Random().nextInt(4) + 2;
+
+    // Calculate the target item index after all rotations are complete
+    final targetIndex =
+    ((numRotations * (Random().nextInt(itemCount) + publicRoomsList.length) - _controller.selectedItem) * -1);
+
+    // Animate the ListWheelScrollView to the target index with a duration based on the number of rotations
+    _controller.animateToItem(
+      targetIndex,
+      duration: Duration(milliseconds: duration),
+      curve: Curves.easeInOut,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,22 +60,7 @@ class _WheelScreenState extends State<WheelScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.auto_awesome),
-        onPressed: () async {
-          final publicRoomsList = await this.publicRoomsList;
-          final itemCount = publicRoomsList.length;
-          final numRotations = Random().nextInt(4) + 2;
-
-          // Calculate the target item index after all rotations are complete
-          final targetIndex =
-              ((numRotations * itemCount - _controller.selectedItem) * -1);
-
-          // Animate the ListWheelScrollView to the target index with a duration based on the number of rotations
-          _controller.animateToItem(
-            targetIndex,
-            duration: Duration(seconds: 1, milliseconds: 500),
-            curve: Curves.easeInOut,
-          );
-        },
+        onPressed: () => scroll(1500),
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: publicRoomsList,
@@ -79,13 +81,21 @@ class _WheelScreenState extends State<WheelScreen> {
                 height: 20,
               ),
               Expanded(
-                child: ListWheelScrollView.useDelegate(
-                  itemExtent: 200,
-                  controller: _controller,
-                  physics: FixedExtentScrollPhysics(),
-                  childDelegate: ListWheelChildLoopingListDelegate(
-                    children: publicRoomsList.map(_buildRoomWidget).toList(),
-                  ),
+                child: LayoutBuilder(
+                  builder: (BuildContext cox, BoxConstraints constraints) {
+                    scroll(10);
+                    return Center(
+                      child: ListWheelScrollView.useDelegate(
+                        itemExtent: 200,
+                        controller: _controller,
+                        physics: FixedExtentScrollPhysics(),
+                        childDelegate: ListWheelChildLoopingListDelegate(
+                          children: publicRoomsList.map(_buildRoomWidget)
+                              .toList(),
+                        ),
+                      ),
+                    );
+                  }
                 ),
               ),
               Container(
