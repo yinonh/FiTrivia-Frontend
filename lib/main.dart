@@ -21,6 +21,7 @@ import 'Screens/connect_us_screen.dart';
 import 'Screens/room_detail_screen.dart';
 import 'Screens/add_room_screen.dart';
 import 'Screens/edit_room.dart';
+import 'Screens/user_details_screen.dart';
 import 'Models/trivia_room.dart';
 import 'Providers/trivia_rooms_provider.dart';
 
@@ -96,13 +97,12 @@ class FitriviaApp extends StatelessWidget {
               room: settings.arguments as TriviaRoom,
             );
           });
-        }
-        else if (settings.name == EditRoom.routeName){
-            return MaterialPageRoute(builder: (context) {
-              return EditRoom(
-                roomID: settings.arguments as String,
-              );
-            });
+        } else if (settings.name == EditRoom.routeName) {
+          return MaterialPageRoute(builder: (context) {
+            return EditRoom(
+              roomID: settings.arguments as String,
+            );
+          });
         }
       },
       routes: {
@@ -113,6 +113,7 @@ class FitriviaApp extends StatelessWidget {
         WheelScreen.routeName: (context) => WheelScreen(),
         ConnectUsPage.routeName: (context) => ConnectUsPage(),
         AddRoom.routeName: (context) => AddRoom(),
+        UserDetailsScreen.routeName: (context) => UserDetailsScreen(),
       },
       theme: FlexThemeData.light(
           scheme: FlexScheme.aquaBlue,
