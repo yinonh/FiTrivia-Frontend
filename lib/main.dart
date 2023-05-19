@@ -24,6 +24,7 @@ import 'Screens/edit_room.dart';
 import 'Screens/user_details_screen.dart';
 import 'Models/trivia_room.dart';
 import 'Providers/trivia_rooms_provider.dart';
+import 'Providers/user_provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,6 +35,7 @@ Future<void> main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => TriviaRoomProvider()),
+        ChangeNotifierProvider(create: (context) => UserProvider()),
       ],
       child: FitriviaApp(),
     ),

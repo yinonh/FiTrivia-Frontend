@@ -1,6 +1,11 @@
+import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:provider/provider.dart';
+
+import '../Providers/user_provider.dart';
+import '../Screens/trivia_rooms.dart';
 
 class UserDetailsScreen extends StatefulWidget {
   static const routeName = '/edit_user';
@@ -9,10 +14,13 @@ class UserDetailsScreen extends StatefulWidget {
 }
 
 class _UserDetailsScreenState extends State<UserDetailsScreen> {
-  TextEditingController _userNameController = TextEditingController();
-  TextEditingController _emailController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
   bool _isUpdating = false;
+  final _userDetailsFormKey = GlobalKey<FormState>();
+  final _passwordFormKey = GlobalKey<FormState>();
+  final _userNameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _currentPasswordController = TextEditingController();
+  final _newPasswordController = TextEditingController();
 
   @override
   void initState() {
@@ -24,7 +32,8 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
   void dispose() {
     _userNameController.dispose();
     _emailController.dispose();
-    _passwordController.dispose();
+    _currentPasswordController.dispose();
+    _newPasswordController.dispose();
     super.dispose();
   }
 
@@ -46,114 +55,236 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
     }
   }
 
-  Future<void> _submitForm() async {
-    User? user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      String updatedUserName = _userNameController.text;
-      String updatedEmail = _emailController.text;
-      String updatedPassword = _passwordController.text;
-
-      setState(() {
-        _isUpdating = true;
-      });
-
-      try {
-        await FirebaseFirestore.instance
-            .collection('Users')
-            .doc(user.uid)
-            .update({'userName': updatedUserName});
-
-        // Update email if necessary
-        if (updatedEmail.isNotEmpty && updatedEmail != user.email) {
-          await user.updateEmail(updatedEmail);
-        }
-
-        // Update password if necessary
-        if (updatedPassword.isNotEmpty) {
-          await user.updatePassword(updatedPassword);
-        }
-
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text('User Details Updated'),
-              content:
-                  Text('Your user details have been updated successfully.'),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(context); // Close the dialog
-                    Navigator.pop(
-                        context); // Navigate back to the previous screen
-                  },
-                  child: Text('OK'),
-                ),
-              ],
-            );
-          },
-        );
-      } catch (e) {
-        print(e);
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text('Error'),
-              content: Text('An error occurred while updating user details.'),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(context); // Close the dialog
-                  },
-                  child: Text('OK'),
-                ),
-              ],
-            );
-          },
-        );
-      } finally {
-        setState(() {
-          _isUpdating = false;
-        });
-      }
+  Future<void> _updateUserDetails() async {
+    if (!_userDetailsFormKey.currentState!.validate()) {
+      return;
     }
+    setState(() {
+      _isUpdating = true;
+    });
+    _userDetailsFormKey.currentState!.save();
+    try {
+      bool success = await Provider.of<UserProvider>(context, listen: false)
+          .updateUserDetails(_userNameController.text, _emailController.text);
+      if (success) {
+        showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: Text('Details Updated'),
+            content: Text('Your user details has been updated successfully.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(ctx).pop();
+                },
+                child: Text('OK'),
+              ),
+            ],
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to update user details.'),
+          ),
+        );
+      }
+    } catch (e) {
+      print(e);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('An error occurred.'),
+        ),
+      );
+    } finally {
+      setState(() {
+        _isUpdating = false;
+      });
+    }
+  }
+
+  Future<void> _updatePassword() async {
+    if (!_passwordFormKey.currentState!.validate()) {
+      return;
+    }
+    setState(() {
+      _isUpdating = true;
+    });
+    _passwordFormKey.currentState!.save();
+    try {
+      bool success = await Provider.of<UserProvider>(context, listen: false)
+          .updatePassword(
+              _currentPasswordController.text, _newPasswordController.text);
+      if (success) {
+        showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: Text('Password Updated'),
+            content: Text('Your password has been updated successfully.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(ctx).pop();
+                },
+                child: Text('OK'),
+              ),
+            ],
+          ),
+        );
+      } else {
+        showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: Text('Password Update Failed'),
+            content: Text('Failed to update the password. Please try again.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(ctx).pop();
+                },
+                child: Text('OK'),
+              ),
+            ],
+          ),
+        );
+      }
+    } catch (e) {
+      print(e);
+      showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: Text('Error'),
+          content: Text('An error occurred.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(ctx).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        ),
+      );
+    } finally {
+      setState(() {
+        _isUpdating = false;
+      });
+    }
+  }
+
+  Widget _buildUpdateUserDetailsForm() {
+    return Form(
+      key: _userDetailsFormKey,
+      child: Column(
+        children: [
+          TextFormField(
+            controller: _userNameController,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter your username';
+              }
+              return null;
+            },
+            decoration: InputDecoration(labelText: 'Username'),
+          ),
+          SizedBox(height: 16),
+          TextFormField(
+            controller: _emailController,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter your email';
+              } else if (!EmailValidator.validate(value)) {
+                return 'Invalid email';
+              }
+              return null;
+            },
+            decoration: InputDecoration(labelText: 'Email'),
+          ),
+          SizedBox(height: 32),
+          ElevatedButton(
+            onPressed: _isUpdating ? null : _updateUserDetails,
+            child: _isUpdating
+                ? CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  )
+                : Text('Save'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildUpdatePasswordForm() {
+    return Form(
+      key: _passwordFormKey,
+      child: Column(
+        children: [
+          TextFormField(
+            controller: _currentPasswordController,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter your current password';
+              }
+              return null;
+            },
+            obscureText: true,
+            decoration: InputDecoration(labelText: 'Current Password'),
+          ),
+          SizedBox(height: 16),
+          TextFormField(
+            controller: _newPasswordController,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter a new password';
+              } else if (value.length < 6) {
+                return 'Password should be at least 6 characters';
+              }
+              return null;
+            },
+            obscureText: true,
+            decoration: InputDecoration(labelText: 'New Password'),
+          ),
+          SizedBox(height: 32),
+          ElevatedButton(
+            onPressed: _isUpdating ? null : _updatePassword,
+            child: _isUpdating
+                ? CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  )
+                : Text('Update Password'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Edit User Details'),
+        title: Text('User Details'),
       ),
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextFormField(
-              controller: _userNameController,
-              decoration: InputDecoration(labelText: 'User Name'),
-            ),
-            SizedBox(height: 16),
-            TextFormField(
-              controller: _emailController,
-              decoration: InputDecoration(labelText: 'Email'),
-            ),
-            SizedBox(height: 16),
-            TextFormField(
-              controller: _passwordController,
-              decoration: InputDecoration(labelText: 'Password'),
-            ),
-            SizedBox(height: 32),
-            ElevatedButton(
-              onPressed: _isUpdating ? null : _submitForm,
-              child: _isUpdating
-                  ? CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                    )
-                  : Text('Save'),
-            ),
-          ],
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              Text(
+                'Update User Details',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              _buildUpdateUserDetailsForm(),
+              SizedBox(height: 32),
+              Divider(),
+              SizedBox(height: 32),
+              Text(
+                'Update Password',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 16),
+              _buildUpdatePasswordForm(),
+            ],
+          ),
         ),
       ),
     );

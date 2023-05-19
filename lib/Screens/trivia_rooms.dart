@@ -235,20 +235,22 @@ class _TriviaRoomsState extends State<TriviaRooms> {
               ),
             ),
           ),
-          Container(
-            height: MediaQuery.of(context).size.height -
-                MediaQuery.of(context).viewPadding.top -
-                AppBar().preferredSize.height -
-                MediaQuery.of(context).viewPadding.top -
-                260 -
-                40 -
-                10,
-            child: _privateRooms.isEmpty
-                ? Center(child: CircularProgressIndicator())
-                : ListView.builder(
-                    itemCount: _privateRooms.length,
+          Expanded(
+            child: FutureBuilder<List<Map<String, dynamic>>>(
+              future: _privateRoomsFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                } else {
+                  final List<Map<String, dynamic>> privateRooms =
+                      snapshot.data ?? [];
+
+                  return ListView.builder(
+                    itemCount: privateRooms.length,
                     itemBuilder: (context, index) {
-                      final Map<String, dynamic> room = _privateRooms[index];
+                      final Map<String, dynamic> room = privateRooms[index];
                       return Column(
                         children: [
                           GestureDetector(
@@ -269,7 +271,10 @@ class _TriviaRoomsState extends State<TriviaRooms> {
                         ],
                       );
                     },
-                  ),
+                  );
+                }
+              },
+            ),
           ),
         ],
       ),
