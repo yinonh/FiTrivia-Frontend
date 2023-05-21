@@ -280,7 +280,14 @@ class TriviaRoomProvider with ChangeNotifier {
     }
   }
 
-  Future<void> add_score(
+  Future<String> getUsernameById(String userID) async {
+    DocumentSnapshot userSnapshot =
+        await FirebaseFirestore.instance.collection('Users').doc(userID).get();
+    Map<String, dynamic> userData = userSnapshot.data() as Map<String, dynamic>;
+    return userData['userName'];
+  }
+
+  Future<List<Map<String, String>>> add_score(
       TriviaRoom room, String userID, int total_score) async {
     final roomsCollection =
         FirebaseFirestore.instance.collection('TriviaRooms');
@@ -299,11 +306,13 @@ class TriviaRoomProvider with ChangeNotifier {
     }
     if (scoresDict.containsKey(userID)) {
       if (scoresDict[userID]! < total_score) {
+        scoresDict[userID] = total_score;
         await scoreboardsCollection.doc(scoreboardID).update({
           'scores.$userID': total_score,
         });
       }
-    } else if (scoresDict.length < 10) {
+    } else if (scoresDict.length < 5) {
+      scoresDict[userID] = total_score;
       await scoreboardsCollection.doc(scoreboardID).update({
         'scores.$userID': total_score,
       });
@@ -322,5 +331,25 @@ class TriviaRoomProvider with ChangeNotifier {
         }
       }
     }
+    List<Map<String, String>> result = [];
+    bool isCurrentUserInside = false;
+    for (var entry in scoresDict.entries) {
+      if (entry.key == userID) {
+        isCurrentUserInside = true;
+      }
+      Map<String, String> x = {};
+      x['id'] = entry.key;
+      x['score'] = entry.value.toString();
+      x['username'] = await getUsernameById(entry.key);
+      result.add(x);
+    }
+    if (!isCurrentUserInside) {
+      result.add({
+        'id': userID,
+        'score': total_score.toString(),
+        'username': await getUsernameById(userID),
+      });
+    }
+    return result;
   }
 }

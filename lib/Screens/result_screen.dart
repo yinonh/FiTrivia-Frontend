@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:collection/collection.dart';
 import 'package:provider/provider.dart';
 import '../Providers/trivia_rooms_provider.dart';
-
+import '../Widgets/scoreboard.dart';
 import '../Widgets/result_list_item.dart';
 import '../Widgets/navigate_drawer.dart';
 
@@ -14,13 +14,15 @@ class ResultScreen extends StatefulWidget {
   final Map<String, int> exDict;
   final List<int> correctAnsIndex;
   final TriviaRoom room;
+  late final Map<String, int> scoresDict;
   String userID = FirebaseAuth.instance.currentUser!.uid;
 
-  ResultScreen({required this.result,
-    required this.exDict,
-    required this.correctAnsIndex,
-    required this.room,
-    Key? key})
+  ResultScreen(
+      {required this.result,
+      required this.exDict,
+      required this.correctAnsIndex,
+      required this.room,
+      Key? key})
       : super(key: key);
 
   @override
@@ -51,8 +53,6 @@ class _ResultScreenState extends State<ResultScreen>
         _resultList.addAll(widget.result);
       });
     });
-    TriviaRoomProvider _triviaRoomsProvider = Provider.of<TriviaRoomProvider>(context, listen: false);
-    _triviaRoomsProvider.add_score(widget.room, widget.userID, get_total_score());
   }
 
   @override
@@ -131,50 +131,90 @@ class _ResultScreenState extends State<ResultScreen>
         title: Text('Result Screen'),
         centerTitle: true,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: ListView.builder(
-                shrinkWrap: true,
-                itemCount: _resultList.length,
-                itemBuilder: (BuildContext context, int index) {
-                  List<String> sublist = _resultList[index];
-                  return Column(
-                    children: [
-                      SlideTransition(
-                        position: _animation,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 4.0),
-                          child: Row(
-                            children: [
-                              ListItem(
-                                numbers: convertStringList(sublist),
-                                classification: getMostFrequentValue(sublist),
-                                correct: is_ans_correct(sublist, index),
-                              ),
-                            ],
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                height: (MediaQuery.of(context).size.height -
+                        AppBar().preferredSize.height -
+                        50) *
+                    0.28,
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: _resultList.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    List<String> sublist = _resultList[index];
+                    return Column(
+                      children: [
+                        SlideTransition(
+                          position: _animation,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 4.0),
+                            child: Row(
+                              children: [
+                                ListItem(
+                                  numbers: convertStringList(sublist),
+                                  classification: getMostFrequentValue(sublist),
+                                  correct: is_ans_correct(sublist, index),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                      Divider(),
-                    ],
-                  );
-                },
-              ),
-            ),
-            Center(
-              child: Text(
-                "Total score: ${get_total_score()}",
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
+                        Divider(),
+                      ],
+                    );
+                  },
                 ),
               ),
-            ),
-          ],
+              Container(
+                height: (MediaQuery.of(context).size.height -
+                        AppBar().preferredSize.height -
+                        50) *
+                    0.72,
+                child: FutureBuilder(
+                  future: Provider.of<TriviaRoomProvider>(context,
+                          listen: false)
+                      .add_score(widget.room, widget.userID, get_total_score()),
+                  builder: (ctx, snapshot) {
+                    if (snapshot.hasData) {
+                      if (snapshot.data!.isEmpty) {
+                        return Text('IS EMPTY');
+                      } else {
+                        return Container(
+                          padding: const EdgeInsets.all(20),
+                          child: Scoreboard(
+                              userScores: snapshot.data!,
+                              currentUserScore: 150,
+                              currentUserID: widget.userID),
+                        );
+                      }
+                    } else if (snapshot.hasError) {
+                      return Text('error');
+                    } else {
+                      return Center(child: CircularProgressIndicator());
+                    }
+                  },
+                  /////
+                ),
+              ),
+              Center(
+                child: Container(
+                  height: 50,
+                  child: Text(
+                    "Total score: ${get_total_score()}",
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
