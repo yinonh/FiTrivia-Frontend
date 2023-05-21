@@ -311,7 +311,7 @@ class TriviaRoomProvider with ChangeNotifier {
           'scores.$userID': total_score,
         });
       }
-    } else if (scoresDict.length < 5) {
+    } else if (scoresDict.length < 10) {
       scoresDict[userID] = total_score;
       await scoreboardsCollection.doc(scoreboardID).update({
         'scores.$userID': total_score,
