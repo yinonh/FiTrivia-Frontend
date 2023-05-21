@@ -1,5 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fitrivia/Models/trivia_room.dart';
 import 'package:flutter/material.dart';
 import 'package:collection/collection.dart';
+import 'package:provider/provider.dart';
+import '../Providers/trivia_rooms_provider.dart';
 
 import '../Widgets/result_list_item.dart';
 import '../Widgets/navigate_drawer.dart';
@@ -9,12 +13,14 @@ class ResultScreen extends StatefulWidget {
   final List<List<String>> result;
   final Map<String, int> exDict;
   final List<int> correctAnsIndex;
+  final TriviaRoom room;
+  String userID = FirebaseAuth.instance.currentUser!.uid;
 
-  ResultScreen(
-      {required this.result,
-      required this.exDict,
-      required this.correctAnsIndex,
-      Key? key})
+  ResultScreen({required this.result,
+    required this.exDict,
+    required this.correctAnsIndex,
+    required this.room,
+    Key? key})
       : super(key: key);
 
   @override
@@ -45,6 +51,8 @@ class _ResultScreenState extends State<ResultScreen>
         _resultList.addAll(widget.result);
       });
     });
+    TriviaRoomProvider _triviaRoomsProvider = Provider.of<TriviaRoomProvider>(context, listen: false);
+    _triviaRoomsProvider.add_score(widget.room, widget.userID, get_total_score());
   }
 
   @override

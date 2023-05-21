@@ -76,6 +76,7 @@ class FitriviaApp extends StatelessWidget {
           final responseList = args['response_list'] as List<List<String>>;
           final exDict = args['ex_dict'] as Map<String, int>;
           final correctAnsIndex = args['correct_ans_index'] as List<int>;
+          final room = args['room'] as TriviaRoom;
 
           // Then, extract the required data from
           // the arguments and pass the data to the
@@ -85,6 +86,7 @@ class FitriviaApp extends StatelessWidget {
               result: responseList,
               exDict: exDict,
               correctAnsIndex: correctAnsIndex,
+              room: room,
             );
           });
         } else if (settings.name == RoomDetails.routeName) {

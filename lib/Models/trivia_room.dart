@@ -9,7 +9,7 @@ class TriviaRoom {
   final List<QuizQuestion> questions;
   final int exerciseTime;
   final int restTime;
-  final Map<String, int> scoreboard;
+  final Map<int,String> scoreboard;
   final String picture;
   final bool isPublic;
   final String password;

@@ -22,8 +22,8 @@ class _PublicRoomDetailState extends State<PublicRoomDetail> {
 
   @override
   Widget build(BuildContext context) {
-    String roomName = Provider.of<TriviaRoomProvider>(context, listen: false)
-        .convertCategory(widget.category);
+    TriviaRoomProvider _triviaRoomsProvider = Provider.of<TriviaRoomProvider>(context, listen: false);
+    String roomName = _triviaRoomsProvider.convertCategory(widget.category);
     return Scaffold(
       appBar: AppBar(
         title: Center(
@@ -117,7 +117,7 @@ class _PublicRoomDetailState extends State<PublicRoomDetail> {
                               listen: false)
                           .fetchQuestions(widget.category, _numberOfQuestions);
                   TriviaRoom room = TriviaRoom(
-                    id: '',
+                    id: widget.category,
                     name: roomName,
                     description: '',
                     managerID: '',
@@ -129,6 +129,9 @@ class _PublicRoomDetailState extends State<PublicRoomDetail> {
                     isPublic: true,
                     password: '',
                   );
+                  if (!await _triviaRoomsProvider.isRoomExistsById(widget.category)){
+                    await _triviaRoomsProvider.addStaticRoom(room);
+                  }
                   //Navigator.pop(context);
                   Navigator.pushNamed(context, PreviousScreen.routeName,
                       arguments: room);

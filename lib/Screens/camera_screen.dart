@@ -212,7 +212,8 @@ class _CameraScreenState extends State<CameraScreen> {
     Map<String, dynamic> args = {
       "response_list": responseList,
       "ex_dict": exDict,
-      "correct_ans_index": correctAnsIndex
+      "correct_ans_index": correctAnsIndex,
+      "room":widget.room
     };
 
     Navigator.pushReplacementNamed(context, ResultScreen.routeName,

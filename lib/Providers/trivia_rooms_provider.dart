@@ -104,7 +104,7 @@ class TriviaRoomProvider with ChangeNotifier {
       questions: questions,
       exerciseTime: doc['exerciseTime'],
       restTime: doc['restTime'],
-      scoreboard: Map<String, int>.from(doc['scoreboard']),
+      scoreboard: {},
       picture: doc['picture'],
       isPublic: doc['isPublic'],
       password: doc['password'],
@@ -136,12 +136,19 @@ class TriviaRoomProvider with ChangeNotifier {
           .collection('TriviaRooms')
           .doc(roomId)
           .get();
+      final List<String> scoreboardIds =
+          List<String>.from(roomSnapshot.data()!['scoreboard'].values.toList());
       final List<String> questionIds =
           List<String>.from(roomSnapshot.data()!['questions'] ?? []);
       final batch = FirebaseFirestore.instance.batch();
       for (final questionId in questionIds) {
         batch.delete(
             FirebaseFirestore.instance.collection('Question').doc(questionId));
+      }
+      for (final scoreboardId in scoreboardIds) {
+        batch.delete(FirebaseFirestore.instance
+            .collection('Scoreboards')
+            .doc(scoreboardId));
       }
       batch.delete(
           FirebaseFirestore.instance.collection('TriviaRooms').doc(roomId));
@@ -152,11 +159,37 @@ class TriviaRoomProvider with ChangeNotifier {
     }
   }
 
+  Future<bool> addStaticRoom(TriviaRoom triviaRoom) async {
+    final roomsCollection =
+        FirebaseFirestore.instance.collection('TriviaRooms');
+    final scoreboardsCollection =
+        FirebaseFirestore.instance.collection('Scoreboards');
+    Map<String, String> scoreboardsDict = {};
+
+    for (int questionsAmount = 2; questionsAmount <= 20; questionsAmount++) {
+      scoreboardsDict[questionsAmount.toString()] =
+          await scoreboardsCollection.add({
+        'scores': [],
+      }).then((docRef) => docRef.id);
+    }
+    try {
+      await roomsCollection.doc(triviaRoom.id).set({
+        'scoreboard': scoreboardsDict,
+      });
+      return true;
+    } catch (e) {
+      print('Error adding trivia room: $e');
+      return false;
+    }
+  }
+
   Future<bool> addTriviaRoom(TriviaRoom triviaRoom) async {
     final roomsCollection =
         FirebaseFirestore.instance.collection('TriviaRooms');
     final questionsCollection =
         FirebaseFirestore.instance.collection('Question');
+    final scoreboardsCollection =
+        FirebaseFirestore.instance.collection('Scoreboards');
 
     final questionIDs = await Future.wait(
         triviaRoom.questions.map((question) => questionsCollection.add({
@@ -165,7 +198,9 @@ class TriviaRoomProvider with ChangeNotifier {
               'incorrectAnswers': question.incorrectAnswers,
               'difficulty': question.difficulty,
             }).then((docRef) => docRef.id)));
-
+    final scoreboardID = await scoreboardsCollection.add({
+      'scores': [],
+    }).then((docRef) => docRef.id);
     try {
       await roomsCollection.add({
         'name': triviaRoom.name,
@@ -174,7 +209,7 @@ class TriviaRoomProvider with ChangeNotifier {
         'questions': questionIDs,
         'exerciseTime': triviaRoom.exerciseTime,
         'restTime': triviaRoom.restTime,
-        'scoreboard': triviaRoom.scoreboard,
+        'scoreboard': {questionIDs.length.toString(): scoreboardID},
         'picture': triviaRoom.picture,
         'isPublic': triviaRoom.isPublic,
         'password': triviaRoom.password,
@@ -214,6 +249,17 @@ class TriviaRoomProvider with ChangeNotifier {
         return newQuestionDocRef.id;
       }
     }));
+    final DocumentSnapshot oldRoomDoc = await roomsCollection.doc(roomID).get();
+    if (!oldRoomDoc['scoreboard'].containsKey(questionIDs.length.toString())) {
+      final scoreboardsCollection =
+          FirebaseFirestore.instance.collection('Scoreboards');
+      final scoreboardID = await scoreboardsCollection.add({
+        'scores': [],
+      }).then((docRef) => docRef.id);
+      await roomsCollection.doc(roomID).update({
+        'scoreboard.${questionIDs.length.toString()}': scoreboardID,
+      });
+    }
 
     try {
       await roomsCollection.doc(roomID).update({
@@ -223,7 +269,6 @@ class TriviaRoomProvider with ChangeNotifier {
         'questions': questionIDs,
         'exerciseTime': triviaRoom.exerciseTime,
         'restTime': triviaRoom.restTime,
-        'scoreboard': triviaRoom.scoreboard,
         'picture': triviaRoom.picture,
         'isPublic': triviaRoom.isPublic,
         'password': triviaRoom.password,
@@ -232,6 +277,50 @@ class TriviaRoomProvider with ChangeNotifier {
     } catch (e) {
       print('Error editing trivia room: $e');
       return false;
+    }
+  }
+
+  Future<void> add_score(
+      TriviaRoom room, String userID, int total_score) async {
+    final roomsCollection =
+        FirebaseFirestore.instance.collection('TriviaRooms');
+    final scoreboardsCollection =
+        FirebaseFirestore.instance.collection('Scoreboards');
+    final DocumentSnapshot roomDoc = await roomsCollection.doc(room.id).get();
+    String scoreboardID =
+        roomDoc['scoreboard'][room.questions.length.toString()];
+    print(scoreboardID);
+    final DocumentReference scoreboardRef =
+        await scoreboardsCollection.doc(scoreboardID);
+    final DocumentSnapshot scoreboardDoc = await scoreboardRef.get();
+    Map<String, int> scoresDict = {};
+    for (var entry in scoreboardDoc['scores'].entries) {
+      scoresDict[entry.key] = entry.value;
+    }
+    if (scoresDict.containsKey(userID)) {
+      if (scoresDict[userID]! < total_score) {
+        await scoreboardsCollection.doc(scoreboardID).update({
+          'scores.$userID': total_score,
+        });
+      }
+    } else if (scoresDict.length < 10) {
+      await scoreboardsCollection.doc(scoreboardID).update({
+        'scores.$userID': total_score,
+      });
+    } else {
+      int minScore = scoresDict.values.reduce((a, b) => a < b ? a : b);
+      if (total_score > minScore) {
+        String keyToRemove = scoresDict.entries
+            .firstWhere((element) => element.value == minScore)
+            .key;
+        if (keyToRemove != null) {
+          scoresDict.remove(keyToRemove);
+          scoresDict[userID] = total_score;
+          await scoreboardsCollection.doc(scoreboardID).update({
+            'scores': scoresDict,
+          });
+        }
+      }
     }
   }
 }
