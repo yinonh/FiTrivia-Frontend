@@ -14,7 +14,8 @@ class UserDetailsScreen extends StatefulWidget {
 }
 
 class _UserDetailsScreenState extends State<UserDetailsScreen> {
-  bool _isUpdating = false;
+  bool _isUpdatingPassword = false;
+  bool _isUpdatingUserDetails = false;
   final _userDetailsFormKey = GlobalKey<FormState>();
   final _passwordFormKey = GlobalKey<FormState>();
   final _userNameController = TextEditingController();
@@ -60,7 +61,7 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
       return;
     }
     setState(() {
-      _isUpdating = true;
+      _isUpdatingUserDetails = true;
     });
     _userDetailsFormKey.currentState!.save();
     try {
@@ -98,7 +99,7 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
       );
     } finally {
       setState(() {
-        _isUpdating = false;
+        _isUpdatingUserDetails = false;
       });
     }
   }
@@ -108,7 +109,7 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
       return;
     }
     setState(() {
-      _isUpdating = true;
+      _isUpdatingPassword = true;
     });
     _passwordFormKey.currentState!.save();
     try {
@@ -167,7 +168,7 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
       );
     } finally {
       setState(() {
-        _isUpdating = false;
+        _isUpdatingPassword = false;
       });
     }
   }
@@ -202,8 +203,8 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
           ),
           SizedBox(height: 32),
           ElevatedButton(
-            onPressed: _isUpdating ? null : _updateUserDetails,
-            child: _isUpdating
+            onPressed: _isUpdatingUserDetails ? null : _updateUserDetails,
+            child: _isUpdatingUserDetails
                 ? CircularProgressIndicator(
                     valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                   )
@@ -246,8 +247,8 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
           ),
           SizedBox(height: 32),
           ElevatedButton(
-            onPressed: _isUpdating ? null : _updatePassword,
-            child: _isUpdating
+            onPressed: _isUpdatingPassword ? null : _updatePassword,
+            child: _isUpdatingPassword
                 ? CircularProgressIndicator(
                     valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                   )
