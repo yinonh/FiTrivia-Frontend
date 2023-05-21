@@ -6,6 +6,7 @@ import '../Screens/add_room_screen.dart';
 import '../Screens/wheel.dart';
 import '../Screens/auth_screen.dart';
 import '../Screens/connect_us_screen.dart';
+import '../Screens/user_details_screen.dart';
 
 class NavigateDrawer extends StatelessWidget {
   const NavigateDrawer({Key? key}) : super(key: key);
@@ -48,6 +49,13 @@ class NavigateDrawer extends StatelessWidget {
             title: Text('Connect us'),
             onTap: () {
               Navigator.pushReplacementNamed(context, ConnectUsPage.routeName);
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.edit),
+            title: Text('Edit user details'),
+            onTap: () {
+              Navigator.pushNamed(context, UserDetailsScreen.routeName);
             },
           ),
           ListTile(
