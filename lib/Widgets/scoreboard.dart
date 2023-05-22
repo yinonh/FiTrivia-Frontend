@@ -3,12 +3,11 @@ import 'package:flutter/material.dart';
 class Scoreboard extends StatefulWidget {
   final List<Map<String, String>> userScores;
   final String currentUserID;
-  final int currentUserScore;
 
-  Scoreboard(
-      {required this.userScores,
-      required this.currentUserID,
-      required this.currentUserScore});
+  Scoreboard({
+    required this.userScores,
+    required this.currentUserID,
+  });
 
   @override
   _ScoreboardState createState() => _ScoreboardState();
@@ -20,6 +19,7 @@ class _ScoreboardState extends State<Scoreboard>
   late int currentUserIndex;
   late AnimationController _animationController;
   double _currentPosition = 0.0;
+  int maxScoreboardSize = 10;
 
   @override
   void initState() {
@@ -36,8 +36,8 @@ class _ScoreboardState extends State<Scoreboard>
     }
     sortedEntries = sortedEntries..sort((a, b) => b.score.compareTo(a.score));
 
-    currentUserIndex = sortedEntries
-        .indexWhere((entry) => entry.id == widget.currentUserID);
+    currentUserIndex =
+        sortedEntries.indexWhere((entry) => entry.id == widget.currentUserID);
 
     _animationController = AnimationController(
       vsync: this,
@@ -68,7 +68,9 @@ class _ScoreboardState extends State<Scoreboard>
         itemBuilder: (context, index) {
           if (index == sortedEntries.length) {
             // Render a separate row for the current user at the bottom
-            return widget.currentUserScore < sortedEntries.last.score
+            print(sortedEntries.last.score);
+            return (sortedEntries.last.id == widget.currentUserID &&
+                sortedEntries.length == maxScoreboardSize + 1)
                 ? _buildSeparateRow()
                 : Container(); // Empty container if current user's score is not lower than the last score
           }
@@ -82,8 +84,9 @@ class _ScoreboardState extends State<Scoreboard>
 
           // Render a regular score entry
           return ListTile(
-            leading:
-                Text(index+1 > 5 ? '' :(index + 1).toString()), // Display the place (index + 1)
+            leading: Text(
+                index + 1 > maxScoreboardSize ? '' : (index + 1).toString()),
+            // Display the place (index + 1)
             title: Text(entry.username),
             trailing: Text(entry.score.toString()),
           );
@@ -95,9 +98,10 @@ class _ScoreboardState extends State<Scoreboard>
   Widget _buildSeparateRow() {
     return Container(
       color: Colors.grey[200],
-      padding: EdgeInsets.all(16.0),
+      padding: EdgeInsets.all(15.0),
+      margin: EdgeInsets.all(15.0),
       child: Text(
-        'Your score is lower than the last entry.',
+        'Your score is lower than the ${maxScoreboardSize}th place.',
         textAlign: TextAlign.center,
         style: TextStyle(
           fontSize: 16.0,
@@ -134,7 +138,7 @@ class _ScoreboardState extends State<Scoreboard>
               ),
               child: ListTile(
                 leading: Text(
-                  index >=5  ? '' : (index).toString(),
+                  index >= maxScoreboardSize ? '' : (index).toString(),
                   style: TextStyle(
                     fontSize: 18.0, // Increase the font size for larger text
                     fontWeight: FontWeight.bold,

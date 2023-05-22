@@ -169,7 +169,7 @@ class TriviaRoomProvider with ChangeNotifier {
     for (int questionsAmount = 2; questionsAmount <= 20; questionsAmount++) {
       scoreboardsDict[questionsAmount.toString()] =
           await scoreboardsCollection.add({
-        'scores': [],
+        'scores': {},
       }).then((docRef) => docRef.id);
     }
     try {
@@ -199,7 +199,7 @@ class TriviaRoomProvider with ChangeNotifier {
               'difficulty': question.difficulty,
             }).then((docRef) => docRef.id)));
     final scoreboardID = await scoreboardsCollection.add({
-      'scores': [],
+      'scores': {},
     }).then((docRef) => docRef.id);
     try {
       await roomsCollection.add({
@@ -289,6 +289,7 @@ class TriviaRoomProvider with ChangeNotifier {
 
   Future<List<Map<String, String>>> add_score(
       TriviaRoom room, String userID, int total_score) async {
+    int maxScoreboardSize = 10;
     final roomsCollection =
         FirebaseFirestore.instance.collection('TriviaRooms');
     final scoreboardsCollection =
@@ -311,7 +312,7 @@ class TriviaRoomProvider with ChangeNotifier {
           'scores.$userID': total_score,
         });
       }
-    } else if (scoresDict.length < 10) {
+    } else if (scoresDict.length < maxScoreboardSize) {
       scoresDict[userID] = total_score;
       await scoreboardsCollection.doc(scoreboardID).update({
         'scores.$userID': total_score,
