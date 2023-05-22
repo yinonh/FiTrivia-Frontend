@@ -1,11 +1,15 @@
+import 'dart:io';
 import 'dart:math';
 import 'dart:convert';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:camera/camera.dart';
 import 'package:http_parser/http_parser.dart';
 import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;
+import 'package:path_provider/path_provider.dart';
 
 import '../Widgets/rest_popup.dart';
 import '../Widgets/bottom_buttons.dart';
@@ -165,13 +169,26 @@ class _CameraScreenState extends State<CameraScreen> {
 
   Future<void> _startTimer(BuildContext context) async {
     for (int i = 0; i < widget.room.questions.length; i++) {
-      final repeatingTimer = Timer.periodic(
-          Duration(milliseconds: (1000 / _num_of_images).toInt()), (timer) {
-        if (widget.controller != null &&
-            widget.controller.value.isInitialized) {
-          _captureFrame(i);
-        }
-      });
+      Timer repeatingTimer;
+      if (kIsWeb) {
+        repeatingTimer = Timer.periodic(
+            Duration(milliseconds: (1000 / _num_of_images).toInt()), (timer) {
+          if (widget.controller != null &&
+              widget.controller.value.isInitialized) {
+            _captureFrameWeb(i);
+          }
+        });
+      } else {
+        repeatingTimer = Timer.periodic(Duration(seconds: 1), (timer) {
+          if (widget.controller != null &&
+              widget.controller.value.isInitialized) {
+            if (widget.controller != null &&
+                widget.controller.value.isInitialized) {
+              _captureFrame(i);
+            }
+          }
+        });
+      }
 
       countDownStream = Stream<int>.periodic(Duration(seconds: 1), (i) {
         update_buttons();
@@ -213,7 +230,7 @@ class _CameraScreenState extends State<CameraScreen> {
       "response_list": responseList,
       "ex_dict": exDict,
       "correct_ans_index": correctAnsIndex,
-      "room":widget.room
+      "room": widget.room
     };
 
     Navigator.pushReplacementNamed(context, ResultScreen.routeName,
@@ -255,7 +272,7 @@ class _CameraScreenState extends State<CameraScreen> {
     }
   }
 
-  void _captureFrame(int index) async {
+  void _captureFrameWeb(int index) async {
     if (_isCapturing) {
       return;
     }
@@ -273,6 +290,69 @@ class _CameraScreenState extends State<CameraScreen> {
     } finally {
       _isCapturing = false;
     }
+  }
+
+  void _captureFrame(int index) async {
+    if (_isCapturing) {
+      return;
+    }
+    try {
+      _isCapturing = true;
+      List<XFile> capturedImages = [];
+      widget.controller.startImageStream((CameraImage image) async {
+        if (capturedImages.length < 10) {
+          XFile imageFile = await _convertCameraImageToXFile(image);
+          capturedImages.add(imageFile);
+          if (capturedImages.length == 10) {
+            widget.controller.stopImageStream(); // Stop the image stream
+            _capturedImages.addAll(capturedImages);
+            if (_capturedImages.length == _num_of_images) {
+              _sendImages(index);
+            }
+          }
+        }
+      });
+    } catch (e) {
+      print('Error capturing frame: $e');
+    } finally {
+      _isCapturing = false;
+    }
+  }
+
+  Future<XFile> _convertCameraImageToXFile(CameraImage image) async {
+    final Directory tempDir = await getTemporaryDirectory();
+    final String filePath = '${tempDir.path}/image.jpg';
+    final File file = File(filePath);
+    await file.writeAsBytes(_convertYUV420ToJPEG(image));
+    return XFile(filePath);
+  }
+
+  Uint8List _convertYUV420ToJPEG(CameraImage image) {
+    final int width = image.width;
+    final int height = image.height;
+    final int uvRowStride = image.planes[1].bytesPerRow;
+    final int uvPixelStride = image.planes[1].bytesPerPixel!;
+    final int yLength = width * height;
+    final int uvLength = uvRowStride * height ~/ uvPixelStride;
+    final Uint8List yData = image.planes[0].bytes;
+    final Uint8List uData = image.planes[1].bytes;
+    final Uint8List vData = image.planes[2].bytes;
+
+    final Uint8List allData = Uint8List(yLength + uvLength);
+
+    int i = 0;
+    for (int x = 0; x < yLength; x++) {
+      allData[i++] = yData[x];
+    }
+
+    int j = 0;
+    for (int x = 0; x < uvLength; x += uvPixelStride) {
+      allData[i++] = uData[j];
+      allData[i++] = vData[j];
+      j += uvPixelStride;
+    }
+
+    return allData;
   }
 
   @override

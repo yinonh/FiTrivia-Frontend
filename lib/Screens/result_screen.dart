@@ -1,9 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:fitrivia/Models/trivia_room.dart';
 import 'package:flutter/material.dart';
 import 'package:collection/collection.dart';
 import 'package:provider/provider.dart';
+
 import '../Providers/trivia_rooms_provider.dart';
+import '../Models/trivia_room.dart';
 import '../Widgets/scoreboard.dart';
 import '../Widgets/result_list_item.dart';
 import '../Widgets/navigate_drawer.dart';
