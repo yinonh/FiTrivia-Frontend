@@ -1,8 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:fitrivia/Models/trivia_room.dart';
 import 'package:flutter/material.dart';
 import 'package:collection/collection.dart';
 import 'package:provider/provider.dart';
+import 'package:audioplayers/audioplayers.dart';
+import 'package:confetti/confetti.dart';
+
+import '../Models/trivia_room.dart';
 import '../Providers/trivia_rooms_provider.dart';
 import '../Widgets/scoreboard.dart';
 import '../Widgets/result_list_item.dart';
@@ -34,11 +37,17 @@ class _ResultScreenState extends State<ResultScreen>
   late AnimationController _animationController;
   late Animation<Offset> _animation;
   final List<List<String>> _resultList = [];
+  late ConfettiController _confettiController;
+  AudioPlayer cheeringPlayer = AudioPlayer();
+  DeviceFileSource cheering = DeviceFileSource('assets/cheering.mp3');
 
   @override
   void initState() {
     super.initState();
-
+    playCheering();
+    _confettiController =
+        ConfettiController(duration: const Duration(seconds: 2));
+    _confettiController.play();
     _animationController = AnimationController(
       vsync: this,
       duration: Duration(milliseconds: 600),
@@ -55,9 +64,15 @@ class _ResultScreenState extends State<ResultScreen>
     });
   }
 
+  Future<void> playCheering() async {
+    cheeringPlayer.play(cheering);
+  }
+
   @override
   void dispose() {
     _animationController.dispose();
+    _confettiController.dispose();
+    cheeringPlayer.dispose();
     super.dispose();
   }
 
@@ -131,91 +146,118 @@ class _ResultScreenState extends State<ResultScreen>
         title: Text('Result Screen'),
         centerTitle: true,
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                height: (MediaQuery.of(context).size.height -
-                        AppBar().preferredSize.height -
-                        50) *
-                    0.28,
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: _resultList.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    List<String> sublist = _resultList[index];
-                    return Column(
-                      children: [
-                        SlideTransition(
-                          position: _animation,
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 4.0),
-                            child: Row(
-                              children: [
-                                ListItem(
-                                  numbers: convertStringList(sublist),
-                                  classification: getMostFrequentValue(sublist),
-                                  correct: is_ans_correct(sublist, index),
+      body: Stack(
+        children: [
+          Align(
+            alignment: Alignment.topCenter,
+            child: ConfettiWidget(
+              confettiController: _confettiController,
+              emissionFrequency: 0.05,
+              numberOfParticles: 20,
+              maxBlastForce: 5,
+              minBlastForce: 2,
+              blastDirectionality: BlastDirectionality.explosive,
+              particleDrag: 0.05,
+              gravity: 0.2,
+              colors: const [
+                Colors.red,
+                Colors.green,
+                Colors.blue,
+                Colors.yellow,
+                Colors.purple,
+              ],
+            ),
+          ),
+          SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    height: (MediaQuery.of(context).size.height -
+                            AppBar().preferredSize.height -
+                            50) *
+                        0.28,
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: _resultList.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        List<String> sublist = _resultList[index];
+                        return Column(
+                          children: [
+                            SlideTransition(
+                              position: _animation,
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 4.0),
+                                child: Row(
+                                  children: [
+                                    ListItem(
+                                      numbers: convertStringList(sublist),
+                                      classification:
+                                          getMostFrequentValue(sublist),
+                                      correct: is_ans_correct(sublist, index),
+                                    ),
+                                  ],
                                 ),
-                              ],
+                              ),
                             ),
-                          ),
-                        ),
-                        Divider(),
-                      ],
-                    );
-                  },
-                ),
-              ),
-              Container(
-                height: (MediaQuery.of(context).size.height -
-                        AppBar().preferredSize.height -
-                        50) *
-                    0.72,
-                child: FutureBuilder(
-                  future: Provider.of<TriviaRoomProvider>(context,
-                          listen: false)
-                      .add_score(widget.room, widget.userID, get_total_score()),
-                  builder: (ctx, snapshot) {
-                    if (snapshot.hasData) {
-                      if (snapshot.data!.isEmpty) {
-                        return Text('IS EMPTY');
-                      } else {
-                        return Container(
-                          padding: const EdgeInsets.all(20),
-                          child: Scoreboard(
-                              userScores: snapshot.data!,
-                              currentUserScore: 150,
-                              currentUserID: widget.userID),
+                            Divider(),
+                          ],
                         );
-                      }
-                    } else if (snapshot.hasError) {
-                      return Text('error');
-                    } else {
-                      return Center(child: CircularProgressIndicator());
-                    }
-                  },
-                  /////
-                ),
-              ),
-              Center(
-                child: Container(
-                  height: 50,
-                  child: Text(
-                    "Total score: ${get_total_score()}",
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20,
+                      },
                     ),
                   ),
-                ),
+                  Container(
+                    height: (MediaQuery.of(context).size.height -
+                            AppBar().preferredSize.height -
+                            50) *
+                        0.72,
+                    child: FutureBuilder(
+                      future: Provider.of<TriviaRoomProvider>(context,
+                              listen: false)
+                          .add_score(
+                              widget.room, widget.userID, get_total_score()),
+                      builder: (ctx, snapshot) {
+                        if (snapshot.hasData) {
+                          if (snapshot.data!.isEmpty) {
+                            return Text('IS EMPTY');
+                          } else {
+                            return Container(
+                              padding: const EdgeInsets.all(20),
+                              child: Scoreboard(
+                                  userScores: snapshot.data!,
+                                  currentUserScore: 150,
+                                  currentUserID: widget.userID),
+                            );
+                          }
+                        } else if (snapshot.hasError) {
+                          return Text('error');
+                        } else {
+                          return Center(child: CircularProgressIndicator());
+                        }
+                      },
+                      /////
+                    ),
+                  ),
+                  Center(
+                    child: Container(
+                      height: 50,
+                      child: Text(
+                        "Total score: ${get_total_score()}",
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
@@ -13,6 +14,7 @@ import '../Widgets/private_rooms_item.dart';
 import '../Widgets/navigate_drawer.dart';
 import '../Widgets/public_room_items.dart';
 import '../Providers/trivia_rooms_provider.dart';
+import '../Providers/music_provider.dart';
 
 class MyCustomScrollBehavior extends MaterialScrollBehavior {
   // Override behavior methods and getters like dragDevices
@@ -38,6 +40,7 @@ class _TriviaRoomsState extends State<TriviaRooms> {
   late Future<List<Map<String, dynamic>>> _privateRoomsFuture;
   late List<Map<String, dynamic>> _privateRooms = [];
   late TriviaRoomProvider _privateRoomsProvider;
+  late AudioPlayer bgMusic;
 
   Future<void> customShowDialog(
       {context, title, content, actionWidgets}) async {
@@ -60,6 +63,7 @@ class _TriviaRoomsState extends State<TriviaRooms> {
   @override
   void initState() {
     super.initState();
+    //Provider.of<MusicProvider>(context, listen: false).startBgMusic();
     publicRoomsList = Provider.of<TriviaRoomProvider>(context, listen: false)
         .publicTriviaRooms;
     publicRooms = List.generate(
