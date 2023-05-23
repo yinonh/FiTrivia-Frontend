@@ -188,7 +188,6 @@ class _ResultScreenState extends State<ResultScreen>
                           padding: const EdgeInsets.all(20),
                           child: Scoreboard(
                               userScores: snapshot.data!,
-                              currentUserScore: 150,
                               currentUserID: widget.userID),
                         );
                       }
