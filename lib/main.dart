@@ -51,6 +51,9 @@ class FitriviaApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     User? currentUser = FirebaseAuth.instance.currentUser;
+    // if(currentUser != null){
+    //   context.read<MusicProvider>().fetchMusicSettings(currentUser.uid);
+    // }
     String initialScreen =
         currentUser == null ? AuthScreen.routeName : TriviaRooms.routeName;
     const TextTheme text_theme = TextTheme(

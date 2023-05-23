@@ -40,6 +40,7 @@ class _TriviaRoomsState extends State<TriviaRooms> {
   late Future<List<Map<String, dynamic>>> _privateRoomsFuture;
   late List<Map<String, dynamic>> _privateRooms = [];
   late TriviaRoomProvider _privateRoomsProvider;
+  late MusicProvider _musicProvider;
   late AudioPlayer bgMusic;
 
   Future<void> customShowDialog(
@@ -63,6 +64,7 @@ class _TriviaRoomsState extends State<TriviaRooms> {
   @override
   void initState() {
     super.initState();
+    //context.read<MusicProvider>().startBgMusic();
     //Provider.of<MusicProvider>(context, listen: false).startBgMusic();
     publicRoomsList = Provider.of<TriviaRoomProvider>(context, listen: false)
         .publicTriviaRooms;
@@ -75,6 +77,8 @@ class _TriviaRoomsState extends State<TriviaRooms> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    _musicProvider = Provider.of<MusicProvider>(context);
+    _musicProvider.startBgMusic();
     _privateRoomsProvider = Provider.of<TriviaRoomProvider>(context);
     _privateRoomsFuture = _privateRoomsProvider
         .getTriviaRoomsByManagerID(FirebaseAuth.instance.currentUser!.uid);

@@ -5,7 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 
 import '../Providers/user_provider.dart';
-import '../Screens/trivia_rooms.dart';
+import '../Widgets/edit_music_settigs.dart';
 
 class UserDetailsScreen extends StatefulWidget {
   static const routeName = '/edit_user';
@@ -284,6 +284,12 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
               ),
               SizedBox(height: 16),
               _buildUpdatePasswordForm(),
+              SizedBox(height: 32),
+              Text(
+                'Music Settings',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              EditMusicSettingsWidget(),
             ],
           ),
         ),

@@ -1,23 +1,104 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:async';
 
 class MusicProvider with ChangeNotifier {
-  AudioPlayer bgMusicPlayer = AudioPlayer();
-  AudioPlayer clockPlayer = AudioPlayer();
-  AudioPlayer trainPlayer = AudioPlayer();
+  final AudioPlayer bgMusicPlayer = AudioPlayer();
+  final AudioPlayer clockPlayer = AudioPlayer();
+  final AudioPlayer trainPlayer = AudioPlayer();
+  final AudioPlayer cheeringPlayer = AudioPlayer();
 
-  get volume => 0.7;
-  get gameMusicOn => true;
-  get backgroundMusicOn => true;
-  get musicType => "metal";
-  get trainMusicFile => DeviceFileSource('assets/metal.mp3');
+  double volume = 0.7;
+  bool gameMusicOn = false;
+  bool backgroundMusicOn = true;
+  String musicType = "metal";
+
+  Future<void> fetchMusicSettings(String uid) async {
+    try {
+      final userDoc = await FirebaseFirestore.instance
+          .collection('Users')
+          .doc(uid)
+          .get();
+
+      if (userDoc.exists) {
+        final musicSettings = userDoc.data()?['musicSettings'];
+
+        if (musicSettings != null && musicSettings is Map) {
+          volume = musicSettings['volume'] ?? volume;
+          gameMusicOn = musicSettings['gameMusicOn'] ?? gameMusicOn;
+          backgroundMusicOn = musicSettings['backgroundMusicOn'] ?? backgroundMusicOn;
+          musicType = musicSettings['musicType'] ?? musicType;
+        }
+      }
+    } catch (error) {
+      print('Failed to fetch music settings: $error');
+    }
+  }
+
+  Future<void> editMusicSettings(String uid, Map<String, dynamic> newSettings) async {
+    try {
+      final userDoc = FirebaseFirestore.instance.collection('Users').doc(uid);
+
+      await userDoc.update({'musicSettings': newSettings});
+
+      // Update the provider properties
+      if (newSettings.containsKey('volume')) {
+        volume = newSettings['volume'];
+      }
+      if (newSettings.containsKey('gameMusicOn')) {
+        gameMusicOn = newSettings['gameMusicOn'];
+      }
+      if (newSettings.containsKey('backgroundMusicOn')) {
+        backgroundMusicOn = newSettings['backgroundMusicOn'];
+      }
+      if (newSettings.containsKey('musicType')) {
+        musicType = newSettings['musicType'];
+      }
+
+      notifyListeners();
+    } catch (error) {
+      print('Failed to edit music settings: $error');
+    }
+  }
+
+  get trainMusicFile => DeviceFileSource('assets/$musicType.mp3');
+
   get backgroundMusicFile => DeviceFileSource('assets/background.mp3');
+
   get clockMusicFile => DeviceFileSource('assets/bellSound.mp3');
 
+  get cheeringFile => DeviceFileSource('assets/cheering.mp3');
+
   Future<void> startTrainMusic() async {
-    await trainPlayer.play(trainMusicFile);
+    if (gameMusicOn) {
+      trainPlayer.setVolume(volume);
+      await trainPlayer.play(DeviceFileSource('assets/$musicType.mp3'));
+    }
+  }
+
+  Future<void> startCheeringMusic() async {
+    if(gameMusicOn) {
+      cheeringPlayer.setVolume(volume);
+      await cheeringPlayer.play(cheeringFile);
+    }
+  }
+
+  Future<void> startBgMusic() async {
+    if(bgMusicPlayer.state  != PlayerState.playing && backgroundMusicOn){
+      bgMusicPlayer.setReleaseMode(ReleaseMode.loop);
+      await bgMusicPlayer.play(backgroundMusicFile);
+    }
+    bgMusicPlayer.setVolume(volume);
+  }
+
+  Future<void> stopCheeringMusic() async {
+    await cheeringPlayer.stop();
+  }
+
+  Future<void> stopBgMusic() async {
+    await bgMusicPlayer.stop();
   }
 
   Future<void> stopTrainMusic() async {
@@ -25,11 +106,11 @@ class MusicProvider with ChangeNotifier {
   }
 
   Future<void> fullTrainVolume() async {
-    await trainPlayer.setVolume(1);
+    await trainPlayer.setVolume(volume);
   }
 
   Future<void> lowTrainVolume() async {
-    await trainPlayer.setVolume(0.3);
+    await trainPlayer.setVolume(volume * 0.4);
   }
 
   Future<void> pauseBgMusic() async {
@@ -37,17 +118,16 @@ class MusicProvider with ChangeNotifier {
   }
 
   Future<void> startClockMusic() async {
-    await clockPlayer.play(clockMusicFile);
+    if(gameMusicOn) {
+      clockPlayer.setVolume(volume);
+      await clockPlayer.play(clockMusicFile);
+    }
   }
 
   Future<void> stopClockMusic() async {
     await clockPlayer.stop();
   }
 
-  Future<void> startBgMusic() async {
-    bgMusicPlayer.setReleaseMode(ReleaseMode.loop);
-    await bgMusicPlayer.play(backgroundMusicFile);
-  }
 
   Future<void> resumeBgMusic() async {
     await bgMusicPlayer.resume();

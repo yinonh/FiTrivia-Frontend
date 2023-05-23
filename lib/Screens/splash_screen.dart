@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../Screens/trivia_rooms.dart';
-import '../Providers/music_provider.dart';
+// import '../Providers/music_provider.dart';
 
 class SplashScreen extends StatelessWidget {
   static const routeName = '/splash_screen';
@@ -11,7 +11,7 @@ class SplashScreen extends StatelessWidget {
   const SplashScreen({required this.nextScreen, Key? key}) : super(key: key);
 
   void startMusic(BuildContext context) {
-    context.read<MusicProvider>().startBgMusic();
+    // context.read<MusicProvider>().startBgMusic();
     Navigator.of(context).pushReplacementNamed(nextScreen);
   }
 

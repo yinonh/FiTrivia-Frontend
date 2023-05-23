@@ -139,8 +139,6 @@ class _CameraScreenState extends State<CameraScreen> {
   @override
   void dispose() {
     widget.controller.dispose();
-    Provider.of<MusicProvider>(context, listen: false).stopClockMusic();
-    Provider.of<MusicProvider>(context, listen: false).stopTrainMusic();
     super.dispose();
   }
 
@@ -236,7 +234,8 @@ class _CameraScreenState extends State<CameraScreen> {
       "correct_ans_index": correctAnsIndex,
       "room": widget.room
     };
-
+    Provider.of<MusicProvider>(context, listen: false).stopClockMusic();
+    Provider.of<MusicProvider>(context, listen: false).stopTrainMusic();
     Navigator.pushReplacementNamed(context, ResultScreen.routeName,
         arguments: args);
   }

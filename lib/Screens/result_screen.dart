@@ -7,6 +7,7 @@ import 'package:confetti/confetti.dart';
 
 import '../Models/trivia_room.dart';
 import '../Providers/trivia_rooms_provider.dart';
+import '../Providers/music_provider.dart';
 import '../Widgets/scoreboard.dart';
 import '../Widgets/result_list_item.dart';
 import '../Widgets/navigate_drawer.dart';
@@ -38,8 +39,7 @@ class _ResultScreenState extends State<ResultScreen>
   late Animation<Offset> _animation;
   final List<List<String>> _resultList = [];
   late ConfettiController _confettiController;
-  AudioPlayer cheeringPlayer = AudioPlayer();
-  DeviceFileSource cheering = DeviceFileSource('assets/cheering.mp3');
+
 
   @override
   void initState() {
@@ -65,14 +65,14 @@ class _ResultScreenState extends State<ResultScreen>
   }
 
   Future<void> playCheering() async {
-    cheeringPlayer.play(cheering);
+    Provider.of<MusicProvider>(context, listen: false).startCheeringMusic();
+    Provider.of<MusicProvider>(context, listen: false).resumeBgMusic();
   }
 
   @override
   void dispose() {
     _animationController.dispose();
     _confettiController.dispose();
-    cheeringPlayer.dispose();
     super.dispose();
   }
 

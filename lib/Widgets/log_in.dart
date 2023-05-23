@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:email_validator/email_validator.dart';
+import 'package:provider/provider.dart';
 
 import '../Screens/trivia_rooms.dart';
+import '../Providers/music_provider.dart';
 
 class LogIn extends StatefulWidget {
   final VoidCallback changeMode;
@@ -95,10 +97,12 @@ class _LogInState extends State<LogIn> {
                         _isLoading = true;
                       });
                       try {
-                        await FirebaseAuth.instance.signInWithEmailAndPassword(
+                        UserCredential currentUser = await FirebaseAuth.instance.signInWithEmailAndPassword(
                           email: _email!,
                           password: _password!,
                         );
+                        final musicProvider = context.read<MusicProvider>();
+                        await musicProvider.fetchMusicSettings(currentUser.user!.uid);
                         Navigator.pushReplacementNamed(
                           context,
                           TriviaRooms.routeName,

@@ -40,9 +40,9 @@ class GifGrid extends StatelessWidget {
               elevation: MaterialStateProperty.resolveWith<double>(
                     (Set<MaterialState> states) {
                   if (selectedItems[index]) {
-                    return 10.0;
+                    return 0.0;
                   }
-                  return 0.0;
+                  return 10.0;
                 },
               ),
             ),

@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:provider/provider.dart';
 
+import '../Providers/music_provider.dart';
 import '../Screens/trivia_rooms.dart';
 
 class SignUp extends StatefulWidget {
@@ -32,13 +34,27 @@ class _SignUpState extends State<SignUp> {
     });
     _formKey.currentState!.save();
     try {
-      final UserCredential userCredential = await FirebaseAuth.instance
+      final UserCredential currentUser = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(
               email: _email!, password: _password2!);
+
+      final defaultMusicSettings = {
+        'volume': 0.7,
+        'gameMusicOn': false,
+        'backgroundMusicOn': true,
+        'musicType': 'metal',
+      };
+
       await FirebaseFirestore.instance
           .collection('Users')
-          .doc(userCredential.user!.uid)
-          .set({'userName': _userName!, "isAdmin": false});
+          .doc(currentUser.user!.uid)
+          .set({
+        'userName': _userName!,
+        "isAdmin": false,
+        'musicSettings': defaultMusicSettings,
+      });
+      final musicProvider = context.read<MusicProvider>();
+      await musicProvider.fetchMusicSettings(currentUser.user!.uid);
       Navigator.pushReplacementNamed(context, TriviaRooms.routeName);
     } on FirebaseAuthException catch (e) {
       setState(() {
