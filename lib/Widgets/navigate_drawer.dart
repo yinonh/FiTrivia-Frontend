@@ -1,12 +1,15 @@
 import 'package:fitrivia/Screens/trivia_rooms.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:provider/provider.dart';
 
+
+import '../Providers/music_provider.dart';
 import '../Screens/add_room_screen.dart';
 import '../Screens/wheel.dart';
 import '../Screens/auth_screen.dart';
 import '../Screens/connect_us_screen.dart';
-import '../Screens/user_details_screen.dart';
+import '../Screens/settings_screen.dart';
 
 class NavigateDrawer extends StatelessWidget {
   const NavigateDrawer({Key? key}) : super(key: key);
@@ -52,8 +55,8 @@ class NavigateDrawer extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: Icon(Icons.edit),
-            title: Text('Edit user details'),
+            leading: Icon(Icons.settings),
+            title: Text('Settings'),
             onTap: () {
               Navigator.pushNamed(context, UserDetailsScreen.routeName);
             },
@@ -62,6 +65,7 @@ class NavigateDrawer extends StatelessWidget {
             leading: Icon(Icons.exit_to_app),
             title: Text('Logout'),
             onTap: () async {
+              await Provider.of<MusicProvider>(context, listen: false).stopBgMusic();
               await FirebaseAuth.instance.signOut();
               Navigator.pushReplacementNamed(context, AuthScreen.routeName);
             },

@@ -40,7 +40,7 @@ class _SignUpState extends State<SignUp> {
 
       final defaultMusicSettings = {
         'volume': 0.7,
-        'gameMusicOn': false,
+        'gameMusicOn': true,
         'backgroundMusicOn': true,
         'musicType': 'metal',
       };

@@ -86,11 +86,11 @@ class MusicProvider with ChangeNotifier {
   }
 
   Future<void> startBgMusic() async {
+    bgMusicPlayer.setVolume(volume);
     if(bgMusicPlayer.state  != PlayerState.playing && backgroundMusicOn){
       bgMusicPlayer.setReleaseMode(ReleaseMode.loop);
       await bgMusicPlayer.play(backgroundMusicFile);
     }
-    bgMusicPlayer.setVolume(volume);
   }
 
   Future<void> stopCheeringMusic() async {
@@ -107,6 +107,10 @@ class MusicProvider with ChangeNotifier {
 
   Future<void> fullTrainVolume() async {
     await trainPlayer.setVolume(volume);
+  }
+
+  Future<void>changeTempVolume(double volume) async{
+      await bgMusicPlayer.setVolume(volume);
   }
 
   Future<void> lowTrainVolume() async {

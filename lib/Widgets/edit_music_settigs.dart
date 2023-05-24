@@ -24,17 +24,18 @@ class _EditMusicSettingsWidgetState extends State<EditMusicSettingsWidget> {
   late String selectedMusicType;
   AudioPlayer previewPlayers = AudioPlayer();
   bool isPlayingPreview = false;
+  late MusicProvider _musicProvider;
 
 
   @override
   void initState() {
     super.initState();
-    final musicProvider = Provider.of<MusicProvider>(context, listen: false);
-    volume = musicProvider.volume;
-    gameMusicOn = musicProvider.gameMusicOn;
-    backgroundMusicOn = musicProvider.backgroundMusicOn;
-    musicType = musicProvider.musicType;
-    selectedMusicType = musicProvider.musicType;
+    _musicProvider = Provider.of<MusicProvider>(context, listen: false);
+    volume = _musicProvider.volume;
+    gameMusicOn = _musicProvider.gameMusicOn;
+    backgroundMusicOn = _musicProvider.backgroundMusicOn;
+    musicType = _musicProvider.musicType;
+    selectedMusicType = _musicProvider.musicType;
   }
 
   @override
@@ -53,14 +54,14 @@ class _EditMusicSettingsWidgetState extends State<EditMusicSettingsWidget> {
   }
 
   Future<void> playMusicPreview(String musicType) async {
-    final String musicAsset = 'assets/metal.mp3';
+    final String musicAsset = 'assets/$musicType.mp3';
     final Duration previewDuration = Duration(seconds: 5);
 
     if (previewPlayers.state == PlayerState.playing) {
       await previewPlayers.stop();
     }
 
-    await Provider.of<MusicProvider>(context, listen: false).stopBgMusic();
+    await _musicProvider.stopBgMusic();
     await previewPlayers.setVolume(volume);
     setState(() {
       isPlayingPreview = true;
@@ -72,25 +73,24 @@ class _EditMusicSettingsWidgetState extends State<EditMusicSettingsWidget> {
     setState(() {
       isPlayingPreview = false;
     });
-    await Provider.of<MusicProvider>(context, listen: false).startBgMusic();
+    await _musicProvider.startBgMusic();
   }
 
   Future<void> saveChanges() async {
-    final musicProvider = Provider.of<MusicProvider>(context, listen: false);
     final uid = FirebaseAuth.instance.currentUser!.uid; // User's UID
 
     if(!backgroundMusicOn){
-      musicProvider.stopBgMusic();
+      _musicProvider.stopBgMusic();
     }
 
     final newSettings = {
       'volume': volume,
       'gameMusicOn': gameMusicOn,
       'backgroundMusicOn': backgroundMusicOn,
-      'musicType': musicType,
+      'musicType': selectedMusicType,
     };
 
-    await musicProvider.editMusicSettings(uid, newSettings);
+    await _musicProvider.editMusicSettings(uid, newSettings);
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Music settings updated successfully!')),
@@ -112,6 +112,7 @@ class _EditMusicSettingsWidgetState extends State<EditMusicSettingsWidget> {
           max: 1.0,
           onChanged: (newValue) {
             setState(() {
+              _musicProvider.changeTempVolume(newValue);
               volume = newValue;
             });
           },
@@ -138,7 +139,7 @@ class _EditMusicSettingsWidgetState extends State<EditMusicSettingsWidget> {
         ),
         SizedBox(height: 16.0),
         Text(
-          'Music Type',
+          'Game music Type',
           style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
         ),
         Row(

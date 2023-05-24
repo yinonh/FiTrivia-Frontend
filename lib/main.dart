@@ -20,7 +20,7 @@ import 'Screens/connect_us_screen.dart';
 import 'Screens/room_detail_screen.dart';
 import 'Screens/add_room_screen.dart';
 import 'Screens/edit_room.dart';
-import 'Screens/user_details_screen.dart';
+import 'Screens/settings_screen.dart';
 import 'Models/trivia_room.dart';
 import 'Providers/trivia_rooms_provider.dart';
 import 'Providers/user_provider.dart';

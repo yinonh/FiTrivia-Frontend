@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 
 import '../Providers/user_provider.dart';
+import '../Providers/music_provider.dart';
 import '../Widgets/edit_music_settigs.dart';
 
 class UserDetailsScreen extends StatefulWidget {
@@ -263,6 +264,10 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(icon: Icon(Icons.arrow_back), onPressed: (){
+          Provider.of<MusicProvider>(context, listen: false).startBgMusic();
+      Navigator.pop(context);
+    },),
         title: Text('User Details'),
       ),
       body: SingleChildScrollView(

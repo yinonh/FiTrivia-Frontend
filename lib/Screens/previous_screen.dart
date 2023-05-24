@@ -28,6 +28,8 @@ class _PreviousScreenState extends State<PreviousScreen> {
   int _countdownValue = 6;
   Timer? _countdownTimer;
   bool cameraAvailable = true;
+  late MusicProvider _musicProvider;
+
   // AudioPlayer clockPlayer = AudioPlayer();
   // DeviceFileSource clock = DeviceFileSource('assets/bellSound.mp3');
 
@@ -35,6 +37,7 @@ class _PreviousScreenState extends State<PreviousScreen> {
   void initState() {
     super.initState();
     isControllerInitialized = false;
+    _musicProvider = Provider.of<MusicProvider>(context, listen: false);
     availableCameras().then((camerasList) {
       if (camerasList.isEmpty) {
         setState(() {
@@ -106,9 +109,8 @@ class _PreviousScreenState extends State<PreviousScreen> {
   @override
   void dispose() {
     //TODO: Dispose only if not process to camera screen.
-    // _controller.dispose();
     _countdownTimer?.cancel();
-    // clockPlayer.dispose();
+    _musicProvider.stopClockMusic();
     super.dispose();
   }
 
@@ -126,7 +128,7 @@ class _PreviousScreenState extends State<PreviousScreen> {
           'controller': _controller,
           'questions': widget.room,
         };
-        Provider.of<MusicProvider>(context, listen: false).stopClockMusic();
+        _musicProvider.stopClockMusic();
         Navigator.of(context)
             .popUntil((route) => route.isFirst); // clean the Navigator
         Navigator.pushReplacementNamed(context, CameraScreen.routeName,
@@ -188,7 +190,12 @@ class _PreviousScreenState extends State<PreviousScreen> {
 
   Widget camera_preview(Widget content) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        leading: IconButton(icon: Icon(Icons.arrow_back), onPressed: (){
+          _musicProvider.startBgMusic();
+          Navigator.pop(context);
+        },),
+      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -204,10 +211,8 @@ class _PreviousScreenState extends State<PreviousScreen> {
                 child: ElevatedButton(
                   onPressed: !pressed && isControllerInitialized
                       ? () {
-                          Provider.of<MusicProvider>(context, listen: false)
-                              .pauseBgMusic();
-                          Provider.of<MusicProvider>(context, listen: false)
-                              .startClockMusic();
+                    _musicProvider.pauseBgMusic();
+                    _musicProvider.startClockMusic();
 
                           // Start the countdown when the "Ready" button is pressed
                           startCountdown();
