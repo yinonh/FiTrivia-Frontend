@@ -6,11 +6,13 @@ import 'package:http_parser/http_parser.dart';
 import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;
+import 'package:provider/provider.dart';
 
 import '../Widgets/rest_popup.dart';
 import '../Widgets/bottom_buttons.dart';
 import '../Models/trivia_room.dart';
 import '../Screens/result_screen.dart';
+import '../Providers/music_provider.dart';
 
 class CameraScreen extends StatefulWidget {
   static const routeName = '/camera_screen';
@@ -52,7 +54,18 @@ class _CameraScreenState extends State<CameraScreen> {
         List.generate(widget.room.questions.length, (_) => <String>[]);
     currentQuestonList = _shuffleAnswers();
     update_buttons();
+    Provider.of<MusicProvider>(context, listen: false).startTrainMusic();
     _startTimer(context);
+  }
+
+  Future<void> playMusic() async {
+    Provider.of<MusicProvider>(context, listen: false).stopClockMusic();
+    Provider.of<MusicProvider>(context, listen: false).fullTrainVolume();
+  }
+
+  Future<void> stopAndPlayClock() async {
+    Provider.of<MusicProvider>(context, listen: false).lowTrainVolume();
+    Provider.of<MusicProvider>(context, listen: false).startClockMusic();
   }
 
   void ans_index(int score) {
@@ -181,9 +194,15 @@ class _CameraScreenState extends State<CameraScreen> {
       Timer(Duration(seconds: widget.room.exerciseTime), () {
         repeatingTimer.cancel();
       });
+      Timer(Duration(seconds: widget.room.exerciseTime - 5), () {
+        setState(() {
+          stopAndPlayClock();
+        });
+      });
       Timer(Duration(seconds: widget.room.exerciseTime - 2), () {
         setState(() {
           done = true;
+          playMusic();
         });
         update_buttons();
       });
@@ -213,9 +232,10 @@ class _CameraScreenState extends State<CameraScreen> {
       "response_list": responseList,
       "ex_dict": exDict,
       "correct_ans_index": correctAnsIndex,
-      "room":widget.room
+      "room": widget.room
     };
-
+    Provider.of<MusicProvider>(context, listen: false).stopClockMusic();
+    Provider.of<MusicProvider>(context, listen: false).stopTrainMusic();
     Navigator.pushReplacementNamed(context, ResultScreen.routeName,
         arguments: args);
   }

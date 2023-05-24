@@ -46,6 +46,8 @@ dependencies:
   cloud_firestore: ^4.5.3
   firebase_auth: ^4.4.2
   share_plus: ^4.5.3
+  audioplayers: ^4.0.1
+  confetti: ^0.7.0
 
 dev_dependencies:
   flutter_test:

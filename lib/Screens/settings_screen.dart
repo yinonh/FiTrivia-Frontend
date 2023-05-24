@@ -5,7 +5,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 
 import '../Providers/user_provider.dart';
-import '../Screens/trivia_rooms.dart';
+import '../Providers/music_provider.dart';
+import '../Widgets/edit_music_settigs.dart';
 
 class UserDetailsScreen extends StatefulWidget {
   static const routeName = '/edit_user';
@@ -263,6 +264,10 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(icon: Icon(Icons.arrow_back), onPressed: (){
+          Provider.of<MusicProvider>(context, listen: false).startBgMusic();
+      Navigator.pop(context);
+    },),
         title: Text('User Details'),
       ),
       body: SingleChildScrollView(
@@ -284,6 +289,12 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
               ),
               SizedBox(height: 16),
               _buildUpdatePasswordForm(),
+              SizedBox(height: 32),
+              Text(
+                'Music Settings',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              EditMusicSettingsWidget(),
             ],
           ),
         ),

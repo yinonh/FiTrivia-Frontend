@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:card_swiper/card_swiper.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+
 
 import '../Models/trivia_room.dart';
 import '../Screens/add_room_screen.dart';
@@ -13,6 +15,7 @@ import '../Widgets/private_rooms_item.dart';
 import '../Widgets/navigate_drawer.dart';
 import '../Widgets/public_room_items.dart';
 import '../Providers/trivia_rooms_provider.dart';
+import '../Providers/music_provider.dart';
 
 class MyCustomScrollBehavior extends MaterialScrollBehavior {
   // Override behavior methods and getters like dragDevices
@@ -38,6 +41,8 @@ class _TriviaRoomsState extends State<TriviaRooms> {
   late Future<List<Map<String, dynamic>>> _privateRoomsFuture;
   late List<Map<String, dynamic>> _privateRooms = [];
   late TriviaRoomProvider _privateRoomsProvider;
+  late MusicProvider _musicProvider;
+  late AudioPlayer bgMusic;
 
   Future<void> customShowDialog(
       {context, title, content, actionWidgets}) async {
@@ -60,6 +65,8 @@ class _TriviaRoomsState extends State<TriviaRooms> {
   @override
   void initState() {
     super.initState();
+    //context.read<MusicProvider>().startBgMusic();
+    //Provider.of<MusicProvider>(context, listen: false).startBgMusic();
     publicRoomsList = Provider.of<TriviaRoomProvider>(context, listen: false)
         .publicTriviaRooms;
     publicRooms = List.generate(
@@ -71,6 +78,8 @@ class _TriviaRoomsState extends State<TriviaRooms> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    _musicProvider = Provider.of<MusicProvider>(context);
+    _musicProvider.startBgMusic();
     _privateRoomsProvider = Provider.of<TriviaRoomProvider>(context);
     _privateRoomsFuture = _privateRoomsProvider
         .getTriviaRoomsByManagerID(FirebaseAuth.instance.currentUser!.uid);

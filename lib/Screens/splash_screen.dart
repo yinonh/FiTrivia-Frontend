@@ -1,7 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../Screens/trivia_rooms.dart';
+// import '../Providers/music_provider.dart';
 
 class SplashScreen extends StatelessWidget {
   static const routeName = '/splash_screen';
+  final String nextScreen;
+
+  const SplashScreen({required this.nextScreen, Key? key}) : super(key: key);
+
+  void startMusic(BuildContext context) {
+    // context.read<MusicProvider>().startBgMusic();
+    Navigator.of(context).pushReplacementNamed(nextScreen);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -13,14 +26,16 @@ class SplashScreen extends StatelessWidget {
               "assets/logo.png",
               height: 200,
             ),
-            SizedBox(
-              height: 10,
-            ),
+            SizedBox(height: 25),
             Container(
+              height: 50,
               width: 300,
-              child: const LinearProgressIndicator(
-                  //value: 5,
-                  ),
+              child: FilledButton(
+                onPressed: () {
+                  startMusic(context);
+                },
+                child: Text("START"),
+              ),
             ),
           ],
         ),

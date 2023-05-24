@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:camera/camera.dart';
-import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -21,10 +20,11 @@ import 'Screens/connect_us_screen.dart';
 import 'Screens/room_detail_screen.dart';
 import 'Screens/add_room_screen.dart';
 import 'Screens/edit_room.dart';
-import 'Screens/user_details_screen.dart';
+import 'Screens/settings_screen.dart';
 import 'Models/trivia_room.dart';
 import 'Providers/trivia_rooms_provider.dart';
 import 'Providers/user_provider.dart';
+import 'Providers/music_provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,6 +34,7 @@ Future<void> main() async {
   runApp(
     MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (context) => MusicProvider()),
         ChangeNotifierProvider(create: (context) => TriviaRoomProvider()),
         ChangeNotifierProvider(create: (context) => UserProvider()),
       ],
@@ -50,7 +51,11 @@ class FitriviaApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     User? currentUser = FirebaseAuth.instance.currentUser;
-    Widget initialScreen = currentUser == null ? AuthScreen() : TriviaRooms();
+    // if(currentUser != null){
+    //   context.read<MusicProvider>().fetchMusicSettings(currentUser.uid);
+    // }
+    String initialScreen =
+        currentUser == null ? AuthScreen.routeName : TriviaRooms.routeName;
     const TextTheme text_theme = TextTheme(
       displayLarge: TextStyle(fontSize: 100.0, fontWeight: FontWeight.bold),
       titleLarge: TextStyle(fontSize: 36.0, fontStyle: FontStyle.italic),
@@ -110,7 +115,6 @@ class FitriviaApp extends StatelessWidget {
         }
       },
       routes: {
-        SplashScreen.routeName: (context) => SplashScreen(),
         AuthScreen.routeName: (context) => AuthScreen(),
         NoCameraScreen.routeName: (context) => NoCameraScreen(),
         TriviaRooms.routeName: (context) => TriviaRooms(),
@@ -128,13 +132,7 @@ class FitriviaApp extends StatelessWidget {
         textTheme: text_theme,
       ),
       themeMode: ThemeMode.system,
-      home: AnimatedSplashScreen(
-        backgroundColor: (Colors.blueGrey[100])!,
-        splash: Center(
-          child: Image.asset(
-            "assets/logo.png",
-          ),
-        ),
+      home: SplashScreen(
         nextScreen: initialScreen,
       ),
     );
