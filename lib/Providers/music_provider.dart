@@ -17,10 +17,8 @@ class MusicProvider with ChangeNotifier {
 
   Future<void> fetchMusicSettings(String uid) async {
     try {
-      final userDoc = await FirebaseFirestore.instance
-          .collection('Users')
-          .doc(uid)
-          .get();
+      final userDoc =
+          await FirebaseFirestore.instance.collection('Users').doc(uid).get();
 
       if (userDoc.exists) {
         final musicSettings = userDoc.data()?['musicSettings'];
@@ -28,7 +26,8 @@ class MusicProvider with ChangeNotifier {
         if (musicSettings != null && musicSettings is Map) {
           volume = musicSettings['volume'] ?? volume;
           gameMusicOn = musicSettings['gameMusicOn'] ?? gameMusicOn;
-          backgroundMusicOn = musicSettings['backgroundMusicOn'] ?? backgroundMusicOn;
+          backgroundMusicOn =
+              musicSettings['backgroundMusicOn'] ?? backgroundMusicOn;
           musicType = musicSettings['musicType'] ?? musicType;
         }
       }
@@ -37,7 +36,8 @@ class MusicProvider with ChangeNotifier {
     }
   }
 
-  Future<void> editMusicSettings(String uid, Map<String, dynamic> newSettings) async {
+  Future<void> editMusicSettings(
+      String uid, Map<String, dynamic> newSettings) async {
     try {
       final userDoc = FirebaseFirestore.instance.collection('Users').doc(uid);
 
@@ -74,12 +74,13 @@ class MusicProvider with ChangeNotifier {
   Future<void> startTrainMusic() async {
     if (gameMusicOn) {
       trainPlayer.setVolume(volume);
+      trainPlayer.setReleaseMode(ReleaseMode.loop);
       await trainPlayer.play(DeviceFileSource('assets/$musicType.mp3'));
     }
   }
 
   Future<void> startCheeringMusic() async {
-    if(gameMusicOn) {
+    if (gameMusicOn) {
       cheeringPlayer.setVolume(volume);
       await cheeringPlayer.play(cheeringFile);
     }
@@ -87,10 +88,11 @@ class MusicProvider with ChangeNotifier {
 
   Future<void> startBgMusic() async {
     bgMusicPlayer.setVolume(volume);
-    if(bgMusicPlayer.state  != PlayerState.playing && backgroundMusicOn){
+    if ((bgMusicPlayer.state != PlayerState.playing) && backgroundMusicOn) {
       bgMusicPlayer.setReleaseMode(ReleaseMode.loop);
       await bgMusicPlayer.play(backgroundMusicFile);
     }
+
   }
 
   Future<void> stopCheeringMusic() async {
@@ -109,8 +111,8 @@ class MusicProvider with ChangeNotifier {
     await trainPlayer.setVolume(volume);
   }
 
-  Future<void>changeTempVolume(double volume) async{
-      await bgMusicPlayer.setVolume(volume);
+  Future<void> changeTempVolume(double volume) async {
+    await bgMusicPlayer.setVolume(volume);
   }
 
   Future<void> lowTrainVolume() async {
@@ -122,7 +124,7 @@ class MusicProvider with ChangeNotifier {
   }
 
   Future<void> startClockMusic() async {
-    if(gameMusicOn) {
+    if (gameMusicOn) {
       clockPlayer.setVolume(volume);
       await clockPlayer.play(clockMusicFile);
     }
@@ -132,8 +134,9 @@ class MusicProvider with ChangeNotifier {
     await clockPlayer.stop();
   }
 
-
   Future<void> resumeBgMusic() async {
-    await bgMusicPlayer.resume();
+    if ((bgMusicPlayer.state != PlayerState.playing) && backgroundMusicOn) {
+      await bgMusicPlayer.resume();
+    }
   }
 }

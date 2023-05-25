@@ -108,7 +108,7 @@ class _ConnectUsPageState extends State<ConnectUsPage> {
                       height: 10,
                     ),
                     const Text(
-                      "Common Qestions:",
+                      "Common Questions:",
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w700,
