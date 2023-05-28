@@ -8,7 +8,7 @@ import '../Providers/music_provider.dart';
 import '../Screens/trivia_rooms.dart';
 
 class SignUp extends StatefulWidget {
-  final VoidCallback changeMode;
+  final void Function(String) changeMode;
 
   SignUp({required this.changeMode, Key? key}) : super(key: key);
 
@@ -206,16 +206,16 @@ class _SignUpState extends State<SignUp> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               TextButton(
-                onPressed: () {},
+                onPressed: () => widget.changeMode('forgot_password'),
                 child: const Text(
                   'Forgot Password',
                   style: TextStyle(color: Colors.white),
                 ),
               ),
               TextButton(
-                onPressed: widget.changeMode,
+                onPressed: () => widget.changeMode('login'),
                 child: const Text(
-                  'Sign In Now',
+                  'Sign In',
                   style: TextStyle(color: Colors.white),
                 ),
               ),

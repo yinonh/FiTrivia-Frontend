@@ -1,19 +1,24 @@
+import 'package:fitrivia/Widgets/forgot_password.dart';
 import 'package:flutter/material.dart';
 
 import '../Widgets/log_in.dart';
 import '../Widgets/sign_up.dart';
+import '../Widgets/forgot_password.dart';
 
 class AuthScreen extends StatefulWidget {
   static const routeName = '/auth_screen';
+
   @override
   State<AuthScreen> createState() => _AuthScreenState();
 }
 
 class _AuthScreenState extends State<AuthScreen>
     with SingleTickerProviderStateMixin {
-  bool loginMode = true;
+  String screenMode = 'login';
   late AnimationController _controller;
-  late Animation<Size> _heightAnimation;
+  late Animation<Size> _animation;
+  Size _animationStartValue = Size(500, 420);
+  Size _animationEndValue = Size(500, 600);
 
   @override
   void initState() {
@@ -22,9 +27,9 @@ class _AuthScreenState extends State<AuthScreen>
       vsync: this,
       duration: Duration(milliseconds: 300),
     );
-    _heightAnimation = Tween<Size>(
-      begin: Size(500, 420),
-      end: Size(500, 600),
+    _animation = Tween<Size>(
+      begin: _animationStartValue,
+      end: _animationEndValue,
     ).animate(
       CurvedAnimation(
         parent: _controller,
@@ -39,13 +44,43 @@ class _AuthScreenState extends State<AuthScreen>
     _controller.dispose();
   }
 
-  void _changeMode() {
-    if (loginMode) {
-      loginMode = false;
-      _controller.forward();
-    } else {
-      loginMode = true;
-      _controller.reverse();
+  void _changeMode(String state) {
+    if (state == 'signup') {
+      screenMode = 'signup';
+      _animation = Tween<Size>(
+        begin: _animation.value,
+        end: Size(500, 600),
+      ).animate(
+        CurvedAnimation(
+          parent: _controller,
+          curve: Curves.linear,
+        ),
+      );
+      _controller.forward(from: 0.0);
+    } else if (state == 'forgot_password') {
+      screenMode = 'forgot_password';
+      _animation = Tween<Size>(
+        begin: _animation.value,
+        end: Size(300, 300),
+      ).animate(
+        CurvedAnimation(
+          parent: _controller,
+          curve: Curves.linear,
+        ),
+      );
+      _controller.forward(from: 0.0);
+    } else if (state == 'login') {
+      screenMode = 'login';
+      _animation = Tween<Size>(
+        begin: _animation.value,
+        end: Size(500, 420),
+      ).animate(
+        CurvedAnimation(
+          parent: _controller,
+          curve: Curves.linear,
+        ),
+      );
+      _controller.forward(from: 0.0);
     }
   }
 
@@ -57,10 +92,10 @@ class _AuthScreenState extends State<AuthScreen>
           _buildBackgroundGrid(),
           Center(
             child: AnimatedBuilder(
-              animation: _heightAnimation,
+              animation: _animation,
               builder: (BuildContext context, Widget? child) {
                 return Container(
-                  height: _heightAnimation.value.height,
+                  height: _animation.value.height,
                   width: 500,
                   padding: const EdgeInsets.symmetric(
                     horizontal: 24,
@@ -76,9 +111,11 @@ class _AuthScreenState extends State<AuthScreen>
                         )
                       ]),
                   child: SingleChildScrollView(
-                    child: loginMode
+                    child: screenMode == 'login'
                         ? LogIn(changeMode: _changeMode)
-                        : SignUp(changeMode: _changeMode),
+                        : screenMode == 'signup'
+                            ? SignUp(changeMode: _changeMode)
+                            : ForgotPassword(changeMode: _changeMode),
                   ),
                 );
               },
