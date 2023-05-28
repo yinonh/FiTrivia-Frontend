@@ -61,7 +61,7 @@ class _AuthScreenState extends State<AuthScreen>
       screenMode = 'forgot_password';
       _animation = Tween<Size>(
         begin: _animation.value,
-        end: Size(300, 300),
+        end: Size(350, 350),
       ).animate(
         CurvedAnimation(
           parent: _controller,
