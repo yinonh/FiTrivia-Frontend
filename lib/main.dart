@@ -6,8 +6,10 @@ import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:camera/camera.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'firebase_options.dart';
 
+import 'l10n/app_localizations.dart';
 import 'Screens/auth_screen.dart';
 import 'Screens/camera_screen.dart';
 import 'Screens/previous_screen.dart';
@@ -43,10 +45,29 @@ Future<void> main() async {
   );
 }
 
-class FitriviaApp extends StatelessWidget {
+class FitriviaApp extends StatefulWidget {
   const FitriviaApp({
     Key? key,
   }) : super(key: key);
+
+  static void setLocale(BuildContext context, Locale newLocale) {
+    final _FitriviaAppState state =
+        context.findAncestorStateOfType<_FitriviaAppState>()!;
+    state.setLocale(newLocale);
+  }
+
+  @override
+  State<FitriviaApp> createState() => _FitriviaAppState();
+}
+
+class _FitriviaAppState extends State<FitriviaApp> {
+  Locale _locale = const Locale('en', '');
+
+  void setLocale(Locale newLocale) {
+    setState(() {
+      _locale = newLocale;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,6 +84,18 @@ class FitriviaApp extends StatelessWidget {
     );
 
     return MaterialApp(
+      locale: _locale,
+      localizationsDelegates: [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ],
+      supportedLocales: [
+        const Locale('en', 'US'), // English
+        const Locale('he', 'IS'), // Hebrew
+
+        // Add more locales if needed
+      ],
       onGenerateRoute: (settings) {
         if (settings.name == CameraScreen.routeName) {
           final args = settings.arguments as Map<String, dynamic>;

@@ -110,76 +110,85 @@ class _SignUpState extends State<SignUp> {
             ),
           ),
           SizedBox(height: 16),
-          TextFormField(
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter your email';
-              } else if (!EmailValidator.validate(value)) {
-                return "Email invalid";
-              }
-              return null;
-            },
-            onSaved: (value) {
-              _email = value;
-            },
-            decoration: InputDecoration(
-              labelStyle: TextStyle(color: Colors.black),
-              filled: true,
-              fillColor: Colors.white.withOpacity(0.5),
-              labelText: 'Email',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
+          Directionality(
+            textDirection: TextDirection.ltr,
+            child: TextFormField(
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter your email';
+                } else if (!EmailValidator.validate(value)) {
+                  return "Email invalid";
+                }
+                return null;
+              },
+              onSaved: (value) {
+                _email = value;
+              },
+              decoration: InputDecoration(
+                labelStyle: TextStyle(color: Colors.black),
+                filled: true,
+                fillColor: Colors.white.withOpacity(0.5),
+                labelText: 'Email',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
               ),
             ),
           ),
           SizedBox(height: 16),
-          TextFormField(
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter your password';
-              } else if (value.length < 6) {
-                return 'Password should be at least 6 characters';
-              }
-              _password1 = value;
-              return null;
-            },
-            onSaved: (value) {
-              _password1 = value;
-            },
-            obscureText: true,
-            decoration: InputDecoration(
-              labelStyle: TextStyle(color: Colors.black),
-              filled: true,
-              fillColor: Colors.white.withOpacity(0.5),
-              labelText: 'Password',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
+          Directionality(
+            textDirection: TextDirection.ltr,
+            child: TextFormField(
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter your password';
+                } else if (value.length < 6) {
+                  return 'Password should be at least 6 characters';
+                }
+                _password1 = value;
+                return null;
+              },
+              onSaved: (value) {
+                _password1 = value;
+              },
+              obscureText: true,
+              decoration: InputDecoration(
+                labelStyle: TextStyle(color: Colors.black),
+                filled: true,
+                fillColor: Colors.white.withOpacity(0.5),
+                labelText: 'Password',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
               ),
             ),
           ),
           SizedBox(height: 16),
-          TextFormField(
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please confirm your password';
-              }
-              _password2 = value;
-              if (_password1 != _password2) {
-                return 'Passwords do not match';
-              }
-              return null;
-            },
-            onSaved: (value) {
-              _password2 = value;
-            },
-            obscureText: true,
-            decoration: InputDecoration(
-              labelStyle: TextStyle(color: Colors.black),
-              filled: true,
-              fillColor: Colors.white.withOpacity(0.5),
-              labelText: 'Confirm password',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
+          Directionality(
+            textDirection: TextDirection.ltr,
+            child: TextFormField(
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please confirm your password';
+                }
+                _password2 = value;
+                if (_password1 != _password2) {
+                  return 'Passwords do not match';
+                }
+                return null;
+              },
+              onSaved: (value) {
+                _password2 = value;
+              },
+              obscureText: true,
+              decoration: InputDecoration(
+                labelStyle: TextStyle(color: Colors.black),
+                filled: true,
+                fillColor: Colors.white.withOpacity(0.5),
+                labelText: 'Confirm password',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
               ),
             ),
           ),

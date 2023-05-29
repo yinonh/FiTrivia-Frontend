@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../l10n/app_localizations.dart';
 import '../Screens/trivia_rooms.dart';
-// import '../Providers/music_provider.dart';
 
 class SplashScreen extends StatelessWidget {
   static const routeName = '/splash_screen';
@@ -34,7 +34,8 @@ class SplashScreen extends StatelessWidget {
                 onPressed: () {
                   startMusic(context);
                 },
-                child: Text("START"),
+                child: Text(AppLocalizations.of(context)
+                    .translate('start')), //Text("START"),
               ),
             ),
           ],

@@ -18,14 +18,15 @@ class ForgotPassword extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Future resetPassword() async{
+    Future resetPassword() async {
       try {
         await FirebaseAuth.instance.sendPasswordResetEmail(email: _email!);
         showDialog(
           context: context,
-          builder: (ctx){
+          builder: (ctx) {
             return AlertDialog(
-              content: const Text('Reset password instructions sent successfully, check your mail inbox..'),
+              content: const Text(
+                  'Reset password instructions sent successfully, check your mail inbox..'),
               actions: <Widget>[
                 TextButton(
                   onPressed: () => Navigator.of(ctx).pop(false),
@@ -35,10 +36,10 @@ class ForgotPassword extends StatelessWidget {
             );
           },
         );
-      } on FirebaseAuthException catch(e){
+      } on FirebaseAuthException catch (e) {
         showDialog(
           context: context,
-          builder: (context){
+          builder: (context) {
             return AlertDialog(
               content: Text(e.message.toString()),
               actions: <Widget>[
@@ -52,6 +53,7 @@ class ForgotPassword extends StatelessWidget {
         );
       }
     }
+
     return Form(
       key: _formKey,
       child: Column(
@@ -65,25 +67,28 @@ class ForgotPassword extends StatelessWidget {
             ),
           ),
           SizedBox(height: 32),
-          TextFormField(
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter your email';
-              } else if (!EmailValidator.validate(value)) {
-                return "Email invalid";
-              }
-              return null;
-            },
-            onSaved: (value) {
-              _email = value;
-            },
-            decoration: InputDecoration(
-              labelStyle: TextStyle(color: Colors.black),
-              filled: true,
-              fillColor: Colors.white.withOpacity(0.5),
-              labelText: 'Email',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
+          Directionality(
+            textDirection: TextDirection.ltr,
+            child: TextFormField(
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter your email';
+                } else if (!EmailValidator.validate(value)) {
+                  return "Email invalid";
+                }
+                return null;
+              },
+              onSaved: (value) {
+                _email = value;
+              },
+              decoration: InputDecoration(
+                labelStyle: TextStyle(color: Colors.black),
+                filled: true,
+                fillColor: Colors.white.withOpacity(0.5),
+                labelText: 'Email',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
               ),
             ),
           ),

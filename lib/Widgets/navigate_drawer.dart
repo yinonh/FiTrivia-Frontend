@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 
-
+import '../Widgets/language_dropdown.dart';
 import '../Providers/music_provider.dart';
 import '../Screens/add_room_screen.dart';
 import '../Screens/wheel.dart';
@@ -65,11 +65,13 @@ class NavigateDrawer extends StatelessWidget {
             leading: Icon(Icons.exit_to_app),
             title: Text('Logout'),
             onTap: () async {
-              await Provider.of<MusicProvider>(context, listen: false).stopBgMusic();
+              await Provider.of<MusicProvider>(context, listen: false)
+                  .stopBgMusic();
               await FirebaseAuth.instance.signOut();
               Navigator.pushReplacementNamed(context, AuthScreen.routeName);
             },
           ),
+          LanguageDropdown(),
         ],
       ),
     );

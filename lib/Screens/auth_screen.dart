@@ -1,9 +1,9 @@
-import 'package:fitrivia/Widgets/forgot_password.dart';
 import 'package:flutter/material.dart';
 
 import '../Widgets/log_in.dart';
 import '../Widgets/sign_up.dart';
 import '../Widgets/forgot_password.dart';
+import '../Widgets/language_dropdown.dart';
 
 class AuthScreen extends StatefulWidget {
   static const routeName = '/auth_screen';
@@ -90,6 +90,7 @@ class _AuthScreenState extends State<AuthScreen>
       body: Stack(
         children: [
           _buildBackgroundGrid(),
+          LanguageDropdown(),
           Center(
             child: AnimatedBuilder(
               animation: _animation,

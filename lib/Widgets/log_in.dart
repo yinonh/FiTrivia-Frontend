@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 
 import '../Screens/trivia_rooms.dart';
 import '../Providers/music_provider.dart';
+import '../l10n/app_localizations.dart';
 
 class LogIn extends StatefulWidget {
   final void Function(String) changeMode;
@@ -30,8 +31,8 @@ class _LogInState extends State<LogIn> {
       key: _formKey,
       child: Column(
         children: [
-          const Text(
-            'Log In',
+          Text(
+            AppLocalizations.of(context).translate('login'),
             style: TextStyle(
               fontSize: 32,
               fontWeight: FontWeight.bold,
@@ -39,49 +40,55 @@ class _LogInState extends State<LogIn> {
             ),
           ),
           SizedBox(height: 32),
-          TextFormField(
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter your email';
-              } else if (!EmailValidator.validate(value)) {
-                return "Email invalid";
-              }
-              return null;
-            },
-            onSaved: (value) {
-              _email = value;
-            },
-            decoration: InputDecoration(
-              labelStyle: TextStyle(color: Colors.black),
-              filled: true,
-              fillColor: Colors.white.withOpacity(0.5),
-              labelText: 'Email',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
+          Directionality(
+            textDirection: TextDirection.ltr,
+            child: TextFormField(
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter your email';
+                } else if (!EmailValidator.validate(value)) {
+                  return "Email invalid";
+                }
+                return null;
+              },
+              onSaved: (value) {
+                _email = value;
+              },
+              decoration: InputDecoration(
+                labelStyle: TextStyle(color: Colors.black),
+                filled: true,
+                fillColor: Colors.white.withOpacity(0.5),
+                labelText: 'Email',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
               ),
             ),
           ),
           SizedBox(height: 16),
-          TextFormField(
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter your password';
-              } else if (value.length < 6) {
-                return 'Password should be at least 6 characters';
-              }
-              return null;
-            },
-            onSaved: (value) {
-              _password = value;
-            },
-            obscureText: true,
-            decoration: InputDecoration(
-              labelStyle: TextStyle(color: Colors.black),
-              filled: true,
-              fillColor: Colors.white.withOpacity(0.5),
-              labelText: 'Password',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
+          Directionality(
+            textDirection: TextDirection.ltr,
+            child: TextFormField(
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter your password';
+                } else if (value.length < 6) {
+                  return 'Password should be at least 6 characters';
+                }
+                return null;
+              },
+              onSaved: (value) {
+                _password = value;
+              },
+              obscureText: true,
+              decoration: InputDecoration(
+                labelStyle: TextStyle(color: Colors.black),
+                filled: true,
+                fillColor: Colors.white.withOpacity(0.5),
+                labelText: 'Password',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
               ),
             ),
           ),
@@ -97,12 +104,14 @@ class _LogInState extends State<LogIn> {
                         _isLoading = true;
                       });
                       try {
-                        UserCredential currentUser = await FirebaseAuth.instance.signInWithEmailAndPassword(
+                        UserCredential currentUser = await FirebaseAuth.instance
+                            .signInWithEmailAndPassword(
                           email: _email!,
                           password: _password!,
                         );
                         final musicProvider = context.read<MusicProvider>();
-                        await musicProvider.fetchMusicSettings(currentUser.user!.uid);
+                        await musicProvider
+                            .fetchMusicSettings(currentUser.user!.uid);
                         Navigator.pushReplacementNamed(
                           context,
                           TriviaRooms.routeName,
