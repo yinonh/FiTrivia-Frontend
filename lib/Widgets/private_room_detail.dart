@@ -3,6 +3,7 @@ import 'package:fitrivia/Models/question.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../l10n/app_localizations.dart';
 import '../Models/trivia_room.dart';
 import '../Providers/trivia_rooms_provider.dart';
 import '../Screens/previous_screen.dart';
@@ -26,8 +27,10 @@ class _PrivateRoomDetailState extends State<PrivateRoomDetail> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          "Room Details",
+        title: Center(
+          child: Text(
+            AppLocalizations.of(context).translate("Room Details"),
+          ),
         ),
       ),
       body: FutureBuilder<TriviaRoom>(
@@ -38,7 +41,7 @@ class _PrivateRoomDetailState extends State<PrivateRoomDetail> {
             return Center(child: CircularProgressIndicator());
           }
           if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
+            return Center(child: Text(AppLocalizations.of(context).translate("Error") + ': ${snapshot.error}'));
           }
           final TriviaRoom room = snapshot.data!;
           return Column(
@@ -64,10 +67,10 @@ class _PrivateRoomDetailState extends State<PrivateRoomDetail> {
                         Navigator.pushNamed(context, PreviousScreen.routeName,
                             arguments: room);
                       },
-                      child: const Padding(
+                      child: Padding(
                         padding: EdgeInsets.all(8.0),
                         child: Text(
-                          '🏁 Start 🏁',
+                          AppLocalizations.of(context).translate('🏁 Start 🏁'),
                           style: TextStyle(
                               fontSize: 20, fontWeight: FontWeight.bold),
                         ),

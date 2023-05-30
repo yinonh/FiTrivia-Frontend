@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 
+import '../l10n/app_localizations.dart';
 import '../Providers/music_provider.dart';
 import '../Screens/trivia_rooms.dart';
 
@@ -80,8 +81,8 @@ class _SignUpState extends State<SignUp> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text(
-            'Register',
+          Text(
+            AppLocalizations.of(context).translate('Register'),
             style: TextStyle(
               fontSize: 32,
               fontWeight: FontWeight.bold,
@@ -92,7 +93,7 @@ class _SignUpState extends State<SignUp> {
           TextFormField(
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return 'Please enter your user name';
+                return AppLocalizations.of(context).translate('Please enter your user name');
               }
               return null;
             },
@@ -103,7 +104,7 @@ class _SignUpState extends State<SignUp> {
               labelStyle: TextStyle(color: Colors.black),
               filled: true,
               fillColor: Colors.white.withOpacity(0.5),
-              labelText: 'User Name',
+              labelText: AppLocalizations.of(context).translate('User Name'),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
@@ -115,9 +116,9 @@ class _SignUpState extends State<SignUp> {
             child: TextFormField(
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Please enter your email';
+                  return AppLocalizations.of(context).translate('Please enter your email') ;
                 } else if (!EmailValidator.validate(value)) {
-                  return "Email invalid";
+                  return AppLocalizations.of(context).translate('Email invalid');
                 }
                 return null;
               },
@@ -128,7 +129,7 @@ class _SignUpState extends State<SignUp> {
                 labelStyle: TextStyle(color: Colors.black),
                 filled: true,
                 fillColor: Colors.white.withOpacity(0.5),
-                labelText: 'Email',
+                labelText: AppLocalizations.of(context).translate('Email'),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
@@ -141,9 +142,9 @@ class _SignUpState extends State<SignUp> {
             child: TextFormField(
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Please enter your password';
+                  return AppLocalizations.of(context).translate('Please enter your password');
                 } else if (value.length < 6) {
-                  return 'Password should be at least 6 characters';
+                  return AppLocalizations.of(context).translate('Password should be at least 6 characters');
                 }
                 _password1 = value;
                 return null;
@@ -156,7 +157,7 @@ class _SignUpState extends State<SignUp> {
                 labelStyle: TextStyle(color: Colors.black),
                 filled: true,
                 fillColor: Colors.white.withOpacity(0.5),
-                labelText: 'Password',
+                labelText: AppLocalizations.of(context).translate('Password'),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
@@ -169,11 +170,11 @@ class _SignUpState extends State<SignUp> {
             child: TextFormField(
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Please confirm your password';
+                  return AppLocalizations.of(context).translate('Please confirm your password');
                 }
                 _password2 = value;
                 if (_password1 != _password2) {
-                  return 'Passwords do not match';
+                  return AppLocalizations.of(context).translate('Passwords do not match');
                 }
                 return null;
               },
@@ -185,7 +186,7 @@ class _SignUpState extends State<SignUp> {
                 labelStyle: TextStyle(color: Colors.black),
                 filled: true,
                 fillColor: Colors.white.withOpacity(0.5),
-                labelText: 'Confirm password',
+                labelText: AppLocalizations.of(context).translate('Confirm password'),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
@@ -208,7 +209,7 @@ class _SignUpState extends State<SignUp> {
                 ? const CircularProgressIndicator(
                     color: Colors.white,
                   )
-                : Text('Sign Up'),
+                : Text(AppLocalizations.of(context).translate('Register')),
           ),
           SizedBox(height: 16),
           Row(
@@ -216,15 +217,15 @@ class _SignUpState extends State<SignUp> {
             children: [
               TextButton(
                 onPressed: () => widget.changeMode('forgot_password'),
-                child: const Text(
-                  'Forgot Password',
+                child: Text(
+                  AppLocalizations.of(context).translate('Forgot Password'),
                   style: TextStyle(color: Colors.white),
                 ),
               ),
               TextButton(
                 onPressed: () => widget.changeMode('login'),
-                child: const Text(
-                  'Sign In',
+                child: Text(
+                  AppLocalizations.of(context).translate('Log in'),
                   style: TextStyle(color: Colors.white),
                 ),
               ),

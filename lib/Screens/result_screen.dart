@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:confetti/confetti.dart';
 
+import '../l10n/app_localizations.dart';
 import '../Models/trivia_room.dart';
 import '../Providers/trivia_rooms_provider.dart';
 import '../Providers/music_provider.dart';
@@ -143,7 +144,7 @@ class _ResultScreenState extends State<ResultScreen>
     return Scaffold(
       drawer: NavigateDrawer(),
       appBar: AppBar(
-        title: Text('Result Screen'),
+        title: Text(AppLocalizations.of(context).translate('Result Screen'),),
         centerTitle: true,
       ),
       body: Stack(
@@ -211,7 +212,7 @@ class _ResultScreenState extends State<ResultScreen>
                       builder: (ctx, snapshot) {
                         if (snapshot.hasData) {
                           if (snapshot.data!.isEmpty) {
-                            return Text('IS EMPTY');
+                            return Text(AppLocalizations.of(context).translate('IS EMPTY'),);
                           } else {
                             return Container(
                               padding: const EdgeInsets.all(20),
@@ -222,7 +223,7 @@ class _ResultScreenState extends State<ResultScreen>
                             );
                           }
                         } else if (snapshot.hasError) {
-                          return Text('error');
+                          return Text(AppLocalizations.of(context).translate('Error'),);
                         } else {
                           return Center(child: CircularProgressIndicator());
                         }
@@ -233,7 +234,7 @@ class _ResultScreenState extends State<ResultScreen>
                     child: Container(
                       height: 50,
                       child: Text(
-                        "Total score: ${get_total_score()}",
+                          AppLocalizations.of(context).translate('Total score') + ": ${get_total_score()}",
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 20,

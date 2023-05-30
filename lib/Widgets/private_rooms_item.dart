@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 
+import '../l10n/app_localizations.dart';
 import '../Providers/trivia_rooms_provider.dart';
 import '../Screens/edit_room.dart';
 import 'package:share_plus/share_plus.dart';
@@ -28,16 +29,25 @@ class PrivateRoomItem extends StatelessWidget {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Confirm'),
-        content: Text('Are you sure you want to delete this room?'),
+        title: Text(
+          AppLocalizations.of(context).translate('Confirm'),
+        ),
+        content: Text(
+          AppLocalizations.of(context)
+              .translate('Are you sure you want to delete this room?'),
+        ),
         actions: <Widget>[
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: Text('No'),
+            child: Text(
+              AppLocalizations.of(context).translate('No'),
+            ),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: Text('Yes'),
+            child: Text(
+              AppLocalizations.of(context).translate('Yes'),
+            ),
           ),
         ],
       ),
@@ -46,22 +56,27 @@ class PrivateRoomItem extends StatelessWidget {
     // If the user confirms, delete the room
     if (confirm == true) {
       try {
-      await Provider.of<TriviaRoomProvider>(context, listen: false)
-          .removeRoom(roomId);
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Room removed.')));
+        await Provider.of<TriviaRoomProvider>(context, listen: false)
+            .removeRoom(roomId);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context).translate('Room removed.'),
+            ),
+          ),
+        );
       } catch (e) {
         ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(
-            content: Text(e.toString().substring(11))));
+            .showSnackBar(SnackBar(content: Text(e.toString().substring(11))));
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    String inviteMessage =
-        'Come join my room: $roomId ${!isPublic ? 'Password: $roomPass' : ''}';
+    String inviteMessage = AppLocalizations.of(context)
+            .translate('Come join my room:') +
+        ' $roomId ${!isPublic ? AppLocalizations.of(context).translate('Password') + ': $roomPass' : ''}';
     return Slidable(
       key: const ValueKey(0),
       startActionPane:
@@ -79,7 +94,7 @@ class PrivateRoomItem extends StatelessWidget {
                       backgroundColor: Color(0xFFFE4A49),
                       foregroundColor: Colors.white,
                       icon: Icons.delete,
-                      label: 'Delete',
+                      label: AppLocalizations.of(context).translate('Delete'),
                     ),
                   ],
                 ),
@@ -98,20 +113,25 @@ class PrivateRoomItem extends StatelessWidget {
                   backgroundColor: Colors.blueGrey,
                   foregroundColor: Colors.white,
                   icon: Icons.edit,
-                  label: 'Edit',
+                  label: AppLocalizations.of(context).translate('Edit'),
                 ),
                 SlidableAction(
                   onPressed: (BuildContext context) async {
                     await Clipboard.setData(ClipboardData(text: inviteMessage));
                     Share.share(inviteMessage);
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
                         content: Text(
-                            'Invite message copied to clipboard successfully.')));
+                          AppLocalizations.of(context).translate(
+                              'Invite message copied to clipboard successfully.'),
+                        ),
+                      ),
+                    );
                   },
                   backgroundColor: Color(0xFF21B7CA),
                   foregroundColor: Colors.white,
                   icon: Icons.share,
-                  label: 'Share',
+                  label: AppLocalizations.of(context).translate('Share'),
                 ),
               ],
             ),
@@ -132,9 +152,14 @@ class PrivateRoomItem extends StatelessWidget {
                         await Clipboard.setData(
                             ClipboardData(text: inviteMessage));
                         Share.share(inviteMessage);
-                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
                             content: Text(
-                                'Invite message copied to clipboard successfully.')));
+                              AppLocalizations.of(context).translate(
+                                  'Invite message copied to clipboard successfully.'),
+                            ),
+                          ),
+                        );
                       },
                     ),
                     IconButton(

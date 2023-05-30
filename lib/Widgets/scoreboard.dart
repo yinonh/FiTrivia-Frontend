@@ -68,7 +68,7 @@ class _ScoreboardState extends State<Scoreboard>
         itemBuilder: (context, index) {
           if (index == sortedEntries.length) {
             // Render a separate row for the current user at the bottom
-            print(sortedEntries.last.score);
+            // print(sortedEntries.last.score);
             return (sortedEntries.last.id == widget.currentUserID &&
                 sortedEntries.length == maxScoreboardSize + 1)
                 ? _buildSeparateRow()

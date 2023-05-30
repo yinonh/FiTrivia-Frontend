@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:provider/provider.dart';
 import 'package:flutter/cupertino.dart';
 
+import '../l10n/app_localizations.dart';
 import '../Screens/room_detail_screen.dart';
 import '../Widgets/navigate_drawer.dart';
 import '../Providers/trivia_rooms_provider.dart';
@@ -55,7 +56,8 @@ class _WheelScreenState extends State<WheelScreen> {
       drawer: NavigateDrawer(),
       appBar: AppBar(
         title: Center(
-          child: Text("hello"),
+          child: Text(AppLocalizations.of(context)
+              .translate('Wheel of Fortune'),),
         ),
       ),
       floatingActionButton: FloatingActionButton(
@@ -70,7 +72,7 @@ class _WheelScreenState extends State<WheelScreen> {
           }
 
           if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
+            return Center(child: Text(AppLocalizations.of(context).translate('Error') + ': ${snapshot.error}'));
           }
 
           final publicRoomsList = snapshot.data!;
@@ -110,7 +112,7 @@ class _WheelScreenState extends State<WheelScreen> {
                   child: Container(
                     padding: const EdgeInsets.all(10.0),
                     child: Text(
-                      'Select!',
+                      AppLocalizations.of(context).translate('Select!'),
                       style: TextStyle(fontSize: 20.0),
                     ),
                   ),

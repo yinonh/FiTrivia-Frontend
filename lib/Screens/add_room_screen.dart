@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+import '../l10n/app_localizations.dart';
 import '../Widgets/navigate_drawer.dart';
 import '../Widgets/exGifButtons.dart';
 import '../Screens/trivia_rooms.dart';
@@ -63,7 +64,7 @@ class _AddRoomState extends State<AddRoom> {
     return Scaffold(
       drawer: NavigateDrawer(),
       appBar: AppBar(
-        title: Text('Add Room'),
+        title: Center(child: Text(AppLocalizations.of(context).translate("Add Room"),)),
       ),
       body: Stepper(
         controlsBuilder: (context, _) {
@@ -88,7 +89,9 @@ class _AddRoomState extends State<AddRoom> {
                       },
                       );
                     } else {
-                      setState(() => exError = true);
+                      if(selectedEx.length != 4) {
+                        setState(() => exError = true);
+                      }
                     }
                   } else {
                     if (_questionsFormKey.currentState!.validate()) {
@@ -118,14 +121,14 @@ class _AddRoomState extends State<AddRoom> {
                         });
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text("Server Error, try again"),
+                            content: Text(AppLocalizations.of(context).translate('Server Error, try again'),),
                           ),
                         );
                       }
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text("Correct the question data"),
+                          content: Text(AppLocalizations.of(context).translate('Correct the question data'),),
                         ),
                       );
                     }
@@ -133,8 +136,8 @@ class _AddRoomState extends State<AddRoom> {
                   }
                 },
                 child: requestSent
-                    ? const Text('Send...')
-                    : const Text('CONTINUE'),
+                    ? Text(AppLocalizations.of(context).translate('Send...'),)
+                    : Text(AppLocalizations.of(context).translate('CONTINUE'),),
               ),
               TextButton(
                 onPressed: () {
@@ -145,7 +148,7 @@ class _AddRoomState extends State<AddRoom> {
                     setState(() => _currentStep -= 1);
                   }
                 },
-                child: const Text('CANCEL'),
+                child: Text(AppLocalizations.of(context).translate('CANCEL'),),
               ),
             ],
           );
@@ -155,7 +158,7 @@ class _AddRoomState extends State<AddRoom> {
         //onStepCancel:
         steps: [
           Step(
-            title: Text('Quiz Details'),
+            title: Text(AppLocalizations.of(context).translate('Quiz Details'),),
             isActive: _currentStep == 0,
             content: Form(
               key: _roomFormKey,
@@ -170,11 +173,11 @@ class _AddRoomState extends State<AddRoom> {
                     decoration: InputDecoration(
                       labelStyle: TextStyle(color: Colors.black),
                       border: OutlineInputBorder(),
-                      labelText: 'Name',
+                      labelText: AppLocalizations.of(context).translate('Name'),
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter a name';
+                        return AppLocalizations.of(context).translate('Please enter a name');
                       }
                       return null;
                     },
@@ -188,11 +191,11 @@ class _AddRoomState extends State<AddRoom> {
                     decoration: InputDecoration(
                       labelStyle: TextStyle(color: Colors.black),
                       border: OutlineInputBorder(),
-                      labelText: 'Description',
+                      labelText: AppLocalizations.of(context).translate('Description'),
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter a description';
+                        return AppLocalizations.of(context).translate('Please enter a description');
                       }
                       return null;
                     },
@@ -203,7 +206,7 @@ class _AddRoomState extends State<AddRoom> {
                   SizedBox(
                     height: 16,
                   ),
-                  Text('Exercise Time (in seconds)'),
+                  Text(AppLocalizations.of(context).translate('Exercise Time (Seconds):'),),
                   Slider(
                     value: _exerciseTime.toDouble(),
                     min: 5,
@@ -219,7 +222,7 @@ class _AddRoomState extends State<AddRoom> {
                   SizedBox(
                     height: 16,
                   ),
-                  Text('Rest Time (in seconds)'),
+                  Text(AppLocalizations.of(context).translate('Rest Time (Seconds):'),),
                   Slider(
                     value: _restTime.toDouble(),
                     min: 5,
@@ -245,7 +248,7 @@ class _AddRoomState extends State<AddRoom> {
                           });
                         },
                       ),
-                      Text('Public Room'),
+                      Text(AppLocalizations.of(context).translate('Public Room'),),
                     ],
                   ),
                   SizedBox(
@@ -255,13 +258,13 @@ class _AddRoomState extends State<AddRoom> {
                     TextFormField(
                       obscureText: true,
                       decoration: InputDecoration(
-                        labelText: 'Password',
+                        labelText: AppLocalizations.of(context).translate('Password'),
                         labelStyle: TextStyle(color: Colors.black),
                         border: OutlineInputBorder(),
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter a password';
+                          return AppLocalizations.of(context).translate('Please enter a password');
                         }
                         return null;
                       },
@@ -270,7 +273,7 @@ class _AddRoomState extends State<AddRoom> {
                       },
                     ),
                   SizedBox(height: 16),
-                  Text("Chose exercise:"),
+                  Text(AppLocalizations.of(context).translate('Chose exercises:'),),
                   Container(
                     width: 500,
                     height: 150,
@@ -284,7 +287,7 @@ class _AddRoomState extends State<AddRoom> {
                   ),
                   exError
                       ? Text(
-                          "You must choose 4 exercise",
+                    AppLocalizations.of(context).translate('You must choose 4 exercise'),
                           style: TextStyle(color: Colors.red),
                         )
                       : SizedBox(height: 0),
@@ -294,7 +297,7 @@ class _AddRoomState extends State<AddRoom> {
             ),
           ),
           Step(
-            title: Text('Questions Details'),
+            title: Text(AppLocalizations.of(context).translate('Questions Details'),),
             isActive: _currentStep == 1,
             content: SingleChildScrollView(
               child: Form(
@@ -317,13 +320,13 @@ class _AddRoomState extends State<AddRoom> {
                                       question: '',
                                       difficulty: '',
                                     ))),
-                            child: Text('Add Question'),
+                            child: Text(AppLocalizations.of(context).translate('Add Question'),),
                           ),
                         if (_quizQuestions.length > 2)
                           ElevatedButton(
                             onPressed: () =>
                                 setState(() => _quizQuestions.removeLast()),
-                            child: Text('Remove Question'),
+                            child: Text(AppLocalizations.of(context).translate('Remove Question'),),
                           ),
                       ],
                     ),
@@ -346,15 +349,15 @@ class _AddRoomState extends State<AddRoom> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Question ${index + 1}'),
+            Text(AppLocalizations.of(context).translate('Question') + ' ${index + 1}'),
             SizedBox(height: 8),
             TextFormField(
               maxLength: 190,
               validator: (value) {
                 if (value == null || value == '') {
-                  return "Enter the question";
+                  return AppLocalizations.of(context).translate('Enter the question');
                 } else if (!value!.endsWith("?")) {
-                  return "Question must end with question mark";
+                  return AppLocalizations.of(context).translate('Question must end with question mark');
                 }
               },
               onSaved: (value) => setState(() => _quizQuestions[index] =
@@ -362,7 +365,7 @@ class _AddRoomState extends State<AddRoom> {
               decoration: InputDecoration(
                 labelStyle: TextStyle(color: Colors.black),
                 border: OutlineInputBorder(),
-                labelText: 'Question',
+                labelText: AppLocalizations.of(context).translate('Question'),
               ),
             ),
             SizedBox(height: 8),
@@ -370,7 +373,7 @@ class _AddRoomState extends State<AddRoom> {
               maxLength: 55,
               validator: (value) {
                 if (value == null) {
-                  return "Enter the correct answers";
+                  return AppLocalizations.of(context).translate('Enter the correct answers');
                 }
                 answers[index] = [value];
               },
@@ -379,7 +382,7 @@ class _AddRoomState extends State<AddRoom> {
               decoration: InputDecoration(
                 labelStyle: TextStyle(color: Colors.black),
                 border: OutlineInputBorder(),
-                labelText: 'Correct Answer',
+                labelText: AppLocalizations.of(context).translate('Correct Answer'),
               ),
             ),
             SizedBox(height: 8),
@@ -387,9 +390,9 @@ class _AddRoomState extends State<AddRoom> {
               maxLength: 55,
               validator: (value) {
                 if (value == null) {
-                  return "Enter the incorrect answers";
+                  return AppLocalizations.of(context).translate('Enter the incorrect answers');
                 } else if (answers[index].contains(value)) {
-                  return "all the answers should be different";
+                  return AppLocalizations.of(context).translate('all the answers should be different');
                 } else {
                   answers[index].add(value);
                 }
@@ -400,7 +403,7 @@ class _AddRoomState extends State<AddRoom> {
               decoration: InputDecoration(
                 labelStyle: TextStyle(color: Colors.black),
                 border: OutlineInputBorder(),
-                labelText: 'First Incorrect Answers',
+                labelText: AppLocalizations.of(context).translate('First Incorrect Answers'),
               ),
             ),
             SizedBox(height: 16),
@@ -408,9 +411,9 @@ class _AddRoomState extends State<AddRoom> {
               maxLength: 55,
               validator: (value) {
                 if (value == null) {
-                  return "Enter the incorrect answers";
+                  return AppLocalizations.of(context).translate('Enter the incorrect answers');
                 } else if (answers[index].contains(value)) {
-                  return "all the answers should be different";
+                  return AppLocalizations.of(context).translate('all the answers should be different');
                 } else {
                   answers[index].add(value);
                 }
@@ -421,7 +424,7 @@ class _AddRoomState extends State<AddRoom> {
               decoration: InputDecoration(
                 labelStyle: TextStyle(color: Colors.black),
                 border: OutlineInputBorder(),
-                labelText: 'Second Incorrect Answers',
+                labelText: AppLocalizations.of(context).translate('Second Incorrect Answers'),
               ),
             ),
             SizedBox(height: 16),
@@ -429,9 +432,9 @@ class _AddRoomState extends State<AddRoom> {
               maxLength: 55,
               validator: (value) {
                 if (value == null) {
-                  return "Enter the incorrect answers";
+                  return AppLocalizations.of(context).translate('Enter the incorrect answers');
                 } else if (answers[index].contains(value)) {
-                  return "all the answers should be different";
+                  return AppLocalizations.of(context).translate('all the answers should be different');
                 } else {
                   answers[index].add(value);
                 }
@@ -442,7 +445,7 @@ class _AddRoomState extends State<AddRoom> {
               decoration: InputDecoration(
                 labelStyle: TextStyle(color: Colors.black),
                 border: OutlineInputBorder(),
-                labelText: 'Third Incorrect Answers',
+                labelText: AppLocalizations.of(context).translate('Third Incorrect Answers'),
               ),
             ),
             SizedBox(height: 16),

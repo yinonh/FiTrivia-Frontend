@@ -7,7 +7,7 @@ import 'package:card_swiper/card_swiper.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-
+import '../l10n/app_localizations.dart';
 import '../Models/trivia_room.dart';
 import '../Screens/add_room_screen.dart';
 import '../Screens/room_detail_screen.dart';
@@ -98,7 +98,11 @@ class _TriviaRoomsState extends State<TriviaRooms> {
         TextEditingController();
     return Scaffold(
       appBar: AppBar(
-        title: Center(child: Text("Trivia Rooms")),
+        title: Center(
+          child: Text(
+            AppLocalizations.of(context).translate('Trivia Rooms'),
+          ),
+        ),
       ),
       drawer: NavigateDrawer(),
       floatingActionButton: FloatingActionButton(
@@ -154,9 +158,10 @@ class _TriviaRoomsState extends State<TriviaRooms> {
                   child: TextField(
                     controller: _searchController,
                     // attach the TextEditingController
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       border: OutlineInputBorder(),
-                      hintText: 'Enter room ID to join',
+                      hintText: AppLocalizations.of(context)
+                          .translate('Enter room ID to join'),
                     ),
                   ),
                 ),
@@ -170,11 +175,17 @@ class _TriviaRoomsState extends State<TriviaRooms> {
                           .isRoomExistsById(userInput)) {
                     customShowDialog(
                         context: context,
-                        title: 'Room Not Found',
-                        content: Text('Can\'t find room with this ID'),
+                        title: AppLocalizations.of(context)
+                            .translate('Room Not Found'),
+                        content: Text(
+                          AppLocalizations.of(context)
+                              .translate("Can't find room with this ID"),
+                        ),
                         actionWidgets: <Widget>[
                           TextButton(
-                            child: Text('OK'),
+                            child: Text(
+                              AppLocalizations.of(context).translate('OK'),
+                            ),
                             onPressed: () {
                               Navigator.of(context).pop();
                             },
@@ -189,18 +200,21 @@ class _TriviaRoomsState extends State<TriviaRooms> {
                       forwardToRoom = false;
                       await customShowDialog(
                         context: context,
-                        title: 'Secured Room',
+                        title: AppLocalizations.of(context)
+                            .translate('Secured Room'),
                         content: TextField(
                           controller: _roomPasswordController,
-                          decoration: const InputDecoration(
+                          decoration: InputDecoration(
                             border: OutlineInputBorder(),
-                            hintText: 'Password',
+                            hintText: AppLocalizations.of(context)
+                                .translate('Password'),
                           ),
                           obscureText: true,
                         ),
                         actionWidgets: <Widget>[
                           TextButton(
-                            child: Text('OK'),
+                            child: Text(
+                                AppLocalizations.of(context).translate('OK')),
                             onPressed: () {
                               forwardToRoom = _checkPass(
                                   _roomPasswordController.text,
@@ -210,7 +224,9 @@ class _TriviaRoomsState extends State<TriviaRooms> {
                             },
                           ),
                           TextButton(
-                            child: Text('Cancel'),
+                            child: Text(
+                              AppLocalizations.of(context).translate('Cancel'),
+                            ),
                             onPressed: () {
                               canceled = true;
                               Navigator.of(context).pop();
@@ -226,7 +242,13 @@ class _TriviaRoomsState extends State<TriviaRooms> {
                           arguments: userInput);
                     } else if (!canceled) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Wrong Password')));
+                        SnackBar(
+                          content: Text(
+                            AppLocalizations.of(context)
+                                .translate('Wrong Password'),
+                          ),
+                        ),
+                      );
                     }
                   }
                 },
@@ -234,10 +256,10 @@ class _TriviaRoomsState extends State<TriviaRooms> {
             ],
           ),
           Divider(),
-          const Padding(
+          Padding(
             padding: EdgeInsets.fromLTRB(10, 8, 8, 0),
             child: Text(
-              'My Rooms:',
+              AppLocalizations.of(context).translate('My Rooms'),
               style: TextStyle(
                 fontSize: 25,
                 fontWeight: FontWeight.w800,
@@ -251,7 +273,8 @@ class _TriviaRoomsState extends State<TriviaRooms> {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Center(child: CircularProgressIndicator());
                 } else if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
+                  return Center(child: Text(AppLocalizations.of(context)
+                      .translate('Error') + ': ${snapshot.error}'));
                 } else {
                   final List<Map<String, dynamic>> privateRooms =
                       snapshot.data ?? [];

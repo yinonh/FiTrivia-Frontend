@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 
+import '../l10n/app_localizations.dart';
 import '../Widgets/language_dropdown.dart';
 import '../Providers/music_provider.dart';
 import '../Screens/add_room_screen.dart';
@@ -35,35 +36,35 @@ class NavigateDrawer extends StatelessWidget {
           ),
           ListTile(
             leading: Icon(Icons.add),
-            title: Text('Create New Room'),
+            title: Text(AppLocalizations.of(context).translate('Create New Room'),),
             onTap: () {
               Navigator.pushReplacementNamed(context, AddRoom.routeName);
             },
           ),
           ListTile(
             leading: Icon(Icons.auto_awesome),
-            title: Text('Surprise Me'),
+            title: Text(AppLocalizations.of(context).translate('Surprise Me'),),
             onTap: () {
               Navigator.pushReplacementNamed(context, WheelScreen.routeName);
             },
           ),
           ListTile(
             leading: Icon(Icons.question_answer),
-            title: Text('Connect us'),
+            title: Text(AppLocalizations.of(context).translate('Connect Us'),),
             onTap: () {
               Navigator.pushReplacementNamed(context, ConnectUsPage.routeName);
             },
           ),
           ListTile(
             leading: Icon(Icons.settings),
-            title: Text('Settings'),
+            title: Text(AppLocalizations.of(context).translate('Settings'),),
             onTap: () {
               Navigator.pushNamed(context, UserDetailsScreen.routeName);
             },
           ),
           ListTile(
             leading: Icon(Icons.exit_to_app),
-            title: Text('Logout'),
+            title: Text(AppLocalizations.of(context).translate('Logout'),),
             onTap: () async {
               await Provider.of<MusicProvider>(context, listen: false)
                   .stopBgMusic();

@@ -4,11 +4,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:audioplayers/audioplayers.dart';
 
+import '../l10n/app_localizations.dart';
 import '../Providers/music_provider.dart';
 
 class EditMusicSettingsWidget extends StatefulWidget {
   @override
-  _EditMusicSettingsWidgetState createState() => _EditMusicSettingsWidgetState();
+  _EditMusicSettingsWidgetState createState() =>
+      _EditMusicSettingsWidgetState();
 }
 
 class _EditMusicSettingsWidgetState extends State<EditMusicSettingsWidget> {
@@ -25,7 +27,6 @@ class _EditMusicSettingsWidgetState extends State<EditMusicSettingsWidget> {
   AudioPlayer previewPlayers = AudioPlayer();
   bool isPlayingPreview = false;
   late MusicProvider _musicProvider;
-
 
   @override
   void initState() {
@@ -79,7 +80,7 @@ class _EditMusicSettingsWidgetState extends State<EditMusicSettingsWidget> {
   Future<void> saveChanges() async {
     final uid = FirebaseAuth.instance.currentUser!.uid; // User's UID
 
-    if(!backgroundMusicOn){
+    if (!backgroundMusicOn) {
       _musicProvider.stopBgMusic();
     }
 
@@ -93,7 +94,12 @@ class _EditMusicSettingsWidgetState extends State<EditMusicSettingsWidget> {
     await _musicProvider.editMusicSettings(uid, newSettings);
 
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Music settings updated successfully!')),
+      SnackBar(
+        content: Text(
+          AppLocalizations.of(context)
+              .translate('Music settings updated successfully!'),
+        ),
+      ),
     );
   }
 
@@ -103,7 +109,7 @@ class _EditMusicSettingsWidgetState extends State<EditMusicSettingsWidget> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Volume',
+          AppLocalizations.of(context).translate('Volume'),
           style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
         ),
         Slider(
@@ -119,7 +125,7 @@ class _EditMusicSettingsWidgetState extends State<EditMusicSettingsWidget> {
         ),
         SizedBox(height: 16.0),
         CheckboxListTile(
-          title: Text('Game Music'),
+          title: Text(AppLocalizations.of(context).translate('Game Music'),),
           value: gameMusicOn,
           onChanged: (newValue) {
             setState(() {
@@ -129,7 +135,7 @@ class _EditMusicSettingsWidgetState extends State<EditMusicSettingsWidget> {
         ),
         SizedBox(height: 16.0),
         CheckboxListTile(
-          title: Text('Background Music'),
+          title: Text(AppLocalizations.of(context).translate('Background Music'),),
           value: backgroundMusicOn,
           onChanged: (newValue) {
             setState(() {
@@ -139,7 +145,7 @@ class _EditMusicSettingsWidgetState extends State<EditMusicSettingsWidget> {
         ),
         SizedBox(height: 16.0),
         Text(
-          'Game music Type',
+          AppLocalizations.of(context).translate('Game music Type'),
           style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
         ),
         Row(
@@ -156,14 +162,20 @@ class _EditMusicSettingsWidgetState extends State<EditMusicSettingsWidget> {
                     borderRadius: BorderRadius.circular(8.0),
                   ),
                   child: Center(
-                    child: this.isPlayingPreview ? CircularProgressIndicator(color: Colors.white, ) : Text(
-                      musicTypeNames[musicType]!,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                      ),
-                    ),
+                    child: this.isPlayingPreview
+                        ? CircularProgressIndicator(
+                            color: Colors.white,
+                          )
+                        : Text(
+                            musicTypeNames[musicType]!,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontWeight: isSelected
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                            ),
+                          ),
                   ),
                 ),
               ),
@@ -174,12 +186,11 @@ class _EditMusicSettingsWidgetState extends State<EditMusicSettingsWidget> {
         Center(
           child: ElevatedButton(
             onPressed: saveChanges,
-            child: Text('Save Changes'),
+            child: Text(AppLocalizations.of(context).translate('Save Changes'),),
           ),
         ),
         SizedBox(height: 32.0),
       ],
     );
-
   }
 }

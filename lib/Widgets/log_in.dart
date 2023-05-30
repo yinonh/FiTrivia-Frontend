@@ -3,9 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:provider/provider.dart';
 
+import '../l10n/app_localizations.dart';
 import '../Screens/trivia_rooms.dart';
 import '../Providers/music_provider.dart';
-import '../l10n/app_localizations.dart';
 
 class LogIn extends StatefulWidget {
   final void Function(String) changeMode;
@@ -32,7 +32,7 @@ class _LogInState extends State<LogIn> {
       child: Column(
         children: [
           Text(
-            AppLocalizations.of(context).translate('login'),
+            AppLocalizations.of(context).translate('Log in'),
             style: TextStyle(
               fontSize: 32,
               fontWeight: FontWeight.bold,
@@ -45,9 +45,9 @@ class _LogInState extends State<LogIn> {
             child: TextFormField(
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Please enter your email';
+                  return AppLocalizations.of(context).translate('Please enter your email');
                 } else if (!EmailValidator.validate(value)) {
-                  return "Email invalid";
+                  return AppLocalizations.of(context).translate('Email invalid');
                 }
                 return null;
               },
@@ -58,7 +58,7 @@ class _LogInState extends State<LogIn> {
                 labelStyle: TextStyle(color: Colors.black),
                 filled: true,
                 fillColor: Colors.white.withOpacity(0.5),
-                labelText: 'Email',
+                labelText: AppLocalizations.of(context).translate('Email'),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
@@ -71,9 +71,9 @@ class _LogInState extends State<LogIn> {
             child: TextFormField(
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Please enter your password';
+                  return AppLocalizations.of(context).translate('Please enter your password');
                 } else if (value.length < 6) {
-                  return 'Password should be at least 6 characters';
+                  return AppLocalizations.of(context).translate('Password should be at least 6 characters');
                 }
                 return null;
               },
@@ -85,7 +85,7 @@ class _LogInState extends State<LogIn> {
                 labelStyle: TextStyle(color: Colors.black),
                 filled: true,
                 fillColor: Colors.white.withOpacity(0.5),
-                labelText: 'Password',
+                labelText: AppLocalizations.of(context).translate('Password'),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
@@ -118,10 +118,10 @@ class _LogInState extends State<LogIn> {
                         );
                       } on FirebaseAuthException catch (e) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
+                          SnackBar(
                             duration: Duration(seconds: 2),
                             content: Text(
-                              'Failed to sign in',
+                              AppLocalizations.of(context).translate('Failed to sign in'),
                               style: TextStyle(
                                 color: Colors.deepOrange,
                                 fontWeight: FontWeight.bold,
@@ -149,7 +149,7 @@ class _LogInState extends State<LogIn> {
                 ? const CircularProgressIndicator(
                     color: Colors.white,
                   )
-                : Text('Sign In'),
+                : Text(AppLocalizations.of(context).translate('Log in')),
           ),
           SizedBox(height: 16),
           Row(
@@ -157,15 +157,15 @@ class _LogInState extends State<LogIn> {
             children: [
               TextButton(
                 onPressed: () => widget.changeMode('forgot_password'),
-                child: const Text(
-                  'Forgot Password',
+                child: Text(
+                  AppLocalizations.of(context).translate('Forgot Password'),
                   style: TextStyle(color: Colors.white),
                 ),
               ),
               TextButton(
                 onPressed: () => widget.changeMode('signup'),
-                child: const Text(
-                  'Register',
+                child: Text(
+                  AppLocalizations.of(context).translate('Register'),
                   style: TextStyle(color: Colors.white),
                 ),
               ),

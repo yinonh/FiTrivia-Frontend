@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+import '../l10n/app_localizations.dart';
 import '../Widgets/navigate_drawer.dart';
 
 class ConnectUsPage extends StatefulWidget {
   static const routeName = "/connect_us";
+
   @override
   _ConnectUsPageState createState() => _ConnectUsPageState();
 }
@@ -34,7 +36,11 @@ class _ConnectUsPageState extends State<ConnectUsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Center(child: Text("Connect Us")),
+        title: Center(
+          child: Text(
+            AppLocalizations.of(context).translate('Connect Us'),
+          ),
+        ),
       ),
       drawer: NavigateDrawer(),
       body: SingleChildScrollView(
@@ -43,7 +49,10 @@ class _ConnectUsPageState extends State<ConnectUsPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text("What would you like to contact us about?"),
+              Text(
+                AppLocalizations.of(context)
+                    .translate('What would you like to contact us about?'),
+              ),
               SizedBox(height: 8),
               Form(
                 key: _formKey,
@@ -53,7 +62,8 @@ class _ConnectUsPageState extends State<ConnectUsPage> {
                     DropdownButtonFormField<String>(
                       //value: _subject,
                       decoration: InputDecoration(
-                        labelText: 'Select subject',
+                        labelText: AppLocalizations.of(context)
+                            .translate('Select subject'),
                         border: OutlineInputBorder(),
                       ),
                       onChanged: (String? newValue) {
@@ -63,7 +73,8 @@ class _ConnectUsPageState extends State<ConnectUsPage> {
                       },
                       validator: (value) {
                         if (value == null) {
-                          return 'Please select a subject';
+                          return AppLocalizations.of(context)
+                              .translate('Please select a subject');
                         }
                         return null;
                       },
@@ -75,12 +86,15 @@ class _ConnectUsPageState extends State<ConnectUsPage> {
                     TextFormField(
                       maxLines: 5,
                       decoration: InputDecoration(
-                        labelText: "Message",
-                        hintText: "Type your message here",
+                        labelText:
+                            AppLocalizations.of(context).translate('Message'),
+                        hintText: AppLocalizations.of(context)
+                            .translate('Type your message here'),
                       ),
                       validator: (value) {
                         if (value != null && value.isEmpty) {
-                          return "Please enter a message";
+                          return AppLocalizations.of(context)
+                              .translate('Please enter a message');
                         }
                         return null;
                       },
@@ -101,14 +115,16 @@ class _ConnectUsPageState extends State<ConnectUsPage> {
                             _sendMessage();
                           }
                         },
-                        child: Text("Send"),
+                        child: Text(
+                            AppLocalizations.of(context).translate('Send')),
                       ),
                     ),
                     SizedBox(
                       height: 10,
                     ),
-                    const Text(
-                      "Common Questions:",
+                    Text(
+                      AppLocalizations.of(context)
+                          .translate('Common Questions:'),
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w700,
@@ -159,15 +175,21 @@ class _ConnectUsPageState extends State<ConnectUsPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text("Message sent"),
+        title: Text(
+          AppLocalizations.of(context).translate('Message sent'),
+        ),
         content: Text(
-            "Thank you for contacting us. We will get back to you as soon as possible."),
+          AppLocalizations.of(context).translate(
+              'Thank you for contacting us. We will get back to you as soon as possible.'),
+        ),
         actions: [
           TextButton(
             onPressed: () {
               Navigator.pop(context);
             },
-            child: Text("OK"),
+            child: Text(
+              AppLocalizations.of(context).translate('OK'),
+            ),
           ),
         ],
       ),

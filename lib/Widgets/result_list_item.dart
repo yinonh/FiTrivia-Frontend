@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import '../l10n/app_localizations.dart';
 import '../Widgets/chart.dart';
 
 class ListItem extends StatelessWidget {
@@ -14,9 +16,9 @@ class ListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (numbers.length == 0) {
-      return const Center(
+      return Center(
         child: Text(
-          "Server Error",
+          AppLocalizations.of(context).translate('Server Error'),
           style: TextStyle(
             fontWeight: FontWeight.bold,
             color: Colors.redAccent,
@@ -65,7 +67,7 @@ class ListItem extends StatelessWidget {
           //   ),
           // ),
           Text(
-            "score: " + "${numbers.reduce((a, b) => a + b)}",
+              AppLocalizations.of(context).translate('score: ') + "${numbers.reduce((a, b) => a + b)}",
             style: const TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 20,

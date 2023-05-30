@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'dart:async';
 import 'package:provider/provider.dart';
-// import 'package:audioplayers/audioplayers.dart';
 
+import '../l10n/app_localizations.dart';
 import '../Screens/no_camera_screen.dart';
 import '../Screens/camera_screen.dart';
 import '../Models/trivia_room.dart';
@@ -22,7 +22,6 @@ class PreviousScreen extends StatefulWidget {
 class _PreviousScreenState extends State<PreviousScreen> {
   late bool isControllerInitialized;
   late CameraController _controller;
-  //late Future<List<QuizQuestion>> _futureQuestions;
   late Future<void> _initializeControllerFuture;
   bool pressed = false;
   int _countdownValue = 6;
@@ -30,8 +29,6 @@ class _PreviousScreenState extends State<PreviousScreen> {
   bool cameraAvailable = true;
   late MusicProvider _musicProvider;
 
-  // AudioPlayer clockPlayer = AudioPlayer();
-  // DeviceFileSource clock = DeviceFileSource('assets/bellSound.mp3');
 
   @override
   void initState() {
@@ -61,7 +58,6 @@ class _PreviousScreenState extends State<PreviousScreen> {
           _controller = CameraController(
             backCamera,
             ResolutionPreset.high,
-            // enableAudio: false,
           );
           _initializeControllerFuture = _controller.initialize().then((_) {
             setState(() {
@@ -76,35 +72,6 @@ class _PreviousScreenState extends State<PreviousScreen> {
       }
     });
   }
-
-  // void initState() {
-  //   super.initState();
-  //   isControllerInitialized = false;
-  //   // _futureQuestions = QuizQuestion.fetchQuestions().whenComplete(() {
-  //   //   setState(() {
-  //   //     pressed = true;
-  //   //   });
-  //   // });
-  //   availableCameras().then((cameras) {
-  //     if (cameras.isEmpty) {
-  //       setState(() {
-  //         cameraAvailable = false;
-  //       });
-  //     } else {
-  //       final backCamera = cameras.last;
-  //       _controller = CameraController(
-  //         backCamera,
-  //         ResolutionPreset.high,
-  //         // enableAudio: false,
-  //       );
-  //       _initializeControllerFuture = _controller.initialize().then((_) {
-  //         setState(() {
-  //           isControllerInitialized = true;
-  //         });
-  //       });
-  //     }
-  //   });
-  // }
 
   @override
   void dispose() {
@@ -146,7 +113,7 @@ class _PreviousScreenState extends State<PreviousScreen> {
   Widget _buildCameraPreview() {
     if (!cameraAvailable) {
       return Center(
-        child: Text('No camera available'),
+        child: Text(AppLocalizations.of(context).translate('No camera available')),
       );
     } else if (!isControllerInitialized) {
       return Center(
@@ -225,9 +192,9 @@ class _PreviousScreenState extends State<PreviousScreen> {
                       : null,
                   child: Text(
                     (!isControllerInitialized)
-                        ? 'Loading...'
+                        ? AppLocalizations.of(context).translate('Loading...')
                         : (_countdownValue == 6)
-                            ? 'Ready'
+                            ? AppLocalizations.of(context).translate('Ready')
                             : '$_countdownValue',
                     style: TextStyle(fontSize: 20.0),
                   ),

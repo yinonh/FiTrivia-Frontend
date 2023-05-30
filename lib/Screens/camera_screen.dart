@@ -8,6 +8,7 @@ import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;
 import 'package:provider/provider.dart';
 
+import '../l10n/app_localizations.dart';
 import '../Widgets/rest_popup.dart';
 import '../Widgets/bottom_buttons.dart';
 import '../Models/trivia_room.dart';
@@ -252,7 +253,7 @@ class _CameraScreenState extends State<CameraScreen> {
       }
       _capturedImages.clear();
       var request = http.MultipartRequest(
-          'POST', Uri.parse('http://127.0.0.1:8000/images/')); // 34.76.234.245
+          'POST', Uri.parse('http://127.0.0.1:8000/images/')); //  34.76.234.245
       request.files.addAll(imageFiles);
       try {
         var response = await request.send();
@@ -303,9 +304,9 @@ class _CameraScreenState extends State<CameraScreen> {
           stream: countDownStream,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              return Text('Time Left: ${snapshot.data} s');
+              return Text(AppLocalizations.of(context).translate('Time Left') + ': ${snapshot.data} s');
             } else {
-              return Text('Time Left: 0 s');
+              return Text(AppLocalizations.of(context).translate('Time Over'),);
             }
           },
         ),

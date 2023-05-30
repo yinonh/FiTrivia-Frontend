@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../l10n/app_localizations.dart';
 import '../Models/question.dart';
 import '../Models/trivia_room.dart';
 import '../Providers/trivia_rooms_provider.dart';
@@ -53,7 +54,7 @@ class _PublicRoomDetailState extends State<PublicRoomDetail> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'Number of Questions: $_numberOfQuestions',
+                        AppLocalizations.of(context).translate('Number of Questions:') + ' $_numberOfQuestions',
                         style: TextStyle(fontSize: 20.0),
                       ),
                       SizedBox(height: 20.0),
@@ -71,7 +72,7 @@ class _PublicRoomDetailState extends State<PublicRoomDetail> {
                       ),
                       SizedBox(height: 40.0),
                       Text(
-                        'Rest Time (Seconds): $_restTime',
+                        AppLocalizations.of(context).translate('Rest Time (Seconds):') + ' $_restTime',
                         style: TextStyle(fontSize: 20.0),
                       ),
                       SizedBox(height: 20.0),
@@ -89,7 +90,7 @@ class _PublicRoomDetailState extends State<PublicRoomDetail> {
                       ),
                       SizedBox(height: 40.0),
                       Text(
-                        'Exercise Time (Seconds): $_exerciseTime',
+                        AppLocalizations.of(context).translate('Exercise Time (Seconds):') + ' $_exerciseTime',
                         style: TextStyle(fontSize: 20.0),
                       ),
                       SizedBox(height: 20.0),
@@ -136,10 +137,10 @@ class _PublicRoomDetailState extends State<PublicRoomDetail> {
                   Navigator.pushNamed(context, PreviousScreen.routeName,
                       arguments: room);
                 },
-                child: const Padding(
+                child: Padding(
                   padding: EdgeInsets.all(8.0),
                   child: Text(
-                    '🏁 Start 🏁',
+                    AppLocalizations.of(context).translate('🏁 Start 🏁'),
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                 ),

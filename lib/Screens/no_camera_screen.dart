@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import '../Widgets/bottom_buttons.dart';
 
+import '../l10n/app_localizations.dart';
 import '../models/question.dart';
 
 class NoCameraScreen extends StatefulWidget {
   static const routeName = "/no_camera_screen";
+
   @override
   State<NoCameraScreen> createState() => _NoCameraScreenState();
 }
@@ -14,11 +16,15 @@ class _NoCameraScreenState extends State<NoCameraScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('No Camera'),
+        title: Text(
+          AppLocalizations.of(context).translate('No Camera'),
+        ),
         centerTitle: true,
       ),
-      body: const Center(
-        child: Text("camera not found"),
+      body: Center(
+        child: Text(
+          AppLocalizations.of(context).translate('Camera not found'),
+        ),
       ),
     );
   }

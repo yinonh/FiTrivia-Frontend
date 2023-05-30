@@ -4,12 +4,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 
+import '../l10n/app_localizations.dart';
 import '../Providers/user_provider.dart';
 import '../Providers/music_provider.dart';
 import '../Widgets/edit_music_settigs.dart';
 
 class UserDetailsScreen extends StatefulWidget {
   static const routeName = '/edit_user';
+
   @override
   _UserDetailsScreenState createState() => _UserDetailsScreenState();
 }
@@ -72,14 +74,21 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
         showDialog(
           context: context,
           builder: (ctx) => AlertDialog(
-            title: Text('Details Updated'),
-            content: Text('Your user details has been updated successfully.'),
+            title: Text(
+              AppLocalizations.of(context).translate('Details Updated'),
+            ),
+            content: Text(
+              AppLocalizations.of(context).translate(
+                  'Your user details has been updated successfully.'),
+            ),
             actions: [
               TextButton(
                 onPressed: () {
                   Navigator.of(ctx).pop();
                 },
-                child: Text('OK'),
+                child: Text(
+                  AppLocalizations.of(context).translate('OK'),
+                ),
               ),
             ],
           ),
@@ -87,7 +96,10 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to update user details.'),
+            content: Text(
+              AppLocalizations.of(context)
+                  .translate('Failed to update user details.'),
+            ),
           ),
         );
       }
@@ -95,7 +107,9 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
       print(e);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('An error occurred.'),
+          content: Text(
+            AppLocalizations.of(context).translate('An error occurred.'),
+          ),
         ),
       );
     } finally {
@@ -121,14 +135,19 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
         showDialog(
           context: context,
           builder: (ctx) => AlertDialog(
-            title: Text('Password Updated'),
-            content: Text('Your password has been updated successfully.'),
+            title: Text(
+              AppLocalizations.of(context).translate('Password Updated'),
+            ),
+            content: Text(AppLocalizations.of(context)
+                .translate('Your user details has been updated successfully.')),
             actions: [
               TextButton(
                 onPressed: () {
                   Navigator.of(ctx).pop();
                 },
-                child: Text('OK'),
+                child: Text(
+                  AppLocalizations.of(context).translate('OK'),
+                ),
               ),
             ],
           ),
@@ -137,14 +156,21 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
         showDialog(
           context: context,
           builder: (ctx) => AlertDialog(
-            title: Text('Password Update Failed'),
-            content: Text('Failed to update the password. Please try again.'),
+            title: Text(
+              AppLocalizations.of(context).translate('Password Update Failed'),
+            ),
+            content: Text(
+              AppLocalizations.of(context).translate(
+                  'Failed to update the password. Please try again.'),
+            ),
             actions: [
               TextButton(
                 onPressed: () {
                   Navigator.of(ctx).pop();
                 },
-                child: Text('OK'),
+                child: Text(
+                  AppLocalizations.of(context).translate('OK'),
+                ),
               ),
             ],
           ),
@@ -155,14 +181,15 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
       showDialog(
         context: context,
         builder: (ctx) => AlertDialog(
-          title: Text('Error'),
-          content: Text('An error occurred.'),
+          title: Text(AppLocalizations.of(context).translate('Error')),
+          content: Text(
+              AppLocalizations.of(context).translate('An error occurred.')),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(ctx).pop();
               },
-              child: Text('OK'),
+              child: Text(AppLocalizations.of(context).translate('OK')),
             ),
           ],
         ),
@@ -183,24 +210,30 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
             controller: _userNameController,
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return 'Please enter your username';
+                return AppLocalizations.of(context)
+                    .translate('Please enter your user name');
               }
               return null;
             },
-            decoration: InputDecoration(labelText: 'Username'),
+            decoration: InputDecoration(
+              labelText: AppLocalizations.of(context).translate('User Name'),
+            ),
           ),
           SizedBox(height: 16),
           TextFormField(
             controller: _emailController,
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return 'Please enter your email';
+                return AppLocalizations.of(context)
+                    .translate('Please enter your email');
               } else if (!EmailValidator.validate(value)) {
-                return 'Invalid email';
+                return AppLocalizations.of(context).translate('Email invalid');
               }
               return null;
             },
-            decoration: InputDecoration(labelText: 'Email'),
+            decoration: InputDecoration(
+              labelText: AppLocalizations.of(context).translate('Email'),
+            ),
           ),
           SizedBox(height: 32),
           ElevatedButton(
@@ -209,7 +242,9 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
                 ? CircularProgressIndicator(
                     valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                   )
-                : Text('Save'),
+                : Text(
+                    AppLocalizations.of(context).translate('Save Changes'),
+                  ),
           ),
         ],
       ),
@@ -225,26 +260,34 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
             controller: _currentPasswordController,
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return 'Please enter your current password';
+                return AppLocalizations.of(context)
+                    .translate('Please enter your password');
               }
               return null;
             },
             obscureText: true,
-            decoration: InputDecoration(labelText: 'Current Password'),
+            decoration: InputDecoration(
+              labelText: AppLocalizations.of(context)
+                  .translate('Please enter your password'),
+            ),
           ),
           SizedBox(height: 16),
           TextFormField(
             controller: _newPasswordController,
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return 'Please enter a new password';
+                return AppLocalizations.of(context)
+                    .translate('Please enter a new password');
               } else if (value.length < 6) {
-                return 'Password should be at least 6 characters';
+                return AppLocalizations.of(context)
+                    .translate('Password should be at least 6 characters');
               }
               return null;
             },
             obscureText: true,
-            decoration: InputDecoration(labelText: 'New Password'),
+            decoration: InputDecoration(
+              labelText: AppLocalizations.of(context).translate('New Password'),
+            ),
           ),
           SizedBox(height: 32),
           ElevatedButton(
@@ -253,7 +296,9 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
                 ? CircularProgressIndicator(
                     valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                   )
-                : Text('Update Password'),
+                : Text(
+                    AppLocalizations.of(context).translate('Save Changes'),
+                  ),
           ),
         ],
       ),
@@ -264,11 +309,18 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(icon: Icon(Icons.arrow_back), onPressed: (){
-          Provider.of<MusicProvider>(context, listen: false).startBgMusic();
-      Navigator.pop(context);
-    },),
-        title: Text('User Details'),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Provider.of<MusicProvider>(context, listen: false).startBgMusic();
+            Navigator.pop(context);
+          },
+        ),
+        title: Center(
+          child: Text(
+            AppLocalizations.of(context).translate('Edit Details'),
+          ),
+        ),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -276,7 +328,7 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
           child: Column(
             children: [
               Text(
-                'Update User Details',
+                AppLocalizations.of(context).translate('Update User Details'),
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               _buildUpdateUserDetailsForm(),
@@ -284,14 +336,14 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
               Divider(),
               SizedBox(height: 32),
               Text(
-                'Update Password',
+                AppLocalizations.of(context).translate('Update Password'),
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 16),
               _buildUpdatePasswordForm(),
               SizedBox(height: 32),
               Text(
-                'Music Settings',
+                AppLocalizations.of(context).translate('Music Settings'),
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               EditMusicSettingsWidget(),

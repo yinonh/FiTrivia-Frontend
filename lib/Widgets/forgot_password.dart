@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:provider/provider.dart';
 
+import '../l10n/app_localizations.dart';
 import '../Screens/trivia_rooms.dart';
 import '../Providers/music_provider.dart';
 
@@ -25,12 +26,12 @@ class ForgotPassword extends StatelessWidget {
           context: context,
           builder: (ctx) {
             return AlertDialog(
-              content: const Text(
-                  'Reset password instructions sent successfully, check your mail inbox..'),
+              content: Text(
+                  AppLocalizations.of(context).translate('Reset password instructions sent successfully, check your mail inbox..'),),
               actions: <Widget>[
                 TextButton(
                   onPressed: () => Navigator.of(ctx).pop(false),
-                  child: Text('OK'),
+                  child: Text(AppLocalizations.of(context).translate('OK'),),
                 ),
               ],
             );
@@ -45,7 +46,7 @@ class ForgotPassword extends StatelessWidget {
               actions: <Widget>[
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(false),
-                  child: Text('OK'),
+                  child: Text(AppLocalizations.of(context).translate('OK')),
                 ),
               ],
             );
@@ -58,8 +59,8 @@ class ForgotPassword extends StatelessWidget {
       key: _formKey,
       child: Column(
         children: [
-          const Text(
-            'Forgot Password',
+          Text(
+            AppLocalizations.of(context).translate('Forgot Password'),
             style: TextStyle(
               fontSize: 32,
               fontWeight: FontWeight.bold,
@@ -72,9 +73,9 @@ class ForgotPassword extends StatelessWidget {
             child: TextFormField(
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Please enter your email';
+                  return AppLocalizations.of(context).translate('Please enter your email');
                 } else if (!EmailValidator.validate(value)) {
-                  return "Email invalid";
+                  return AppLocalizations.of(context).translate('Email invalid');
                 }
                 return null;
               },
@@ -85,7 +86,7 @@ class ForgotPassword extends StatelessWidget {
                 labelStyle: TextStyle(color: Colors.black),
                 filled: true,
                 fillColor: Colors.white.withOpacity(0.5),
-                labelText: 'Email',
+                labelText: AppLocalizations.of(context).translate('Email'),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
@@ -110,7 +111,7 @@ class ForgotPassword extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
-            child: Text('Reset Password'),
+            child: Text(AppLocalizations.of(context).translate('Reset Password')),
           ),
           SizedBox(height: 16),
           Row(
@@ -118,15 +119,15 @@ class ForgotPassword extends StatelessWidget {
             children: [
               TextButton(
                 onPressed: () => changeMode('login'),
-                child: const Text(
-                  'Sign In',
+                child: Text(
+                  AppLocalizations.of(context).translate('Log in'),
                   style: TextStyle(color: Colors.white),
                 ),
               ),
               TextButton(
                 onPressed: () => changeMode('signup'),
-                child: const Text(
-                  'Register',
+                child: Text(
+                  AppLocalizations.of(context).translate('Register'),
                   style: TextStyle(color: Colors.white),
                 ),
               ),
