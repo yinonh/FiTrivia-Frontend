@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-
 import 'package:fitrivia/main.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+import '../Providers/user_provider.dart';
 
 class LanguageDropdown extends StatefulWidget {
   @override
@@ -8,21 +10,40 @@ class LanguageDropdown extends StatefulWidget {
 }
 
 class _LanguageDropdownState extends State<LanguageDropdown> {
-  String _selectedLanguage = 'English';
+  String _selectedLanguage = 'en';
+  UserProvider _userProvider = UserProvider();
 
-  void _onLanguageChanged(String? language) {
-    if (language != null) {
+  @override
+  void initState() {
+    super.initState();
+    _getUserLanguage();
+  }
+
+  Future<void> _getUserLanguage() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      String? languageCode = await _userProvider.getUserLanguage(user.uid);
+      if (languageCode != null) {
+        setState(() {
+          _selectedLanguage = languageCode;
+        });
+      }
+    }
+  }
+
+  void _onLanguageChanged(String? languageCode) async {
+    if (languageCode != null) {
       setState(() {
-        _selectedLanguage = language;
+        _selectedLanguage = languageCode;
       });
 
       // Update the app's locale based on the selected language
       Locale newLocale;
-      switch (language) {
-        case 'English':
+      switch (languageCode) {
+        case 'en':
           newLocale = const Locale('en', '');
           break;
-        case 'עברית':
+        case 'he':
           newLocale = const Locale('he', '');
           break;
         default:
@@ -33,6 +54,12 @@ class _LanguageDropdownState extends State<LanguageDropdown> {
       WidgetsBinding.instance!.addPostFrameCallback((_) {
         FitriviaApp.setLocale(context, newLocale);
       });
+
+      // Update the user's language in Firestore
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        await _userProvider.updateUserLanguage(user.uid, languageCode);
+      }
     }
   }
 
@@ -49,15 +76,15 @@ class _LanguageDropdownState extends State<LanguageDropdown> {
           height: 1,
         ),
         onChanged: _onLanguageChanged,
-        items: <String>['English', 'עברית'].map((String language) {
+        items: <String>['en', 'he'].map((String languageCode) {
           return DropdownMenuItem<String>(
-            value: language,
+            value: languageCode,
             child: Container(
               height: 300,
               width: 200, // Specify a fixed width for the container
               child: ListTile(
-                leading: _buildFlagIcon(language),
-                title: Text(language),
+                leading: _buildFlagIcon(languageCode),
+                title: Text(_getLanguageName(languageCode)),
               ),
             ),
           );
@@ -66,13 +93,13 @@ class _LanguageDropdownState extends State<LanguageDropdown> {
     );
   }
 
-  Widget _buildFlagIcon(String language) {
+  Widget _buildFlagIcon(String languageCode) {
     String flagAsset;
-    switch (language) {
-      case 'English':
+    switch (languageCode) {
+      case 'en':
         flagAsset = 'assets/english.png';
         break;
-      case 'עברית':
+      case 'he':
         flagAsset = 'assets/israel.png';
         break;
       default:
@@ -87,5 +114,16 @@ class _LanguageDropdownState extends State<LanguageDropdown> {
         height: 35,
       ),
     );
+  }
+
+  String _getLanguageName(String languageCode) {
+    switch (languageCode) {
+      case 'en':
+        return 'English';
+      case 'he':
+        return 'עברית';
+      default:
+        return '';
+    }
   }
 }

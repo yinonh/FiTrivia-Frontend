@@ -1,3 +1,4 @@
+import 'package:fitrivia/main.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:email_validator/email_validator.dart';
@@ -6,6 +7,7 @@ import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../Screens/trivia_rooms.dart';
 import '../Providers/music_provider.dart';
+import '../Providers/user_provider.dart'; // Replace with the actual path to your UserProvider file
 
 class LogIn extends StatefulWidget {
   final void Function(String) changeMode;
@@ -19,6 +21,7 @@ class LogIn extends StatefulWidget {
 class _LogInState extends State<LogIn> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  UserProvider _userProvider = UserProvider(); // Initialize UserProvider
 
   // Declare variables to hold the email and password values
   String? _email;
@@ -45,9 +48,11 @@ class _LogInState extends State<LogIn> {
             child: TextFormField(
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return AppLocalizations.of(context).translate('Please enter your email');
+                  return AppLocalizations.of(context)
+                      .translate('Please enter your email');
                 } else if (!EmailValidator.validate(value)) {
-                  return AppLocalizations.of(context).translate('Email invalid');
+                  return AppLocalizations.of(context)
+                      .translate('Email invalid');
                 }
                 return null;
               },
@@ -71,9 +76,11 @@ class _LogInState extends State<LogIn> {
             child: TextFormField(
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return AppLocalizations.of(context).translate('Please enter your password');
+                  return AppLocalizations.of(context)
+                      .translate('Please enter your password');
                 } else if (value.length < 6) {
-                  return AppLocalizations.of(context).translate('Password should be at least 6 characters');
+                  return AppLocalizations.of(context)
+                      .translate('Password should be at least 6 characters');
                 }
                 return null;
               },
@@ -112,6 +119,27 @@ class _LogInState extends State<LogIn> {
                         final musicProvider = context.read<MusicProvider>();
                         await musicProvider
                             .fetchMusicSettings(currentUser.user!.uid);
+
+                        // Retrieve the user's language preference from Firebase
+                        String? language = await _userProvider
+                            .getUserLanguage(currentUser.user!.uid);
+
+                        // Update the app's locale based on the selected language
+                        Locale newLocale;
+                        switch (language) {
+                          case 'en':
+                            newLocale = const Locale('en', '');
+                            break;
+                          case 'he':
+                            newLocale = const Locale('he', '');
+                            break;
+                          default:
+                            newLocale = const Locale('en', '');
+                        }
+
+                        // Update the app's locale by rebuilding the MaterialApp
+                        FitriviaApp.setLocale(context, newLocale);
+
                         Navigator.pushReplacementNamed(
                           context,
                           TriviaRooms.routeName,
@@ -121,7 +149,8 @@ class _LogInState extends State<LogIn> {
                           SnackBar(
                             duration: Duration(seconds: 2),
                             content: Text(
-                              AppLocalizations.of(context).translate('Failed to sign in'),
+                              AppLocalizations.of(context)
+                                  .translate('Failed to sign in'),
                               style: TextStyle(
                                 color: Colors.deepOrange,
                                 fontWeight: FontWeight.bold,

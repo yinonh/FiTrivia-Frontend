@@ -53,6 +53,7 @@ class _SignUpState extends State<SignUp> {
         'userName': _userName!,
         "isAdmin": false,
         'musicSettings': defaultMusicSettings,
+        'language': "en"
       });
       final musicProvider = context.read<MusicProvider>();
       await musicProvider.fetchMusicSettings(currentUser.user!.uid);
@@ -93,7 +94,8 @@ class _SignUpState extends State<SignUp> {
           TextFormField(
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return AppLocalizations.of(context).translate('Please enter your user name');
+                return AppLocalizations.of(context)
+                    .translate('Please enter your user name');
               }
               return null;
             },
@@ -116,9 +118,11 @@ class _SignUpState extends State<SignUp> {
             child: TextFormField(
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return AppLocalizations.of(context).translate('Please enter your email') ;
+                  return AppLocalizations.of(context)
+                      .translate('Please enter your email');
                 } else if (!EmailValidator.validate(value)) {
-                  return AppLocalizations.of(context).translate('Email invalid');
+                  return AppLocalizations.of(context)
+                      .translate('Email invalid');
                 }
                 return null;
               },
@@ -142,9 +146,11 @@ class _SignUpState extends State<SignUp> {
             child: TextFormField(
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return AppLocalizations.of(context).translate('Please enter your password');
+                  return AppLocalizations.of(context)
+                      .translate('Please enter your password');
                 } else if (value.length < 6) {
-                  return AppLocalizations.of(context).translate('Password should be at least 6 characters');
+                  return AppLocalizations.of(context)
+                      .translate('Password should be at least 6 characters');
                 }
                 _password1 = value;
                 return null;
@@ -170,11 +176,13 @@ class _SignUpState extends State<SignUp> {
             child: TextFormField(
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return AppLocalizations.of(context).translate('Please confirm your password');
+                  return AppLocalizations.of(context)
+                      .translate('Please confirm your password');
                 }
                 _password2 = value;
                 if (_password1 != _password2) {
-                  return AppLocalizations.of(context).translate('Passwords do not match');
+                  return AppLocalizations.of(context)
+                      .translate('Passwords do not match');
                 }
                 return null;
               },
@@ -186,7 +194,8 @@ class _SignUpState extends State<SignUp> {
                 labelStyle: TextStyle(color: Colors.black),
                 filled: true,
                 fillColor: Colors.white.withOpacity(0.5),
-                labelText: AppLocalizations.of(context).translate('Confirm password'),
+                labelText:
+                    AppLocalizations.of(context).translate('Confirm password'),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),

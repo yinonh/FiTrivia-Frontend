@@ -43,4 +43,35 @@ class UserProvider with ChangeNotifier {
       return false; // User details update failed
     }
   }
+
+  Future<String?> getUserLanguage(String userId) async {
+    try {
+      DocumentSnapshot snapshot = await FirebaseFirestore.instance
+          .collection('Users')
+          .doc(userId)
+          .get();
+
+      if (snapshot.exists) {
+        return snapshot.get('language') as String?;
+      }
+      return null; // User not found or language field is not set
+    } catch (e) {
+      print(e);
+      return null; // Error occurred while fetching user language
+    }
+  }
+
+  Future<bool> updateUserLanguage(String userId, String language) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('Users')
+          .doc(userId)
+          .update({'language': language});
+
+      return true; // User language update successful
+    } catch (e) {
+      print(e);
+      return false; // User language update failed
+    }
+  }
 }

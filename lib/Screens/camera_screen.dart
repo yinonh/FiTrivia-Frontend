@@ -253,7 +253,7 @@ class _CameraScreenState extends State<CameraScreen> {
       }
       _capturedImages.clear();
       var request = http.MultipartRequest(
-          'POST', Uri.parse('http://127.0.0.1:8000/images/')); //  34.76.234.245
+          'POST', Uri.parse('http://34.76.234.245/images/')); //  127.0.0.1:8000
       request.files.addAll(imageFiles);
       try {
         var response = await request.send();
@@ -304,9 +304,12 @@ class _CameraScreenState extends State<CameraScreen> {
           stream: countDownStream,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              return Text(AppLocalizations.of(context).translate('Time Left') + ': ${snapshot.data} s');
+              return Text(AppLocalizations.of(context).translate('Time Left') +
+                  ': ${snapshot.data} s');
             } else {
-              return Text(AppLocalizations.of(context).translate('Time Over'),);
+              return Text(
+                AppLocalizations.of(context).translate('Time Over'),
+              );
             }
           },
         ),
