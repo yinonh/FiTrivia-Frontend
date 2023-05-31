@@ -62,6 +62,7 @@ class FitriviaApp extends StatefulWidget {
 
 class _FitriviaAppState extends State<FitriviaApp> {
   Locale _locale = const Locale('en', '');
+  late String initialScreen;
 
   void setLocale(Locale newLocale) {
     setState(() {
@@ -94,13 +95,18 @@ class _FitriviaAppState extends State<FitriviaApp> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    super.initState();
     User? currentUser = FirebaseAuth.instance.currentUser;
-    String initialScreen = AuthScreen.routeName;
+    initialScreen = AuthScreen.routeName;
     if (currentUser != null) {
       setLanguage(currentUser);
       initialScreen = TriviaRooms.routeName;
     }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     const TextTheme text_theme = TextTheme(
       displayLarge: TextStyle(fontSize: 100.0, fontWeight: FontWeight.bold),
       titleLarge: TextStyle(fontSize: 36.0, fontStyle: FontStyle.italic),
