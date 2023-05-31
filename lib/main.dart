@@ -69,11 +69,38 @@ class _FitriviaAppState extends State<FitriviaApp> {
     });
   }
 
+  void setLanguage(User? currentUser) async {
+    if (currentUser == null) {
+      Navigator.of(context).pushReplacementNamed(AuthScreen.routeName);
+    }
+    // Retrieve the user's language preference from Firebase
+    String? language = await UserProvider().getUserLanguage(currentUser!.uid);
+
+    // Update the app's locale based on the selected language
+    Locale newLocale;
+    switch (language) {
+      case 'en':
+        newLocale = const Locale('en', '');
+        break;
+      case 'he':
+        newLocale = const Locale('he', '');
+        break;
+      default:
+        newLocale = const Locale('en', '');
+    }
+
+    // Update the app's locale by rebuilding the MaterialApp
+    setLocale(newLocale);
+  }
+
   @override
   Widget build(BuildContext context) {
     User? currentUser = FirebaseAuth.instance.currentUser;
-    String initialScreen =
-        currentUser == null ? AuthScreen.routeName : TriviaRooms.routeName;
+    String initialScreen = AuthScreen.routeName;
+    if (currentUser != null) {
+      setLanguage(currentUser);
+      initialScreen = TriviaRooms.routeName;
+    }
     const TextTheme text_theme = TextTheme(
       displayLarge: TextStyle(fontSize: 100.0, fontWeight: FontWeight.bold),
       titleLarge: TextStyle(fontSize: 36.0, fontStyle: FontStyle.italic),
@@ -85,13 +112,12 @@ class _FitriviaAppState extends State<FitriviaApp> {
       localizationsDelegates: [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
+        ...GlobalMaterialLocalizations.delegates,
         GlobalWidgetsLocalizations.delegate,
       ],
       supportedLocales: [
-        const Locale('en', 'US'), // English
-        const Locale('he', 'IS'), // Hebrew
-
-        // Add more locales if needed
+        const Locale('en', 'US'),
+        const Locale('he', 'IL'),
       ],
       onGenerateRoute: (settings) {
         if (settings.name == CameraScreen.routeName) {

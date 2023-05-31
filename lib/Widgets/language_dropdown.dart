@@ -41,13 +41,13 @@ class _LanguageDropdownState extends State<LanguageDropdown> {
       Locale newLocale;
       switch (languageCode) {
         case 'en':
-          newLocale = const Locale('en', '');
+          newLocale = const Locale('en', 'US');
           break;
         case 'he':
-          newLocale = const Locale('he', '');
+          newLocale = const Locale('he', 'IL');
           break;
         default:
-          newLocale = const Locale('en', '');
+          newLocale = const Locale('en', 'US');
       }
 
       // Update the app's locale by rebuilding the MaterialApp

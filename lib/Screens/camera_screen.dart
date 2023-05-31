@@ -304,8 +304,11 @@ class _CameraScreenState extends State<CameraScreen> {
           stream: countDownStream,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              return Text(AppLocalizations.of(context).translate('Time Left') +
-                  ': ${snapshot.data} s');
+              return Text(
+                AppLocalizations.of(context).translate('Time Left') +
+                    ': ${snapshot.data} ' +
+                    AppLocalizations.of(context).translate('Seconds'),
+              );
             } else {
               return Text(
                 AppLocalizations.of(context).translate('Time Over'),

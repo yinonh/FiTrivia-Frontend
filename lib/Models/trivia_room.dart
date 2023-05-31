@@ -1,5 +1,4 @@
 import 'question.dart';
-import 'user.dart';
 
 class TriviaRoom {
   final String id;
@@ -9,7 +8,7 @@ class TriviaRoom {
   final List<QuizQuestion> questions;
   final int exerciseTime;
   final int restTime;
-  final Map<int,String> scoreboard;
+  final Map<int, String> scoreboard;
   final String picture;
   final bool isPublic;
   final String password;

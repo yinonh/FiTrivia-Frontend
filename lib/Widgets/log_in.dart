@@ -7,7 +7,7 @@ import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../Screens/trivia_rooms.dart';
 import '../Providers/music_provider.dart';
-import '../Providers/user_provider.dart'; // Replace with the actual path to your UserProvider file
+import '../Providers/user_provider.dart';
 
 class LogIn extends StatefulWidget {
   final void Function(String) changeMode;
@@ -23,7 +23,6 @@ class _LogInState extends State<LogIn> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   UserProvider _userProvider = UserProvider(); // Initialize UserProvider
 
-  // Declare variables to hold the email and password values
   String? _email;
   String? _password;
   bool _isLoading = false;

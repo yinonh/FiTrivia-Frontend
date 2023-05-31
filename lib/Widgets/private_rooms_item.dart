@@ -105,7 +105,7 @@ class PrivateRoomItem extends StatelessWidget {
               motion: ScrollMotion(),
               children: [
                 SlidableAction(
-                  flex: 2,
+                  flex: 1,
                   onPressed: (BuildContext context) {
                     Navigator.pushReplacementNamed(context, EditRoom.routeName,
                         arguments: this.roomId);

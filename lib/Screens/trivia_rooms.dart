@@ -65,8 +65,6 @@ class _TriviaRoomsState extends State<TriviaRooms> {
   @override
   void initState() {
     super.initState();
-    //context.read<MusicProvider>().startBgMusic();
-    //Provider.of<MusicProvider>(context, listen: false).startBgMusic();
     publicRoomsList = Provider.of<TriviaRoomProvider>(context, listen: false)
         .publicTriviaRooms;
     publicRooms = List.generate(
@@ -120,13 +118,13 @@ class _TriviaRoomsState extends State<TriviaRooms> {
               behavior: MyCustomScrollBehavior(),
               child: Swiper(
                 //loop: false,
-                index: publicRooms.length ~/ 2,
+                // index: publicRooms.length ~/ 2,
                 scale: 0.1,
                 itemCount: publicRooms.length,
                 itemBuilder: (BuildContext context, int index) {
                   return publicRooms[index];
                 },
-                //indicatorLayout: PageIndicatorLayout.COLOR,
+                indicatorLayout: PageIndicatorLayout.COLOR,
                 autoplay: MediaQuery.of(context).size.height >
                     MediaQuery.of(context).size.width,
                 viewportFraction: MediaQuery.of(context).size.height >
@@ -273,8 +271,10 @@ class _TriviaRoomsState extends State<TriviaRooms> {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Center(child: CircularProgressIndicator());
                 } else if (snapshot.hasError) {
-                  return Center(child: Text(AppLocalizations.of(context)
-                      .translate('Error') + ': ${snapshot.error}'));
+                  return Center(
+                      child: Text(
+                          AppLocalizations.of(context).translate('Error') +
+                              ': ${snapshot.error}'));
                 } else {
                   final List<Map<String, dynamic>> privateRooms =
                       snapshot.data ?? [];
