@@ -49,6 +49,7 @@ dependencies:
   audioplayers: ^4.0.1
   confetti: ^0.7.0
   flutter_localization: ^0.1.11
+  auto_size_text: ^3.0.0
 
 dev_dependencies:
   flutter_test:

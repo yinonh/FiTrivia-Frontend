@@ -41,7 +41,6 @@ class _ResultScreenState extends State<ResultScreen>
   final List<List<String>> _resultList = [];
   late ConfettiController _confettiController;
 
-
   @override
   void initState() {
     super.initState();
@@ -144,7 +143,9 @@ class _ResultScreenState extends State<ResultScreen>
     return Scaffold(
       drawer: NavigateDrawer(),
       appBar: AppBar(
-        title: Text(AppLocalizations.of(context).translate('Result Screen'),),
+        title: Text(
+          AppLocalizations.of(context).translate('Result Screen'),
+        ),
         centerTitle: true,
       ),
       body: Stack(
@@ -171,12 +172,15 @@ class _ResultScreenState extends State<ResultScreen>
           ),
           SingleChildScrollView(
             child: Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(20.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    height: (MediaQuery.of(context).size.height - AppBar().preferredSize.height - 50) * 0.28,
+                    height: (MediaQuery.of(context).size.height -
+                            AppBar().preferredSize.height -
+                            50) *
+                        0.38,
                     child: ListView.builder(
                       shrinkWrap: true,
                       itemCount: _resultList.length,
@@ -187,12 +191,14 @@ class _ResultScreenState extends State<ResultScreen>
                             SlideTransition(
                               position: _animation,
                               child: Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 4.0),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 4.0),
                                 child: Row(
                                   children: [
                                     ListItem(
                                       numbers: convertStringList(sublist),
-                                      classification: getMostFrequentValue(sublist),
+                                      classification:
+                                          getMostFrequentValue(sublist),
                                       correct: is_ans_correct(sublist, index),
                                     ),
                                   ],
@@ -206,13 +212,22 @@ class _ResultScreenState extends State<ResultScreen>
                     ),
                   ),
                   Container(
-                    height: (MediaQuery.of(context).size.height - AppBar().preferredSize.height - 50) * 0.72,
+                    height: (MediaQuery.of(context).size.height -
+                            AppBar().preferredSize.height -
+                            50) *
+                        0.62,
                     child: FutureBuilder(
-                      future: Provider.of<TriviaRoomProvider>(context, listen: false).add_score(widget.room, widget.userID, get_total_score()),
+                      future: Provider.of<TriviaRoomProvider>(context,
+                              listen: false)
+                          .add_score(
+                              widget.room, widget.userID, get_total_score()),
                       builder: (ctx, snapshot) {
                         if (snapshot.hasData) {
                           if (snapshot.data!.isEmpty) {
-                            return Text(AppLocalizations.of(context).translate('IS EMPTY'),);
+                            return Text(
+                              AppLocalizations.of(context)
+                                  .translate('IS EMPTY'),
+                            );
                           } else {
                             return Container(
                               padding: const EdgeInsets.all(20),
@@ -223,7 +238,9 @@ class _ResultScreenState extends State<ResultScreen>
                             );
                           }
                         } else if (snapshot.hasError) {
-                          return Text(AppLocalizations.of(context).translate('Error'),);
+                          return Text(
+                            AppLocalizations.of(context).translate('Error'),
+                          );
                         } else {
                           return Center(child: CircularProgressIndicator());
                         }
@@ -234,7 +251,8 @@ class _ResultScreenState extends State<ResultScreen>
                     child: Container(
                       height: 50,
                       child: Text(
-                          AppLocalizations.of(context).translate('Total score') + ": ${get_total_score()}",
+                        AppLocalizations.of(context).translate('Total score') +
+                            ": ${get_total_score()}",
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 20,

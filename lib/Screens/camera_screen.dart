@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 import 'dart:convert';
 import 'package:flutter/material.dart';
@@ -27,7 +28,7 @@ class CameraScreen extends StatefulWidget {
 }
 
 class _CameraScreenState extends State<CameraScreen> {
-  static const _num_of_images = 10;
+  static const _num_of_images = 20;
   List<XFile> _capturedImages = [];
   int index = 0;
   bool _isCapturing = false;
@@ -56,7 +57,23 @@ class _CameraScreenState extends State<CameraScreen> {
     currentQuestonList = _shuffleAnswers();
     update_buttons();
     Provider.of<MusicProvider>(context, listen: false).startTrainMusic();
-    _startTimer(context);
+    WidgetsBinding.instance!.addPostFrameCallback((_) async {
+      await showRestDialog();
+      await Future.delayed(Duration(seconds: 5, milliseconds: 50));
+      _startTimer(context);
+    });
+  }
+
+  Future<void> showRestDialog() async {
+    showDialog(
+      context: context,
+      builder: (BuildContext cntx) => RestDialog(
+        question: widget.room.questions[0].question,
+        tween: Tween<double>(begin: 0.0, end: 1.0),
+        duration: 5,
+      ),
+      barrierDismissible: false,
+    );
   }
 
   Future<void> playMusic() async {
@@ -95,26 +112,6 @@ class _CameraScreenState extends State<CameraScreen> {
     // Return the shuffled list.
     return shuffledList;
   }
-
-  // List<String> _shuffleAnswers() {
-  //   List<String> allStrings = [
-  //     widget.room.questions[index].correctAnswer,
-  //     ...widget.room.questions[index].incorrectAnswers
-  //   ];
-  //   int randomSeed = randomHash(widget.room.questions[index].correctAnswer,
-  //       widget.room.questions[index].incorrectAnswers);
-  //   Random random = Random(randomSeed);
-  //   List<String> shuffledList = List<String>.from(allStrings);
-  //   for (int i = shuffledList.length - 1; i > 0; i--) {
-  //     int j = random.nextInt(i + 1);
-  //     String temp = shuffledList[i];
-  //     shuffledList[i] = shuffledList[j];
-  //     shuffledList[j] = temp;
-  //   }
-  //   correctAnsIndex
-  //       .add(shuffledList.indexOf(widget.room.questions[index].correctAnswer));
-  //   return shuffledList;
-  // }
 
   int randomHash(String mainString, List<String> stringList) {
     String inputString = mainString + stringList.join();
@@ -173,7 +170,6 @@ class _CameraScreenState extends State<CameraScreen> {
         mostFrequentValue = value;
       }
     }
-
     return mostFrequentValue;
   }
 
@@ -211,7 +207,10 @@ class _CameraScreenState extends State<CameraScreen> {
       await Future.delayed(Duration(seconds: widget.room.exerciseTime));
       showDialog(
         context: context,
-        builder: (BuildContext cntx) => CustomProgressDialog(
+        builder: (BuildContext cntx) => RestDialog(
+          question: index + 1 < widget.room.questions.length
+              ? widget.room.questions[index + 1].question
+              : "",
           tween: Tween<double>(begin: 0.0, end: 1.0),
           duration: widget.room.restTime,
         ),
@@ -253,10 +252,25 @@ class _CameraScreenState extends State<CameraScreen> {
       }
       _capturedImages.clear();
       var request = http.MultipartRequest(
-          'POST', Uri.parse('http://34.76.234.245/images/')); //  127.0.0.1:8000
+          'POST',
+          Uri.parse(
+              'http://34.76.234.245:8000/images/')); //  10.132.15.203, 34.76.234.245, fitrivia, 127.0.0.1
       request.files.addAll(imageFiles);
+      // request.headers.addAll({
+      //   "Access-Control-Allow-Origin": "*",
+      //   'Content-Type': 'application/json',
+      //   'Accept': '*/*'
+      // });
       try {
         var response = await request.send();
+        print('Error: ${response.statusCode}');
+        // showDialog(
+        //     context: context,
+        //     builder: (BuildContext context) {
+        //       return AlertDialog(
+        //         content: Text(response.toString()),
+        //       );
+        //     });
         if (response.statusCode == 200) {
           // Success
           var responseBody = await response.stream.bytesToString();
@@ -272,9 +286,61 @@ class _CameraScreenState extends State<CameraScreen> {
       } catch (e) {
         // Exception
         print('Exception: $e');
+        // showDialog(
+        //     context: context,
+        //     builder: (BuildContext context) {
+        //       return AlertDialog(
+        //         content: Text("$e"),
+        //       );
+        //     });
       }
     }
   }
+
+  // Future<void> _sendImages(int index) async {
+  //   if (_capturedImages.length == _num_of_images) {
+  //     List<List<int>> imageBytesList = [];
+  //     List<String> imageNames = [];
+  //     for (var image in _capturedImages) {
+  //       var bytes = await image.readAsBytes();
+  //       var fileName = path.basename(image.path);
+  //       imageBytesList.add(bytes);
+  //       imageNames.add(fileName);
+  //     }
+  //     _capturedImages.clear();
+  //     try {
+  //       var socket = await Socket.connect('10.132.15.203', 8000);
+  //       for (var i = 0; i < imageBytesList.length; i++) {
+  //         var imageName = imageNames[i];
+  //         var imageData = imageBytesList[i];
+  //         var imageLength = imageData.length;
+  //
+  //         // Sending image length
+  //         socket.write(imageLength.toString() + '\n');
+  //         await socket.flush();
+  //
+  //         // Sending image name
+  //         socket.write(imageName + '\n');
+  //         await socket.flush();
+  //
+  //         // Sending image data
+  //         socket.add(imageData);
+  //         await socket.flush();
+  //       }
+  //
+  //       // Closing the socket
+  //       await socket.close();
+  //
+  //       print('Images sent successfully');
+  //
+  //       // Handle the response if needed
+  //       // ...
+  //     } catch (e) {
+  //       // Exception
+  //       print('Exception: $e');
+  //     }
+  //   }
+  // }
 
   void _captureFrame(int index) async {
     if (_isCapturing) {

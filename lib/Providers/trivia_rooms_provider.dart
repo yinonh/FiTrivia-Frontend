@@ -297,7 +297,7 @@ class TriviaRoomProvider with ChangeNotifier {
     final DocumentSnapshot roomDoc = await roomsCollection.doc(room.id).get();
     String scoreboardID =
         roomDoc['scoreboard'][room.questions.length.toString()];
-    print(scoreboardID);
+    //print(scoreboardID);
     final DocumentReference scoreboardRef =
         await scoreboardsCollection.doc(scoreboardID);
     final DocumentSnapshot scoreboardDoc = await scoreboardRef.get();
