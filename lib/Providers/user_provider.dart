@@ -44,6 +44,25 @@ class UserProvider with ChangeNotifier {
     }
   }
 
+  Future<String?> getUsernameByUserId(String userId) async {
+    try {
+      final userDoc = await FirebaseFirestore.instance
+          .collection('Users')
+          .doc(userId)
+          .get();
+
+      if (userDoc.exists) {
+        final userData = userDoc.data();
+        final username = userData?['userName'] as String?;
+        return username;
+      }
+      return null; // User not found
+    } catch (e) {
+      print(e);
+      return null; // Error occurred while fetching username
+    }
+  }
+
   Future<String?> getUserLanguage(String userId) async {
     try {
       DocumentSnapshot snapshot = await FirebaseFirestore.instance

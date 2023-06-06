@@ -23,7 +23,8 @@ class _PublicRoomDetailState extends State<PublicRoomDetail> {
 
   @override
   Widget build(BuildContext context) {
-    TriviaRoomProvider _triviaRoomsProvider = Provider.of<TriviaRoomProvider>(context, listen: false);
+    TriviaRoomProvider _triviaRoomsProvider =
+        Provider.of<TriviaRoomProvider>(context, listen: false);
     String roomName = _triviaRoomsProvider.convertCategory(widget.category);
     return Scaffold(
       appBar: AppBar(
@@ -54,7 +55,9 @@ class _PublicRoomDetailState extends State<PublicRoomDetail> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        AppLocalizations.of(context).translate('Number of Questions:') + ' $_numberOfQuestions',
+                        AppLocalizations.of(context)
+                                .translate('Number of Questions:') +
+                            ' $_numberOfQuestions',
                         style: TextStyle(fontSize: 20.0),
                       ),
                       SizedBox(height: 20.0),
@@ -72,7 +75,9 @@ class _PublicRoomDetailState extends State<PublicRoomDetail> {
                       ),
                       SizedBox(height: 40.0),
                       Text(
-                        AppLocalizations.of(context).translate('Rest Time (Seconds):') + ' $_restTime',
+                        AppLocalizations.of(context)
+                                .translate('Rest Time (Seconds):') +
+                            ' $_restTime',
                         style: TextStyle(fontSize: 20.0),
                       ),
                       SizedBox(height: 20.0),
@@ -90,7 +95,9 @@ class _PublicRoomDetailState extends State<PublicRoomDetail> {
                       ),
                       SizedBox(height: 40.0),
                       Text(
-                        AppLocalizations.of(context).translate('Exercise Time (Seconds):') + ' $_exerciseTime',
+                        AppLocalizations.of(context)
+                                .translate('Exercise Time (Seconds):') +
+                            ' $_exerciseTime',
                         style: TextStyle(fontSize: 20.0),
                       ),
                       SizedBox(height: 20.0),
@@ -130,7 +137,8 @@ class _PublicRoomDetailState extends State<PublicRoomDetail> {
                     isPublic: true,
                     password: '',
                   );
-                  if (!await _triviaRoomsProvider.isRoomExistsById(widget.category)){
+                  if (!await _triviaRoomsProvider
+                      .isRoomExistsById(widget.category)) {
                     await _triviaRoomsProvider.addStaticRoom(room);
                   }
                   //Navigator.pop(context);
