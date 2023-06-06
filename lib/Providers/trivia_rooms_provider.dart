@@ -304,11 +304,7 @@ class TriviaRoomProvider with ChangeNotifier {
     Map<String, int> scoresDict = {};
     if (scoreboardDoc['scores'].isNotEmpty) {
       for (var entry in scoreboardDoc['scores'].entries) {
-        print(entry.key);
-        print(entry.value);
         scoresDict[entry.key] = entry.value;
-        print(entry.key);
-        print(entry.value);
       }
     }
     if (scoresDict.containsKey(userID)) {
