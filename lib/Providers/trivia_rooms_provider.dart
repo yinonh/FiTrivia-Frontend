@@ -302,8 +302,14 @@ class TriviaRoomProvider with ChangeNotifier {
         await scoreboardsCollection.doc(scoreboardID);
     final DocumentSnapshot scoreboardDoc = await scoreboardRef.get();
     Map<String, int> scoresDict = {};
-    for (var entry in scoreboardDoc['scores'].entries) {
-      scoresDict[entry.key] = entry.value;
+    if (scoreboardDoc['scores'].isNotEmpty) {
+      for (var entry in scoreboardDoc['scores'].entries) {
+        print(entry.key);
+        print(entry.value);
+        scoresDict[entry.key] = entry.value;
+        print(entry.key);
+        print(entry.value);
+      }
     }
     if (scoresDict.containsKey(userID)) {
       if (scoresDict[userID]! < total_score) {
