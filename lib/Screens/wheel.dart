@@ -39,8 +39,10 @@ class _WheelScreenState extends State<WheelScreen> {
     final numRotations = Random().nextInt(4) + 2;
 
     // Calculate the target item index after all rotations are complete
-    final targetIndex =
-    ((numRotations * (Random().nextInt(itemCount) + publicRoomsList.length) - _controller.selectedItem) * -1);
+    final targetIndex = ((numRotations *
+                (Random().nextInt(itemCount) + publicRoomsList.length) -
+            _controller.selectedItem) *
+        -1);
 
     // Animate the ListWheelScrollView to the target index with a duration based on the number of rotations
     _controller.animateToItem(
@@ -56,8 +58,9 @@ class _WheelScreenState extends State<WheelScreen> {
       drawer: NavigateDrawer(),
       appBar: AppBar(
         title: Center(
-          child: Text(AppLocalizations.of(context)
-              .translate('Wheel of Fortune'),),
+          child: Text(
+            AppLocalizations.of(context).translate('Wheel of Fortune'),
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
@@ -72,7 +75,9 @@ class _WheelScreenState extends State<WheelScreen> {
           }
 
           if (snapshot.hasError) {
-            return Center(child: Text(AppLocalizations.of(context).translate('Error') + ': ${snapshot.error}'));
+            return Center(
+                child: Text(AppLocalizations.of(context).translate('Error') +
+                    ': ${snapshot.error}'));
           }
 
           final publicRoomsList = snapshot.data!;
@@ -84,21 +89,20 @@ class _WheelScreenState extends State<WheelScreen> {
               ),
               Expanded(
                 child: LayoutBuilder(
-                  builder: (BuildContext cox, BoxConstraints constraints) {
-                    scroll(10);
-                    return Center(
-                      child: ListWheelScrollView.useDelegate(
-                        itemExtent: 200,
-                        controller: _controller,
-                        physics: FixedExtentScrollPhysics(),
-                        childDelegate: ListWheelChildLoopingListDelegate(
-                          children: publicRoomsList.map(_buildRoomWidget)
-                              .toList(),
-                        ),
+                    builder: (BuildContext cox, BoxConstraints constraints) {
+                  scroll(10);
+                  return Center(
+                    child: ListWheelScrollView.useDelegate(
+                      itemExtent: 200,
+                      controller: _controller,
+                      physics: FixedExtentScrollPhysics(),
+                      childDelegate: ListWheelChildLoopingListDelegate(
+                        children:
+                            publicRoomsList.map(_buildRoomWidget).toList(),
                       ),
-                    );
-                  }
-                ),
+                    ),
+                  );
+                }),
               ),
               Container(
                 padding: const EdgeInsets.all(10.0),
@@ -133,6 +137,14 @@ class _WheelScreenState extends State<WheelScreen> {
       width: min(MediaQuery.of(context).size.width * 0.8, 700),
       child: ElevatedButton(
         onPressed: () {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                AppLocalizations.of(context).translate(
+                    "Press on the select button to select this room"),
+              ),
+            ),
+          );
           print('Room ${room['name']} was pressed.');
         },
         child: Column(

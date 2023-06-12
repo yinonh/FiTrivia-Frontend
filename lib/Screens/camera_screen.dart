@@ -59,7 +59,7 @@ class _CameraScreenState extends State<CameraScreen> {
     Provider.of<MusicProvider>(context, listen: false).startTrainMusic();
     WidgetsBinding.instance!.addPostFrameCallback((_) async {
       await showRestDialog();
-      await Future.delayed(Duration(seconds: 5, milliseconds: 50));
+      await Future.delayed(Duration(seconds: 5));
       _startTimer(context);
     });
   }
@@ -175,12 +175,22 @@ class _CameraScreenState extends State<CameraScreen> {
 
   Future<void> _startTimer(BuildContext context) async {
     for (int i = 0; i < widget.room.questions.length; i++) {
+      int count = 0;
+      int sec = 1;
       final repeatingTimer = Timer.periodic(
-          Duration(milliseconds: (1000 / _num_of_images).toInt()), (timer) {
+          Duration(milliseconds: (1000 / _num_of_images).toInt()),
+          (timer) async {
         if (widget.controller != null &&
             widget.controller.value.isInitialized) {
-          _captureFrame(i);
+          _captureFrame(0);
         }
+        if (count % _num_of_images == 0) {
+          update_buttons();
+          countDownStream =
+              Stream<int>.fromIterable([widget.room.exerciseTime - sec]);
+          sec++;
+        }
+        count++;
       });
 
       countDownStream = Stream<int>.periodic(Duration(seconds: 1), (i) {
@@ -254,7 +264,7 @@ class _CameraScreenState extends State<CameraScreen> {
       var request = http.MultipartRequest(
           'POST',
           Uri.parse(
-              'http://34.76.234.245:8000/images/')); //  10.132.15.203, 34.76.234.245, fitrivia, 127.0.0.1
+              'http://127.0.0.1:8000/images/')); //  10.132.15.203, 34.76.234.245, fitrivia, 127.0.0.1
       request.files.addAll(imageFiles);
       // request.headers.addAll({
       //   "Access-Control-Allow-Origin": "*",
@@ -377,7 +387,9 @@ class _CameraScreenState extends State<CameraScreen> {
               );
             } else {
               return Text(
-                AppLocalizations.of(context).translate('Time Over'),
+                AppLocalizations.of(context).translate('Time Left') +
+                    ': ${widget.room.exerciseTime.toString()} ' +
+                    AppLocalizations.of(context).translate('Seconds'),
               );
             }
           },
