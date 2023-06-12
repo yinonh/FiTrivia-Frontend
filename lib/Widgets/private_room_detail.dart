@@ -1,13 +1,17 @@
 import 'dart:async';
 import 'package:fitrivia/Models/question.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../l10n/app_localizations.dart';
 import '../Models/trivia_room.dart';
 import '../Providers/trivia_rooms_provider.dart';
 import '../Providers/user_provider.dart';
 import '../Screens/previous_screen.dart';
+import '../Screens/edit_room.dart';
 
 class PrivateRoomDetail extends StatefulWidget {
   String roomID;
@@ -24,30 +28,130 @@ class _PrivateRoomDetailState extends State<PrivateRoomDetail> {
     super.initState();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Center(
-          child: Text(
-            AppLocalizations.of(context).translate("Room Details"),
+  Future<void> removeRoom(BuildContext context, String roomId) async {
+    // Show confirmation dialog to the user
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(
+          AppLocalizations.of(context).translate('Confirm'),
+        ),
+        content: Text(
+          AppLocalizations.of(context)
+              .translate('Are you sure you want to delete this room?'),
+        ),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(
+              AppLocalizations.of(context).translate('No'),
+            ),
           ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: Text(
+              AppLocalizations.of(context).translate('Yes'),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    // If the user confirms, delete the room
+    if (confirm == true) {
+      try {
+        await Provider.of<TriviaRoomProvider>(context, listen: false)
+            .removeRoom(roomId);
+        Navigator.pop(context);
+      } catch (e) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(e.toString().substring(11))));
+      }
+    }
+  }
+
+  Future<void> share(BuildContext context, TriviaRoom room) async {
+    String inviteMessage = AppLocalizations.of(context)
+            .translate('Come join my room:') +
+        ' ${room.id} ${!room.isPublic ? AppLocalizations.of(context).translate('Password') + ': ${room.password}' : ''}';
+    await Clipboard.setData(ClipboardData(text: inviteMessage));
+    Share.share(inviteMessage);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          AppLocalizations.of(context)
+              .translate('Invite message copied to clipboard successfully.'),
         ),
       ),
-      body: FutureBuilder<TriviaRoom>(
-        future: Provider.of<TriviaRoomProvider>(context, listen: false)
-            .getTriviaRoomById(widget.roomID),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          }
-          if (snapshot.hasError) {
-            return Center(
-                child: Text(AppLocalizations.of(context).translate("Error") +
-                    ': ${snapshot.error}'));
-          }
-          final TriviaRoom room = snapshot.data!;
-          return Column(
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<TriviaRoom>(
+      future: Provider.of<TriviaRoomProvider>(context, listen: false)
+          .getTriviaRoomById(widget.roomID),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        }
+        if (snapshot.hasError) {
+          return Center(
+              child: Text(AppLocalizations.of(context).translate("Error") +
+                  ': ${snapshot.error}'));
+        }
+        final TriviaRoom room = snapshot.data!;
+        return Scaffold(
+          appBar: AppBar(
+            actions: FirebaseAuth.instance.currentUser!.uid == room.managerID
+                ? <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.all(3.0),
+                      child: IconButton(
+                        icon: const Icon(
+                          Icons.edit,
+                          size: 30,
+                        ),
+                        onPressed: () {
+                          Navigator.pushReplacementNamed(
+                              context, EditRoom.routeName,
+                              arguments: room.id);
+                        },
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(3.0),
+                      child: IconButton(
+                        icon: const Icon(
+                          Icons.share,
+                          size: 30,
+                        ),
+                        onPressed: () {
+                          share(context, room);
+                        },
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(3.0),
+                      child: IconButton(
+                        icon: const Icon(
+                          Icons.delete,
+                          size: 30,
+                        ),
+                        onPressed: () async {
+                          await removeRoom(context, room.id);
+                        },
+                      ),
+                    ),
+                  ]
+                : null,
+            title: Center(
+              child: Text(
+                AppLocalizations.of(context).translate("Room Details"),
+              ),
+            ),
+          ),
+          body: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -139,9 +243,9 @@ class _PrivateRoomDetailState extends State<PrivateRoomDetail> {
                 ),
               ),
             ],
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 }

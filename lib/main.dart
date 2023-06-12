@@ -114,6 +114,7 @@ class _FitriviaAppState extends State<FitriviaApp> {
     );
 
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       locale: _locale,
       localizationsDelegates: [
         AppLocalizations.delegate,

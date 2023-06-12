@@ -10,7 +10,7 @@ class MusicProvider with ChangeNotifier {
   final AudioPlayer trainPlayer = AudioPlayer();
   final AudioPlayer cheeringPlayer = AudioPlayer();
 
-  double volume = 0.7;
+  double volume = 0.05;
   bool gameMusicOn = false;
   bool backgroundMusicOn = true;
   String musicType = "metal";
@@ -92,7 +92,6 @@ class MusicProvider with ChangeNotifier {
       bgMusicPlayer.setReleaseMode(ReleaseMode.loop);
       await bgMusicPlayer.play(backgroundMusicFile);
     }
-
   }
 
   Future<void> stopCheeringMusic() async {

@@ -279,30 +279,33 @@ class _TriviaRoomsState extends State<TriviaRooms> {
                   final List<Map<String, dynamic>> privateRooms =
                       snapshot.data ?? [];
 
-                  return ListView.builder(
-                    itemCount: privateRooms.length,
-                    itemBuilder: (context, index) {
-                      final Map<String, dynamic> room = privateRooms[index];
-                      return Column(
-                        children: [
-                          GestureDetector(
-                            child: PrivateRoomItem(
-                              roomId: room['id'],
-                              roomName: room['name'],
-                              description: room['description'],
-                              roomPass: room['password'],
-                              isPublic: room['isPublic'],
+                  return Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 0, 0, 80),
+                    child: ListView.builder(
+                      itemCount: privateRooms.length,
+                      itemBuilder: (context, index) {
+                        final Map<String, dynamic> room = privateRooms[index];
+                        return Column(
+                          children: [
+                            GestureDetector(
+                              child: PrivateRoomItem(
+                                roomId: room['id'],
+                                roomName: room['name'],
+                                description: room['description'],
+                                roomPass: room['password'],
+                                isPublic: room['isPublic'],
+                              ),
+                              onTap: () {
+                                Navigator.pushNamed(
+                                    context, RoomDetails.routeName,
+                                    arguments: room['id']);
+                              },
                             ),
-                            onTap: () {
-                              Navigator.pushNamed(
-                                  context, RoomDetails.routeName,
-                                  arguments: room['id']);
-                            },
-                          ),
-                          Divider(),
-                        ],
-                      );
-                    },
+                            Divider(),
+                          ],
+                        );
+                      },
+                    ),
                   );
                 }
               },
