@@ -188,6 +188,7 @@ class _FitriviaAppState extends State<FitriviaApp> {
       },
       theme: FlexThemeData.light(
           scheme: FlexScheme.aquaBlue,
+          primaryContainer: Colors.blueGrey[100],
           textTheme: text_theme,
           scaffoldBackground: Colors.blueGrey[100]),
       darkTheme: FlexThemeData.dark(
