@@ -50,6 +50,8 @@ dependencies:
   confetti: ^0.7.0
   flutter_localization: ^0.1.11
   auto_size_text: ^3.0.0
+  image_picker: ^0.8.8
+  firebase_storage: ^11.2.2
 
 dev_dependencies:
   flutter_test:
