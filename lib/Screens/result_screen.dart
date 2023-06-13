@@ -20,6 +20,7 @@ class ResultScreen extends StatefulWidget {
   final List<int> correctAnsIndex;
   final TriviaRoom room;
   late final Map<String, int> scoresDict;
+  int correctAnswers = 0;
   String userID = FirebaseAuth.instance.currentUser!.uid;
 
   ResultScreen(
@@ -79,8 +80,10 @@ class _ResultScreenState extends State<ResultScreen>
   int get_total_score() {
     int total_score = 0;
     for (int i = 0; i < widget.result.length; i++) {
+      bool correctAns = is_ans_correct(widget.result[i], i);
       total_score += convertStringList(widget.result[i]).sum;
-      total_score += is_ans_correct(widget.result[i], i) ? 10 : 0;
+      total_score += correctAns ? 10 : 0;
+      widget.correctAnswers += correctAns ? 1 : 0;
     }
     return total_score;
   }
@@ -219,8 +222,8 @@ class _ResultScreenState extends State<ResultScreen>
                     child: FutureBuilder(
                       future: Provider.of<TriviaRoomProvider>(context,
                               listen: false)
-                          .add_score(
-                              widget.room, widget.userID, get_total_score()),
+                          .add_score(widget.room, widget.userID,
+                              get_total_score(), widget.correctAnswers),
                       builder: (ctx, snapshot) {
                         if (snapshot.hasData) {
                           if (snapshot.data!.isEmpty) {
