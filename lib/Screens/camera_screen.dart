@@ -182,7 +182,7 @@ class _CameraScreenState extends State<CameraScreen> {
           (timer) async {
         if (widget.controller != null &&
             widget.controller.value.isInitialized) {
-          _captureFrame(0);
+          _captureFrame(i);
         }
         if (count % _num_of_images == 0) {
           update_buttons();

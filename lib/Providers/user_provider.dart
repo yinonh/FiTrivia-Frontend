@@ -1,6 +1,13 @@
+import 'dart:async';
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:http/http.dart' as http;
+import 'package:flutter/foundation.dart';
 
 class UserProvider with ChangeNotifier {
   Future<bool> updatePassword(
@@ -91,6 +98,54 @@ class UserProvider with ChangeNotifier {
     } catch (e) {
       print(e);
       return false; // User language update failed
+    }
+  }
+
+  Future<String?> checkExistingProfileImage(String userId) async {
+    final storage = FirebaseStorage.instance;
+    final reference = storage.ref().child('Profile images/$userId.jpg');
+
+    try {
+      final url = await reference.getDownloadURL();
+      return url;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  Future<Uint8List?> loadImageFromUrl(String imageUrl) async {
+    final http.Client client = http.Client();
+    Uint8List? imageBytes = null;
+    try {
+      final http.Response response = await client.get(Uri.parse(imageUrl));
+      imageBytes = response.bodyBytes;
+    } catch (e) {
+      print('Error loading profile image: $e');
+    } finally {
+      client.close();
+      return imageBytes;
+    }
+  }
+
+  Future<void> uploadImageToFirebase(
+      BuildContext context, String userId, String imagePath) async {
+    final storage = FirebaseStorage.instance;
+    final reference = storage.ref().child('Profile images/$userId.jpg');
+
+    try {
+      await reference.putFile(File(imagePath));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Image uploaded successfully'),
+        ),
+      );
+    } catch (e) {
+      print('Error uploading profile image: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to upload image'),
+        ),
+      );
     }
   }
 }

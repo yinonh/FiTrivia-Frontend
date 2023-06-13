@@ -8,6 +8,7 @@ import '../l10n/app_localizations.dart';
 import '../Providers/user_provider.dart';
 import '../Providers/music_provider.dart';
 import '../Widgets/edit_music_settigs.dart';
+import '../Widgets/profile_image.dart';
 
 class UserDetailsScreen extends StatefulWidget {
   static const routeName = '/edit_user';
@@ -328,9 +329,17 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
           child: Column(
             children: [
               Text(
+                AppLocalizations.of(context).translate('Update Profile Image'),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 16),
+              ProfileScreen(),
+              SizedBox(height: 32),
+              Text(
                 AppLocalizations.of(context).translate('Update User Details'),
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
+              SizedBox(height: 16),
               _buildUpdateUserDetailsForm(),
               SizedBox(height: 32),
               Divider(),
