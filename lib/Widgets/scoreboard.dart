@@ -32,7 +32,8 @@ class _ScoreboardState extends State<Scoreboard>
       sortedEntries.add(ScoreEntry(
           id: entry['id']!,
           score: int.parse(entry['score']!),
-          username: entry['username']!));
+          username: entry['username']!,
+          correctAnswers: entry['correct_answers']!));
     }
     sortedEntries = sortedEntries..sort((a, b) => b.score.compareTo(a.score));
 
@@ -70,7 +71,7 @@ class _ScoreboardState extends State<Scoreboard>
             // Render a separate row for the current user at the bottom
             // print(sortedEntries.last.score);
             return (sortedEntries.last.id == widget.currentUserID &&
-                sortedEntries.length == maxScoreboardSize + 1)
+                    sortedEntries.length == maxScoreboardSize + 1)
                 ? _buildSeparateRow()
                 : Container(); // Empty container if current user's score is not lower than the last score
           }
@@ -88,6 +89,7 @@ class _ScoreboardState extends State<Scoreboard>
                 index + 1 > maxScoreboardSize ? '' : (index + 1).toString()),
             // Display the place (index + 1)
             title: Text(entry.username),
+            subtitle: Text('Correct Answers:${entry.correctAnswers}'),
             trailing: Text(entry.score.toString()),
           );
         },
@@ -151,6 +153,13 @@ class _ScoreboardState extends State<Scoreboard>
                     fontWeight: FontWeight.bold,
                   ),
                 ),
+                subtitle: Text(
+                  'Correct Answers:${entry.correctAnswers}',
+                  style: TextStyle(
+                    fontSize: 18.0, // Increase the font size for larger text
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 trailing: Text(
                   entry.score.toString(),
                   style: TextStyle(
@@ -170,7 +179,12 @@ class _ScoreboardState extends State<Scoreboard>
 class ScoreEntry {
   final String id;
   final int score;
+  final String correctAnswers;
   final String username;
 
-  ScoreEntry({required this.id, required this.score, required this.username});
+  ScoreEntry(
+      {required this.id,
+      required this.correctAnswers,
+      required this.score,
+      required this.username});
 }
