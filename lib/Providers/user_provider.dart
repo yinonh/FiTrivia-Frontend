@@ -1,4 +1,5 @@
 import 'dart:async';
+//import 'dart:html';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -127,25 +128,31 @@ class UserProvider with ChangeNotifier {
     }
   }
 
-  Future<void> uploadImageToFirebase(
-      BuildContext context, String userId, String imagePath) async {
-    final storage = FirebaseStorage.instance;
-    final reference = storage.ref().child('Profile images/$userId.jpg');
+  Future<bool> uploadImageToFirebase(BuildContext context, File? image,
+      Uint8List? imageBytes, String userID) async {
+    final FirebaseStorage storage = FirebaseStorage.instance;
+    bool result = false;
 
     try {
-      await reference.putFile(File(imagePath));
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Image uploaded successfully'),
-        ),
-      );
+      notifyListeners();
+
+      if (image != null || imageBytes != null) {
+        final reference = storage.ref().child('Profile images/$userID.jpg');
+
+        if (image != null) {
+          await reference.putFile(image);
+        } else if (imageBytes != null) {
+          await reference.putData(imageBytes);
+        }
+
+        // Show a success message
+        result = true;
+      }
     } catch (e) {
-      print('Error uploading profile image: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to upload image'),
-        ),
-      );
+      print(e);
+    } finally {
+      notifyListeners();
+      return result;
     }
   }
 }

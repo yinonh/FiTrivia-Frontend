@@ -109,22 +109,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
       _isLoading = true; // Show progress indicator
     });
 
-    if (_image != null || _imageBytes != null) {
-      // Get a reference to the Firebase Storage instance and create a new image file in the "Profile images" directory
-      final reference = storage.ref().child('Profile images/$_userID.jpg');
-
-      // Upload the image file or image data to Firebase Storage
-      if (_image != null) {
-        await reference.putFile(_image!);
-      } else if (_imageBytes != null) {
-        await reference.putData(_imageBytes!);
-      }
-
-      // Show a success message
+    if (await user_provider.uploadImageToFirebase(
+        context, _image, _imageBytes, _userID)) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(AppLocalizations.of(context)
               .translate('Image uploaded successfully')),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(context).translate('Server Error')),
         ),
       );
     }
@@ -136,6 +132,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -144,7 +141,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             width: 150,
             height: 150,
             decoration: BoxDecoration(
-              color: Colors.black,
+              color: colorScheme.primary,
               shape: BoxShape.circle,
             ),
             child: GestureDetector(
@@ -180,7 +177,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               return Icon(
                                 Icons.person,
                                 size: 100,
-                                color: Colors.white,
+                                color: colorScheme.secondary,
                               );
                             },
                           ),
