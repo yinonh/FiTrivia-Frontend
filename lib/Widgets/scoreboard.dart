@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
+
 
 class Scoreboard extends StatefulWidget {
   final List<Map<String, String>> userScores;
@@ -89,7 +91,7 @@ class _ScoreboardState extends State<Scoreboard>
                 index + 1 > maxScoreboardSize ? '' : (index + 1).toString()),
             // Display the place (index + 1)
             title: Text(entry.username),
-            subtitle: Text('Correct Answers:${entry.correctAnswers}'),
+            subtitle: Text(AppLocalizations.of(context).translate('Correct Answers')+': ${entry.correctAnswers}'),
             trailing: Text(entry.score.toString()),
           );
         },
@@ -154,7 +156,7 @@ class _ScoreboardState extends State<Scoreboard>
                   ),
                 ),
                 subtitle: Text(
-                  'Correct Answers:${entry.correctAnswers}',
+                  AppLocalizations.of(context).translate('Correct Answers')+': ${entry.correctAnswers}',
                   style: TextStyle(
                     fontSize: 18.0, // Increase the font size for larger text
                     fontWeight: FontWeight.bold,

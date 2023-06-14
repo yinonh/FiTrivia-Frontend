@@ -300,18 +300,19 @@ class TriviaRoomProvider with ChangeNotifier {
     final DocumentReference scoreboardRef =
         await scoreboardsCollection.doc(scoreboardID);
     final DocumentSnapshot scoreboardDoc = await scoreboardRef.get();
-    Map<String, Map<String, int>> scoresDict = {};
+    Map<String, Map<String, dynamic>> scoresDict = {};
     if (scoreboardDoc['scores'].isNotEmpty) {
       for (var entry in scoreboardDoc['scores'].entries) {
         scoresDict[entry.key] = {
           'total_score': entry.value['total_score'],
-          'correct_answers': entry.value['correct_answers']
+          'correct_answers': entry.value['correct_answers'].toString()
         };
       }
     }
     if (scoresDict.containsKey(userID)) {
       if (scoresDict[userID]!['total_score']! < total_score) {
         scoresDict[userID]!['total_score'] = total_score;
+        scoresDict[userID]!['correct_answers'] = correctAnswers.toString()+'/${room.questions.length}';
         await scoreboardsCollection.doc(scoreboardID).update({
           'scores.$userID': scoresDict[userID],
         });
@@ -319,7 +320,7 @@ class TriviaRoomProvider with ChangeNotifier {
     } else if (scoresDict.length < maxScoreboardSize) {
       scoresDict[userID] = {
         'total_score': total_score,
-        'correct_answers': correctAnswers
+        'correct_answers': correctAnswers.toString()+'/${room.questions.length}'
       };
       await scoreboardsCollection.doc(scoreboardID).update({
         'scores.$userID': scoresDict[userID],
@@ -337,7 +338,7 @@ class TriviaRoomProvider with ChangeNotifier {
           scoresDict.remove(keyToRemove);
           scoresDict[userID] = {
             'total_score': total_score,
-            'correct_answers': correctAnswers
+            'correct_answers': correctAnswers.toString()+'/${room.questions.length}'
           };
           await scoreboardsCollection.doc(scoreboardID).update({
             'scores': scoresDict,
@@ -354,7 +355,7 @@ class TriviaRoomProvider with ChangeNotifier {
       Map<String, String> x = {};
       x['id'] = entry.key;
       x['score'] = entry.value['total_score'].toString();
-      x['correct_answers'] = entry.value['correct_answers'].toString();
+      x['correct_answers'] = entry.value['correct_answers'];
       x['username'] = await getUsernameById(entry.key);
       result.add(x);
     }
@@ -362,7 +363,7 @@ class TriviaRoomProvider with ChangeNotifier {
       result.add({
         'id': userID,
         'score': total_score.toString(),
-        'correct_answers': correctAnswers.toString(),
+        'correct_answers': correctAnswers.toString()+'/${room.questions.length}',
         'username': await getUsernameById(userID),
       });
     }
