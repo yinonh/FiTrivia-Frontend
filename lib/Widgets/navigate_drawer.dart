@@ -77,6 +77,7 @@ class NavigateDrawer extends StatelessWidget {
                           return Text(
                             '${AppLocalizations.of(context).translate('Hello')} ${username ?? ''}',
                             style: TextStyle(
+                              fontSize: 20,
                               fontWeight: FontWeight.bold,
                             ),
                           );
