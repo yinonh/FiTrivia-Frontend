@@ -77,7 +77,7 @@ class _TriviaRoomsState extends State<TriviaRooms> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     _musicProvider = Provider.of<MusicProvider>(context);
-    _musicProvider.startBgMusic();
+    _musicProvider.startBgMusic(FirebaseAuth.instance.currentUser!.uid);
     _privateRoomsProvider = Provider.of<TriviaRoomProvider>(context);
     _privateRoomsFuture = _privateRoomsProvider
         .getTriviaRoomsByManagerID(FirebaseAuth.instance.currentUser!.uid);

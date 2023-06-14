@@ -56,7 +56,7 @@ class _SignUpState extends State<SignUp> {
         'language': "en"
       });
       final musicProvider = context.read<MusicProvider>();
-      await musicProvider.fetchMusicSettings(currentUser.user!.uid);
+      await musicProvider.startBgMusic(currentUser.user!.uid);
       Navigator.pushReplacementNamed(context, TriviaRooms.routeName);
     } on FirebaseAuthException catch (e) {
       setState(() {

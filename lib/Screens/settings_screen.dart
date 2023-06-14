@@ -313,7 +313,8 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
-            Provider.of<MusicProvider>(context, listen: false).startBgMusic();
+            Provider.of<MusicProvider>(context, listen: false)
+                .startBgMusic(FirebaseAuth.instance.currentUser!.uid);
             Navigator.pop(context);
           },
         ),
