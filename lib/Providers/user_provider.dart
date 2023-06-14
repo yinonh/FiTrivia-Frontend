@@ -1,4 +1,5 @@
 import 'dart:async';
+
 //import 'dart:html';
 import 'dart:io';
 import 'dart:typed_data';
@@ -153,6 +154,19 @@ class UserProvider with ChangeNotifier {
     } finally {
       notifyListeners();
       return result;
+    }
+  }
+
+  Future<bool> isUserAdmin(String userId) async {
+    try {
+      final DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('Users')
+          .doc(userId)
+          .get();
+      return userDoc['isAdmin']; // User language update successful
+    } catch (e) {
+      print(e);
+      return false;
     }
   }
 }

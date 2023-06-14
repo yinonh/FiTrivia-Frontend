@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:fitrivia/Providers/user_provider.dart';
 import 'package:fitrivia/Widgets/scoreboard.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -31,6 +32,72 @@ class _PublicRoomDetailState extends State<PublicRoomDetail> {
     String roomName = _triviaRoomsProvider.convertCategory(widget.category);
     return Scaffold(
       appBar: AppBar(
+        actions: <Widget>[
+          FutureBuilder(
+            future: Provider.of<UserProvider>(context, listen: false)
+                .isUserAdmin(currentUser),
+            builder: (ctx, snapshot) {
+              if (snapshot.hasData) {
+                if (snapshot.data!) {
+                  return Padding(
+                    padding: const EdgeInsets.all(3.0),
+                    child: IconButton(
+                      icon: const Icon(
+                        Icons.refresh,
+                        size: 30,
+                      ),
+                      onPressed: () async {
+                        await showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              title: Text(
+                                AppLocalizations.of(context)
+                                    .translate('Confirm'),
+                              ),
+                              content: Text(
+                                AppLocalizations.of(context).translate(
+                                    'Are you sure you want to reset scoreboards?'),
+                              ),
+                              actions: <Widget>[
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Text(
+                                    AppLocalizations.of(context)
+                                        .translate('No'),
+                                  ),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    Provider.of<TriviaRoomProvider>(context,
+                                            listen: false)
+                                        .resetScoreboards(widget.category,
+                                            isPublic: true);
+                                    setState(() {});
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Text(
+                                    AppLocalizations.of(context)
+                                        .translate('Yes'),
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
+                    ),
+                  );
+                }
+                return Text('');
+              } else {
+                return Text('');
+              }
+            },
+          ),
+        ],
         title: Center(
           child: Text(
             roomName,
@@ -187,8 +254,17 @@ class _PublicRoomDetailState extends State<PublicRoomDetail> {
                         );
                       }
                     } else if (snapshot.hasError) {
-                      return Text(
-                        AppLocalizations.of(context).translate('Error'),
+                      return Column(
+                        children: [
+                          SizedBox(
+                            height: 70,
+                          ),
+                          Text(
+                            AppLocalizations.of(context)
+                                .translate('No Scores Yet'),
+                            style: TextStyle(fontSize: 20),
+                          ),
+                        ],
                       );
                     } else {
                       return Center(child: CircularProgressIndicator());
