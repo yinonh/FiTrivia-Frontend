@@ -312,7 +312,8 @@ class TriviaRoomProvider with ChangeNotifier {
     if (scoresDict.containsKey(userID)) {
       if (scoresDict[userID]!['total_score']! < total_score) {
         scoresDict[userID]!['total_score'] = total_score;
-        scoresDict[userID]!['correct_answers'] = correctAnswers.toString()+'/${room.questions.length}';
+        scoresDict[userID]!['correct_answers'] =
+            correctAnswers.toString() + '/${room.questions.length}';
         await scoreboardsCollection.doc(scoreboardID).update({
           'scores.$userID': scoresDict[userID],
         });
@@ -320,7 +321,8 @@ class TriviaRoomProvider with ChangeNotifier {
     } else if (scoresDict.length < maxScoreboardSize) {
       scoresDict[userID] = {
         'total_score': total_score,
-        'correct_answers': correctAnswers.toString()+'/${room.questions.length}'
+        'correct_answers':
+            correctAnswers.toString() + '/${room.questions.length}'
       };
       await scoreboardsCollection.doc(scoreboardID).update({
         'scores.$userID': scoresDict[userID],
@@ -338,7 +340,8 @@ class TriviaRoomProvider with ChangeNotifier {
           scoresDict.remove(keyToRemove);
           scoresDict[userID] = {
             'total_score': total_score,
-            'correct_answers': correctAnswers.toString()+'/${room.questions.length}'
+            'correct_answers':
+                correctAnswers.toString() + '/${room.questions.length}'
           };
           await scoreboardsCollection.doc(scoreboardID).update({
             'scores': scoresDict,
@@ -363,9 +366,33 @@ class TriviaRoomProvider with ChangeNotifier {
       result.add({
         'id': userID,
         'score': total_score.toString(),
-        'correct_answers': correctAnswers.toString()+'/${room.questions.length}',
+        'correct_answers':
+            correctAnswers.toString() + '/${room.questions.length}',
         'username': await getUsernameById(userID),
       });
+    }
+    return result;
+  }
+
+  Future<List<Map<String, String>>> get_scoreboard(
+      String roomid, int numberOfQuestions) async {
+    final roomsCollection =
+        FirebaseFirestore.instance.collection('TriviaRooms');
+    final scoreboardsCollection =
+        FirebaseFirestore.instance.collection('Scoreboards');
+    final DocumentSnapshot roomDoc = await roomsCollection.doc(roomid).get();
+    String scoreboardID = roomDoc['scoreboard'][numberOfQuestions.toString()];
+    final DocumentReference scoreboardRef =
+        await scoreboardsCollection.doc(scoreboardID);
+    final DocumentSnapshot scoreboardDoc = await scoreboardRef.get();
+    List<Map<String, String>> result = [];
+    for (var entry in scoreboardDoc['scores'].entries) {
+      Map<String, String> x = {};
+      x['id'] = entry.key;
+      x['score'] = entry.value['total_score'].toString();
+      x['correct_answers'] = entry.value['correct_answers'];
+      x['username'] = await getUsernameById(entry.key);
+      result.add(x);
     }
     return result;
   }

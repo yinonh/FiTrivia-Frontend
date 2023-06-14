@@ -19,12 +19,9 @@ class PublicRoomItems extends StatelessWidget {
         child: Stack(
           alignment: Alignment.bottomCenter,
           children: [
-            Hero(
-              tag: category,
-              child: Image.asset(
-                'assets/$category.png',
-                fit: BoxFit.fill,
-              ),
+            Image.asset(
+              'assets/$category.png',
+              fit: BoxFit.fill,
             ),
             Padding(
               padding: const EdgeInsets.only(bottom: 25),

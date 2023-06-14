@@ -1,7 +1,8 @@
 import 'dart:async';
+import 'package:fitrivia/Widgets/scoreboard.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
+import 'package:firebase_auth/firebase_auth.dart';
 import '../l10n/app_localizations.dart';
 import '../Models/question.dart';
 import '../Models/trivia_room.dart';
@@ -10,6 +11,7 @@ import '../Screens/previous_screen.dart';
 
 class PublicRoomDetail extends StatefulWidget {
   String category;
+
   PublicRoomDetail({required this.category, Key? key}) : super(key: key);
 
   @override
@@ -23,6 +25,7 @@ class _PublicRoomDetailState extends State<PublicRoomDetail> {
 
   @override
   Widget build(BuildContext context) {
+    String currentUser = FirebaseAuth.instance.currentUser!.uid;
     TriviaRoomProvider _triviaRoomsProvider =
         Provider.of<TriviaRoomProvider>(context, listen: false);
     String roomName = _triviaRoomsProvider.convertCategory(widget.category);
@@ -39,14 +42,8 @@ class _PublicRoomDetailState extends State<PublicRoomDetail> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              Hero(
-                tag: widget.category,
-                child: Image.asset(
-                  'assets/${widget.category}.png',
-                  fit: BoxFit.fill,
-                  height: MediaQuery.of(context).size.height * 0.3,
-                  width: MediaQuery.of(context).size.width * 0.8,
-                ),
+              SizedBox(
+                height: 25,
               ),
               Center(
                 child: Container(
@@ -151,6 +148,52 @@ class _PublicRoomDetailState extends State<PublicRoomDetail> {
                     AppLocalizations.of(context).translate('🏁 Start 🏁'),
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
+                ),
+              ),
+              SizedBox(
+                height: 25,
+              ),
+              Text(
+                AppLocalizations.of(context).translate('🏆 Scoreboard 🏆'),
+                style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold),
+              ),
+              Container(
+                height: 400,
+                child: FutureBuilder(
+                  future: _triviaRoomsProvider.get_scoreboard(
+                      widget.category, _numberOfQuestions),
+                  builder: (ctx, snapshot) {
+                    if (snapshot.hasData) {
+                      if (snapshot.data!.isEmpty) {
+                        return Column(
+                          children: [
+                            SizedBox(
+                              height: 70,
+                            ),
+                            Text(
+                              AppLocalizations.of(context)
+                                  .translate('No Scores Yet'),
+                              style: TextStyle(fontSize: 20),
+                            ),
+                          ],
+                        );
+                      } else {
+                        return Container(
+                          padding: const EdgeInsets.all(20),
+                          child: Scoreboard(
+                            userScores: snapshot.data!,
+                            currentUserID: currentUser,
+                          ),
+                        );
+                      }
+                    } else if (snapshot.hasError) {
+                      return Text(
+                        AppLocalizations.of(context).translate('Error'),
+                      );
+                    } else {
+                      return Center(child: CircularProgressIndicator());
+                    }
+                  },
                 ),
               ),
             ],
