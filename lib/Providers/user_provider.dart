@@ -93,4 +93,16 @@ class UserProvider with ChangeNotifier {
       return false; // User language update failed
     }
   }
+  Future<bool> isUserAdmin(String userId) async {
+    try {
+      final DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('Users')
+          .doc(userId)
+          .get();
+      return userDoc['isAdmin']; // User language update successful
+    } catch (e) {
+      print(e);
+      return false;
+    }
+  }
 }

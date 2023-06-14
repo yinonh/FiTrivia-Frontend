@@ -396,4 +396,39 @@ class TriviaRoomProvider with ChangeNotifier {
     }
     return result;
   }
+
+  Future<void> resetScoreboards(String roomId, {isPublic = false}) async {
+    try {
+      final roomsCollection =
+          FirebaseFirestore.instance.collection('TriviaRooms');
+      final roomSnapshot = await roomsCollection.doc(roomId).get();
+      if (isPublic) {
+        this.removeRoom(roomId);
+      } else {
+        await roomsCollection.doc(roomId).update({
+          'scoreboard': {},
+        });
+        final scoreboardsCollection =
+            FirebaseFirestore.instance.collection('Scoreboards');
+        final scoreboardID = await scoreboardsCollection.add({
+          'scores': {},
+        }).then((docRef) => docRef.id);
+        await roomsCollection.doc(roomId).update({
+          'scoreboard.${roomSnapshot['questions'].length.toString()}': scoreboardID,
+        });
+        final List<String> scoreboardIds = List<String>.from(
+            roomSnapshot.data()!['scoreboard'].values.toList());
+        final batch = FirebaseFirestore.instance.batch();
+        for (final scoreboardId in scoreboardIds) {
+          batch.delete(FirebaseFirestore.instance
+              .collection('Scoreboards')
+              .doc(scoreboardId));
+        }
+        await batch.commit().timeout(Duration(seconds: 60));
+      }
+      notifyListeners();
+    } on TimeoutException catch (e) {
+      throw Exception('Timeout Error');
+    }
+  }
 }

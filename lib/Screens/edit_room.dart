@@ -313,28 +313,34 @@ class _EditRoomState extends State<EditRoom> {
                           ],
                         ),
                         SizedBox(height: 16),
+                        if (!_isPublic)
+                          Column(
+                            children: [
+                              TextFormField(
+                                controller: _passwordController,
+                                obscureText: true,
+                                decoration: InputDecoration(
+                                  labelText: AppLocalizations.of(context)
+                                      .translate('Password'),
+                                  labelStyle: TextStyle(color: Colors.black),
+                                  border: OutlineInputBorder(),
+                                ),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return AppLocalizations.of(context)
+                                        .translate(
+                                            'Please enter your password');
+                                  }
+                                  return null;
+                                },
+                              ),
+                              SizedBox(height: 16),
+                            ],
+                          ),
                         Text(
                           AppLocalizations.of(context)
                               .translate('Chose exercises:'),
                         ),
-                        if (!_isPublic)
-                          TextFormField(
-                            controller: _passwordController,
-                            obscureText: true,
-                            decoration: InputDecoration(
-                              labelText: AppLocalizations.of(context)
-                                  .translate('Password'),
-                              labelStyle: TextStyle(color: Colors.black),
-                              border: OutlineInputBorder(),
-                            ),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return AppLocalizations.of(context)
-                                    .translate('Please enter your password');
-                              }
-                              return null;
-                            },
-                          ),
                         SizedBox(height: 16),
                         Container(
                           width: 500,
@@ -354,6 +360,59 @@ class _EditRoomState extends State<EditRoom> {
                                 style: TextStyle(color: Colors.red),
                               )
                             : SizedBox(height: 0),
+                        SizedBox(
+                          height: 16,
+                        ),
+                        TextButton(
+                          onPressed: () async {
+                            await showDialog(
+                              context: context,
+                              builder: (context) {
+                                return AlertDialog(
+                                  title: Text(
+                                    AppLocalizations.of(context)
+                                        .translate('Confirm'),
+                                  ),
+                                  content: Text(
+                                    AppLocalizations.of(context).translate(
+                                        'Are you sure you want to reset scoreboards?'),
+                                  ),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: Text(
+                                        AppLocalizations.of(context)
+                                            .translate('No'),
+                                      ),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                        Provider.of<TriviaRoomProvider>(context, listen: false)
+                                            .resetScoreboards(widget.roomID);
+                                      },
+                                      child: Text(
+                                        AppLocalizations.of(context)
+                                            .translate('Yes'),
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          },
+                          style: TextButton.styleFrom(
+                            backgroundColor: Colors.red,
+                          ),
+                          child: Text(
+                            'Reset Scoreboards',
+                            style: TextStyle(
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
                         SizedBox(
                           height: 16,
                         ),

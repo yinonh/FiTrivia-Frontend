@@ -276,7 +276,7 @@ class _PrivateRoomDetailState extends State<PrivateRoomDetail> {
                         }
                       } else if (snapshot.hasError) {
                         return Text(
-                          AppLocalizations.of(context).translate('Error'),
+                          AppLocalizations.of(context).translate('No Scores Yet'),
                         );
                       } else {
                         return Center(child: CircularProgressIndicator());
