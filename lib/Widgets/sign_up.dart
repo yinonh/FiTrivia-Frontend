@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../l10n/app_localizations.dart';
@@ -40,7 +41,7 @@ class _SignUpState extends State<SignUp> {
               email: _email!, password: _password2!);
 
       final defaultMusicSettings = {
-        'volume': 0.7,
+        'volume': 0.1,
         'gameMusicOn': true,
         'backgroundMusicOn': true,
         'musicType': 'metal',
@@ -102,7 +103,9 @@ class _SignUpState extends State<SignUp> {
             onSaved: (value) {
               _userName = value;
             },
+            maxLength: 15,
             decoration: InputDecoration(
+              counterText: '',
               labelStyle: TextStyle(color: Colors.black),
               filled: true,
               fillColor: Colors.white.withOpacity(0.5),
