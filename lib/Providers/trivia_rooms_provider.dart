@@ -85,13 +85,20 @@ class TriviaRoomProvider with ChangeNotifier {
         .get();
     return doc.exists;
   }
+  Future<bool> isCustomRoomById(String id) async {
+    final DocumentSnapshot doc = await FirebaseFirestore.instance
+        .collection('TriviaRooms')
+        .doc(id)
+        .get();
+    return (doc.data() as Map<String,dynamic>).containsKey('questions')
+    ;
+  }
 
   Future<TriviaRoom> getTriviaRoomById(String id) async {
     final DocumentSnapshot doc = await FirebaseFirestore.instance
         .collection('TriviaRooms')
         .doc(id)
         .get();
-
     final List<String> questionIds = List<String>.from(doc['questions']);
 
     final List<QuizQuestion> questions = await getQuestionsByIds(questionIds);

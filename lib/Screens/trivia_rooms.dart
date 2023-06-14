@@ -169,8 +169,10 @@ class _TriviaRoomsState extends State<TriviaRooms> {
                 onPressed: () async {
                   String userInput = _searchController.text.trim();
                   if (userInput.isEmpty ||
-                      !await _privateRoomsProvider
-                          .isRoomExistsById(userInput)) {
+                      !(await _privateRoomsProvider
+                              .isRoomExistsById(userInput) &&
+                          await _privateRoomsProvider
+                              .isCustomRoomById(userInput))) {
                     customShowDialog(
                         context: context,
                         title: AppLocalizations.of(context)
