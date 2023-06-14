@@ -116,8 +116,7 @@ class _LogInState extends State<LogIn> {
                           password: _password!,
                         );
                         final musicProvider = context.read<MusicProvider>();
-                        await musicProvider
-                            .fetchMusicSettings(currentUser.user!.uid);
+                        await musicProvider.startBgMusic(currentUser.user!.uid);
 
                         // Retrieve the user's language preference from Firebase
                         String? language = await _userProvider

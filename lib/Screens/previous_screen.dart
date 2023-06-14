@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'dart:async';
@@ -28,7 +29,6 @@ class _PreviousScreenState extends State<PreviousScreen> {
   Timer? _countdownTimer;
   bool cameraAvailable = true;
   late MusicProvider _musicProvider;
-
 
   @override
   void initState() {
@@ -113,7 +113,8 @@ class _PreviousScreenState extends State<PreviousScreen> {
   Widget _buildCameraPreview() {
     if (!cameraAvailable) {
       return Center(
-        child: Text(AppLocalizations.of(context).translate('No camera available')),
+        child:
+            Text(AppLocalizations.of(context).translate('No camera available')),
       );
     } else if (!isControllerInitialized) {
       return Center(
@@ -158,10 +159,13 @@ class _PreviousScreenState extends State<PreviousScreen> {
   Widget camera_preview(Widget content) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(icon: Icon(Icons.arrow_back), onPressed: (){
-          _musicProvider.startBgMusic();
-          Navigator.pop(context);
-        },),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            _musicProvider.startBgMusic(FirebaseAuth.instance.currentUser!.uid);
+            Navigator.pop(context);
+          },
+        ),
       ),
       body: Center(
         child: Column(
@@ -178,8 +182,8 @@ class _PreviousScreenState extends State<PreviousScreen> {
                 child: ElevatedButton(
                   onPressed: !pressed && isControllerInitialized
                       ? () {
-                    _musicProvider.pauseBgMusic();
-                    _musicProvider.startClockMusic();
+                          _musicProvider.pauseBgMusic();
+                          _musicProvider.startClockMusic();
 
                           // Start the countdown when the "Ready" button is pressed
                           startCountdown();

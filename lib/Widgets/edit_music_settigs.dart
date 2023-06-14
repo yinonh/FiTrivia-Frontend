@@ -74,7 +74,7 @@ class _EditMusicSettingsWidgetState extends State<EditMusicSettingsWidget> {
     setState(() {
       isPlayingPreview = false;
     });
-    await _musicProvider.startBgMusic();
+    await _musicProvider.startBgMusic(FirebaseAuth.instance.currentUser!.uid);
   }
 
   Future<void> saveChanges() async {
@@ -125,7 +125,9 @@ class _EditMusicSettingsWidgetState extends State<EditMusicSettingsWidget> {
         ),
         SizedBox(height: 16.0),
         CheckboxListTile(
-          title: Text(AppLocalizations.of(context).translate('Game Music'),),
+          title: Text(
+            AppLocalizations.of(context).translate('Game Music'),
+          ),
           value: gameMusicOn,
           onChanged: (newValue) {
             setState(() {
@@ -135,7 +137,9 @@ class _EditMusicSettingsWidgetState extends State<EditMusicSettingsWidget> {
         ),
         SizedBox(height: 16.0),
         CheckboxListTile(
-          title: Text(AppLocalizations.of(context).translate('Background Music'),),
+          title: Text(
+            AppLocalizations.of(context).translate('Background Music'),
+          ),
           value: backgroundMusicOn,
           onChanged: (newValue) {
             setState(() {
@@ -186,7 +190,9 @@ class _EditMusicSettingsWidgetState extends State<EditMusicSettingsWidget> {
         Center(
           child: ElevatedButton(
             onPressed: saveChanges,
-            child: Text(AppLocalizations.of(context).translate('Save Changes'),),
+            child: Text(
+              AppLocalizations.of(context).translate('Save Changes'),
+            ),
           ),
         ),
         SizedBox(height: 32.0),

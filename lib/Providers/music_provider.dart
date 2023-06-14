@@ -15,7 +15,7 @@ class MusicProvider with ChangeNotifier {
   bool backgroundMusicOn = true;
   String musicType = "metal";
 
-  Future<void> fetchMusicSettings(String uid) async {
+  Future<void> startBgMusic(String uid) async {
     try {
       final userDoc =
           await FirebaseFirestore.instance.collection('Users').doc(uid).get();
@@ -33,6 +33,11 @@ class MusicProvider with ChangeNotifier {
       }
     } catch (error) {
       print('Failed to fetch music settings: $error');
+    }
+    bgMusicPlayer.setVolume(volume);
+    if ((bgMusicPlayer.state != PlayerState.playing) && backgroundMusicOn) {
+      bgMusicPlayer.setReleaseMode(ReleaseMode.loop);
+      await bgMusicPlayer.play(backgroundMusicFile);
     }
   }
 
@@ -86,13 +91,9 @@ class MusicProvider with ChangeNotifier {
     }
   }
 
-  Future<void> startBgMusic() async {
-    bgMusicPlayer.setVolume(volume);
-    if ((bgMusicPlayer.state != PlayerState.playing) && backgroundMusicOn) {
-      bgMusicPlayer.setReleaseMode(ReleaseMode.loop);
-      await bgMusicPlayer.play(backgroundMusicFile);
-    }
-  }
+  // Future<void> startBgMusic() async {
+  //
+  // }
 
   Future<void> stopCheeringMusic() async {
     await cheeringPlayer.stop();
