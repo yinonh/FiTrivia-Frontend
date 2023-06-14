@@ -1,6 +1,11 @@
-import 'package:flutter/material.dart';
-import '../l10n/app_localizations.dart';
+import 'dart:typed_data';
 
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../l10n/app_localizations.dart';
+import '../Providers/user_provider.dart';
 
 class Scoreboard extends StatefulWidget {
   final List<Map<String, String>> userScores;
@@ -64,6 +69,7 @@ class _ScoreboardState extends State<Scoreboard>
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Padding(
       padding: const EdgeInsets.all(30.0),
       child: ListView.builder(
@@ -87,11 +93,56 @@ class _ScoreboardState extends State<Scoreboard>
 
           // Render a regular score entry
           return ListTile(
-            leading: Text(
-                index + 1 > maxScoreboardSize ? '' : (index + 1).toString()),
+            leading: FutureBuilder<String?>(
+              future: Provider.of<UserProvider>(context)
+                  .checkExistingProfileImage(entry.id),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  // Show circular progress indicator while loading
+                  return CircularProgressIndicator();
+                } else if (snapshot.hasError) {
+                  // Handle error case
+                  return Text('Error: ${snapshot.error}');
+                } else {
+                  final imageUrl = snapshot.data;
+                  return FutureBuilder<Uint8List?>(
+                    future: imageUrl != null
+                        ? Provider.of<UserProvider>(context)
+                            .loadImageFromUrl(imageUrl)
+                        : null,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        // Show circular progress indicator while loading
+                        return CircularProgressIndicator();
+                      } else if (snapshot.hasError) {
+                        // Handle error case
+                        return Text('Error: ${snapshot.error}');
+                      } else {
+                        final imageBytes = snapshot.data;
+                        return CircleAvatar(
+                          backgroundImage: imageBytes != null
+                              ? MemoryImage(imageBytes)
+                              : null,
+                          backgroundColor:
+                              imageBytes != null ? null : colorScheme.primary,
+                          child: imageBytes == null
+                              ? Icon(
+                                  Icons.person,
+                                  color: colorScheme.secondary,
+                                )
+                              : null,
+                        );
+                      }
+                    },
+                  );
+                }
+              },
+            ),
             // Display the place (index + 1)
             title: Text(entry.username),
-            subtitle: Text(AppLocalizations.of(context).translate('Correct Answers')+': ${entry.correctAnswers}'),
+            subtitle: Text(
+                AppLocalizations.of(context).translate('Correct Answers') +
+                    ': ${entry.correctAnswers}'),
             trailing: Text(entry.score.toString()),
           );
         },
@@ -116,6 +167,7 @@ class _ScoreboardState extends State<Scoreboard>
   }
 
   Widget _buildAnimatedMagnifyingGlassRow(ScoreEntry entry, int index) {
+    final colorScheme = Theme.of(context).colorScheme;
     return AnimatedBuilder(
       animation: _animationController,
       builder: (context, child) {
@@ -141,12 +193,52 @@ class _ScoreboardState extends State<Scoreboard>
                 ],
               ),
               child: ListTile(
-                leading: Text(
-                  index >= maxScoreboardSize ? '' : (index).toString(),
-                  style: TextStyle(
-                    fontSize: 18.0, // Increase the font size for larger text
-                    fontWeight: FontWeight.bold,
-                  ),
+                leading: FutureBuilder<String?>(
+                  future: Provider.of<UserProvider>(context)
+                      .checkExistingProfileImage(entry.id),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      // Show circular progress indicator while loading
+                      return CircularProgressIndicator();
+                    } else if (snapshot.hasError) {
+                      // Handle error case
+                      return Text('Error: ${snapshot.error}');
+                    } else {
+                      final imageUrl = snapshot.data;
+                      return FutureBuilder<Uint8List?>(
+                        future: imageUrl != null
+                            ? Provider.of<UserProvider>(context)
+                                .loadImageFromUrl(imageUrl)
+                            : null,
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            // Show circular progress indicator while loading
+                            return CircularProgressIndicator();
+                          } else if (snapshot.hasError) {
+                            // Handle error case
+                            return Text('Error: ${snapshot.error}');
+                          } else {
+                            final imageBytes = snapshot.data;
+                            return CircleAvatar(
+                              backgroundImage: imageBytes != null
+                                  ? MemoryImage(imageBytes)
+                                  : null,
+                              backgroundColor: imageBytes != null
+                                  ? null
+                                  : colorScheme.primary,
+                              child: imageBytes == null
+                                  ? Icon(
+                                      Icons.person,
+                                      color: colorScheme.secondary,
+                                    )
+                                  : null,
+                            );
+                          }
+                        },
+                      );
+                    }
+                  },
                 ), // Magnifying glass icon
                 title: Text(
                   entry.username,
@@ -156,7 +248,8 @@ class _ScoreboardState extends State<Scoreboard>
                   ),
                 ),
                 subtitle: Text(
-                  AppLocalizations.of(context).translate('Correct Answers')+': ${entry.correctAnswers}',
+                  AppLocalizations.of(context).translate('Correct Answers') +
+                      ': ${entry.correctAnswers}',
                   style: TextStyle(
                     fontSize: 18.0, // Increase the font size for larger text
                     fontWeight: FontWeight.bold,
