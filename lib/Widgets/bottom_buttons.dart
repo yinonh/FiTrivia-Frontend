@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 
 class AnswerButtons extends StatelessWidget {
   const AnswerButtons(
@@ -47,10 +48,11 @@ class AnswerButtons extends StatelessWidget {
                   width: 16.0), // add some spacing between the image and text
               Flexible(
                 flex: 6,
-                child: Text(
+                child: AutoSizeText(
                   textAlign: TextAlign.center,
                   answers[i],
-                  style: TextStyle(fontSize: 20.0),
+                  style: TextStyle(fontSize: 40),
+                  maxLines: 2,
                 ),
               ),
             ],
@@ -94,10 +96,11 @@ class AnswerButtons extends StatelessWidget {
                     width: 16.0), // add some spacing between the image and text
                 Flexible(
                   flex: 6,
-                  child: Text(
+                  child: AutoSizeText(
                     textAlign: TextAlign.center,
                     answers[i],
-                    style: TextStyle(fontSize: 20.0),
+                    style: TextStyle(fontSize: 40),
+                    maxLines: 2,
                   ),
                 ),
               ],

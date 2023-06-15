@@ -8,6 +8,7 @@ import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;
 import 'package:provider/provider.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 
 import '../l10n/app_localizations.dart';
 import '../Widgets/rest_popup.dart';
@@ -28,7 +29,7 @@ class CameraScreen extends StatefulWidget {
 }
 
 class _CameraScreenState extends State<CameraScreen> {
-  static const _num_of_images = 20;
+  static const _num_of_images = 10;
   List<XFile> _capturedImages = [];
   int index = 0;
   bool _isCapturing = false;
@@ -426,10 +427,11 @@ class _CameraScreenState extends State<CameraScreen> {
                       MediaQuery.of(context).viewPadding.top) *
                   0.1,
               child: Center(
-                child: Text(
-                  widget.room.questions[index].question,
-                  style: TextStyle(fontSize: 20.0),
+                child: AutoSizeText(
                   textAlign: TextAlign.center,
+                  widget.room.questions[index].question,
+                  style: TextStyle(fontSize: 40),
+                  maxLines: 2,
                 ),
               ),
             ),
