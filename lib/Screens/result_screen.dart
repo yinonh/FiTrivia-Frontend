@@ -79,6 +79,7 @@ class _ResultScreenState extends State<ResultScreen>
 
   int get_total_score() {
     int total_score = 0;
+    widget.correctAnswers = 0;
     for (int i = 0; i < widget.result.length; i++) {
       bool correctAns = is_ans_correct(widget.result[i], i);
       total_score += convertStringList(widget.result[i]).sum;
