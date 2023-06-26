@@ -3,6 +3,7 @@
 🚀	[Overview](#-🚀-overview)<br>
 🤔	[How It Works](#-🤔-how-it-works)<br>
 💻	[Technologies Used](#-💻-technologies-used)<br>
+🎥 [Demo](#-🎥-demo)<br>
 
 
 ## 🚀 Overview
@@ -23,5 +24,10 @@ This app is built using [Flutter](https://flutter.dev/), a powerful cross platfo
 
 The camera functionality is implemented using the [camera](https://pub.dev/packages/camera) package, which provides a simple interface to the device's camera.
 
-<a href="https://yinonh-fitrivia-information-main-0yd9mi.streamlit.app/" target="_blank"><button>For more information, click here</button></a>
+<a href="https://fitrivia.streamlit.app/" target="_blank"><button>For more information, click here</button></a>
+
+## 🎥 Demo 
+
+https://github.com/yinonh/FiTrivia-Frontend/assets/52419140/c53464b6-c928-4fd4-8a5d-6c7714df9dbe
+
 
