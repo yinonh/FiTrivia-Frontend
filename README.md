@@ -28,6 +28,14 @@ The camera functionality is implemented using the [camera](https://pub.dev/packa
 
 ## 🎥 Demo 
 
+### Game:
+
 https://github.com/yinonh/FiTrivia-Frontend/assets/52419140/c53464b6-c928-4fd4-8a5d-6c7714df9dbe
+
+### App
+
+
+https://github.com/yinonh/FiTrivia-Frontend/assets/52419140/cf71def3-b1ae-44c0-a719-dc2d06a8ddb8
+
 
 
